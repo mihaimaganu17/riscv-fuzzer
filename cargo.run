@@ -1,0 +1,511 @@
+Executing 10111 at 0x11190
+Executing 10011 at 0x11194
+Inst Itype { imm: -1792, rs1: Gp, rd: Gp, funct3: 0 }
+Executing 10011 at 0x11198
+Inst Itype { imm: 0, rs1: Sp, rd: A0, funct3: 0 }
+Executing 10111 at 0x1119c
+Executing 10011 at 0x111a0
+Inst Itype { imm: -412, rs1: A1, rd: A1, funct3: 0 }
+Executing 10011 at 0x111a4
+Inst Itype { imm: -16, rs1: Sp, rd: Sp, funct3: 7 }
+Executing 1101111 at 0x111a8
+Executing 11 at 0x111ac
+Itype { imm: 0, rs1: A0, rd: A1, funct3: 2 }
+Executing 10011 at 0x111b0
+Inst Itype { imm: 8, rs1: A0, rd: A2, funct3: 0 }
+Executing 110111 at 0x111b4
+Executing 10011 at 0x111b8
+Inst Itype { imm: -584, rs1: A0, rd: A0, funct3: 0 }
+Executing 110111 at 0x111bc
+Executing 10011 at 0x111c0
+Inst Itype { imm: 468, rs1: A3, rd: A3, funct3: 0 }
+Executing 110111 at 0x111c4
+Executing 10011 at 0x111c8
+Inst Itype { imm: 1976, rs1: A4, rd: A4, funct3: 0 }
+Executing 10011 at 0x111cc
+Inst Itype { imm: 0, rs1: Zero, rd: A5, funct3: 0 }
+Executing 1101111 at 0x111d0
+Executing 10011 at 0x113fc
+Inst Itype { imm: -32, rs1: Sp, rd: Sp, funct3: 0 }
+Executing 100011 at 0x11400
+Executing 100011 at 0x11404
+Executing 100011 at 0x11408
+Executing 100011 at 0x1140c
+Executing 10011 at 0x11410
+Inst Itype { imm: 0, rs1: A2, rd: S0, funct3: 0 }
+Executing 10011 at 0x11414
+Inst Itype { imm: 0, rs1: A1, rd: S1, funct3: 0 }
+Executing 10011 at 0x11418
+Inst Itype { imm: 0, rs1: A0, rd: S2, funct3: 0 }
+Executing 11 at 0x1141c
+Executing 10011 at 0x11420
+Inst Itype { imm: 3, rs1: S1, rd: A0, funct3: 1 }
+Executing 110011 at 0x11424
+Executing 10011 at 0x11428
+Inst Itype { imm: 8, rs1: A0, rd: A0, funct3: 0 }
+Executing 1101111 at 0x1142c
+Executing 10011 at 0x111dc
+Inst Itype { imm: -368, rs1: Sp, rd: Sp, funct3: 0 }
+Executing 100011 at 0x111e0
+Executing 100011 at 0x111e4
+Executing 100011 at 0x111e8
+Executing 10011 at 0x111ec
+Inst Itype { imm: 0, rs1: A1, rd: S0, funct3: 0 }
+Executing 10011 at 0x111f0
+Inst Itype { imm: 0, rs1: A0, rd: S1, funct3: 0 }
+Executing 10011 at 0x111f4
+Inst Itype { imm: 40, rs1: Sp, rd: A0, funct3: 0 }
+Executing 10011 at 0x111f8
+Inst Itype { imm: 304, rs1: Zero, rd: A2, funct3: 0 }
+Executing 10011 at 0x111fc
+Inst Itype { imm: 0, rs1: Zero, rd: A1, funct3: 0 }
+Executing 1101111 at 0x11200
+Executing 10011 at 0x11c5c
+Inst Itype { imm: -48, rs1: Sp, rd: Sp, funct3: 0 }
+Executing 100011 at 0x11c60
+Executing 100011 at 0x11c64
+Executing 100011 at 0x11c68
+Executing 100011 at 0x11c6c
+Executing 100011 at 0x11c70
+Executing 10011 at 0x11c74
+Inst Itype { imm: 0, rs1: A0, rd: S0, funct3: 0 }
+Executing 1100011 at 0x11c78
+Executing 100011 at 0x11c7c
+Executing 110011 at 0x11c80
+Executing 10011 at 0x11c84
+Inst Itype { imm: 3, rs1: Zero, rd: A3, funct3: 0 }
+Executing 100011 at 0x11c88
+Executing 1100011 at 0x11c8c
+Executing 100011 at 0x11c90
+Executing 100011 at 0x11c94
+Executing 100011 at 0x11c98
+Executing 10011 at 0x11c9c
+Inst Itype { imm: 7, rs1: Zero, rd: A3, funct3: 0 }
+Executing 100011 at 0x11ca0
+Executing 1100011 at 0x11ca4
+Executing 100011 at 0x11ca8
+Executing 10011 at 0x11cac
+Inst Itype { imm: 9, rs1: Zero, rd: S3, funct3: 0 }
+Executing 100011 at 0x11cb0
+Executing 1100011 at 0x11cb4
+Executing 111011 at 0x11cb8
+Executing 10011 at 0x11cbc
+Inst Itype { imm: 3, rs1: A0, rd: A0, funct3: 7 }
+Executing 110011 at 0x11cc0
+Executing 110011 at 0x11cc4
+Executing 10011 at 0x11cc8
+Inst Itype { imm: -4, rs1: A0, rd: S2, funct3: 7 }
+Executing 10011 at 0x11ccc
+Inst Itype { imm: 255, rs1: A1, rd: A0, funct3: 7 }
+Executing 110111 at 0x11cd0
+Executing 11011 at 0x11cd4
+Executing 1101111 at 0x11cd8
+Executing 10011 at 0x11d94
+Inst Itype { imm: 0, rs1: A0, rd: A2, funct3: 0 }
+Executing 10011 at 0x11d98
+Inst Itype { imm: 0, rs1: Zero, rd: A0, funct3: 0 }
+Executing 10011 at 0x11d9c
+Inst Itype { imm: 1, rs1: A1, rd: A3, funct3: 7 }
+Executing 1100011 at 0x11da0
+Executing 110011 at 0x11da4
+Executing 10011 at 0x11da8
+Inst Itype { imm: 1, rs1: A1, rd: A1, funct3: 5 }
+Executing 10011 at 0x11dac
+Inst Itype { imm: 1, rs1: A2, rd: A2, funct3: 1 }
+Executing 1100011 at 0x11db0
+Executing 10011 at 0x11d9c
+Inst Itype { imm: 1, rs1: A1, rd: A3, funct3: 7 }
+Executing 1100011 at 0x11da0
+Executing 10011 at 0x11da8
+Inst Itype { imm: 1, rs1: A1, rd: A1, funct3: 5 }
+Executing 10011 at 0x11dac
+Inst Itype { imm: 1, rs1: A2, rd: A2, funct3: 1 }
+Executing 1100011 at 0x11db0
+Executing 10011 at 0x11d9c
+Inst Itype { imm: 1, rs1: A1, rd: A3, funct3: 7 }
+Executing 1100011 at 0x11da0
+Executing 10011 at 0x11da8
+Inst Itype { imm: 1, rs1: A1, rd: A1, funct3: 5 }
+Executing 10011 at 0x11dac
+Inst Itype { imm: 1, rs1: A2, rd: A2, funct3: 1 }
+Executing 1100011 at 0x11db0
+Executing 10011 at 0x11d9c
+Inst Itype { imm: 1, rs1: A1, rd: A3, funct3: 7 }
+Executing 1100011 at 0x11da0
+Executing 10011 at 0x11da8
+Inst Itype { imm: 1, rs1: A1, rd: A1, funct3: 5 }
+Executing 10011 at 0x11dac
+Inst Itype { imm: 1, rs1: A2, rd: A2, funct3: 1 }
+Executing 1100011 at 0x11db0
+Executing 10011 at 0x11d9c
+Inst Itype { imm: 1, rs1: A1, rd: A3, funct3: 7 }
+Executing 1100011 at 0x11da0
+Executing 10011 at 0x11da8
+Inst Itype { imm: 1, rs1: A1, rd: A1, funct3: 5 }
+Executing 10011 at 0x11dac
+Inst Itype { imm: 1, rs1: A2, rd: A2, funct3: 1 }
+Executing 1100011 at 0x11db0
+Executing 10011 at 0x11d9c
+Inst Itype { imm: 1, rs1: A1, rd: A3, funct3: 7 }
+Executing 1100011 at 0x11da0
+Executing 10011 at 0x11da8
+Inst Itype { imm: 1, rs1: A1, rd: A1, funct3: 5 }
+Executing 10011 at 0x11dac
+Inst Itype { imm: 1, rs1: A2, rd: A2, funct3: 1 }
+Executing 1100011 at 0x11db0
+Executing 10011 at 0x11d9c
+Inst Itype { imm: 1, rs1: A1, rd: A3, funct3: 7 }
+Executing 1100011 at 0x11da0
+Executing 10011 at 0x11da8
+Inst Itype { imm: 1, rs1: A1, rd: A1, funct3: 5 }
+Executing 10011 at 0x11dac
+Inst Itype { imm: 1, rs1: A2, rd: A2, funct3: 1 }
+Executing 1100011 at 0x11db0
+Executing 10011 at 0x11d9c
+Inst Itype { imm: 1, rs1: A1, rd: A3, funct3: 7 }
+Executing 1100011 at 0x11da0
+Executing 10011 at 0x11da8
+Inst Itype { imm: 1, rs1: A1, rd: A1, funct3: 5 }
+Executing 10011 at 0x11dac
+Inst Itype { imm: 1, rs1: A2, rd: A2, funct3: 1 }
+Executing 1100011 at 0x11db0
+Executing 10011 at 0x11d9c
+Inst Itype { imm: 1, rs1: A1, rd: A3, funct3: 7 }
+Executing 1100011 at 0x11da0
+Executing 110011 at 0x11da4
+Executing 10011 at 0x11da8
+Inst Itype { imm: 1, rs1: A1, rd: A1, funct3: 5 }
+Executing 10011 at 0x11dac
+Inst Itype { imm: 1, rs1: A2, rd: A2, funct3: 1 }
+Executing 1100011 at 0x11db0
+Executing 10011 at 0x11d9c
+Inst Itype { imm: 1, rs1: A1, rd: A3, funct3: 7 }
+Executing 1100011 at 0x11da0
+Executing 10011 at 0x11da8
+Inst Itype { imm: 1, rs1: A1, rd: A1, funct3: 5 }
+Executing 10011 at 0x11dac
+Inst Itype { imm: 1, rs1: A2, rd: A2, funct3: 1 }
+Executing 1100011 at 0x11db0
+Executing 10011 at 0x11d9c
+Inst Itype { imm: 1, rs1: A1, rd: A3, funct3: 7 }
+Executing 1100011 at 0x11da0
+Executing 10011 at 0x11da8
+Inst Itype { imm: 1, rs1: A1, rd: A1, funct3: 5 }
+Executing 10011 at 0x11dac
+Inst Itype { imm: 1, rs1: A2, rd: A2, funct3: 1 }
+Executing 1100011 at 0x11db0
+Executing 10011 at 0x11d9c
+Inst Itype { imm: 1, rs1: A1, rd: A3, funct3: 7 }
+Executing 1100011 at 0x11da0
+Executing 10011 at 0x11da8
+Inst Itype { imm: 1, rs1: A1, rd: A1, funct3: 5 }
+Executing 10011 at 0x11dac
+Inst Itype { imm: 1, rs1: A2, rd: A2, funct3: 1 }
+Executing 1100011 at 0x11db0
+Executing 10011 at 0x11d9c
+Inst Itype { imm: 1, rs1: A1, rd: A3, funct3: 7 }
+Executing 1100011 at 0x11da0
+Executing 10011 at 0x11da8
+Inst Itype { imm: 1, rs1: A1, rd: A1, funct3: 5 }
+Executing 10011 at 0x11dac
+Inst Itype { imm: 1, rs1: A2, rd: A2, funct3: 1 }
+Executing 1100011 at 0x11db0
+Executing 10011 at 0x11d9c
+Inst Itype { imm: 1, rs1: A1, rd: A3, funct3: 7 }
+Executing 1100011 at 0x11da0
+Executing 10011 at 0x11da8
+Inst Itype { imm: 1, rs1: A1, rd: A1, funct3: 5 }
+Executing 10011 at 0x11dac
+Inst Itype { imm: 1, rs1: A2, rd: A2, funct3: 1 }
+Executing 1100011 at 0x11db0
+Executing 10011 at 0x11d9c
+Inst Itype { imm: 1, rs1: A1, rd: A3, funct3: 7 }
+Executing 1100011 at 0x11da0
+Executing 10011 at 0x11da8
+Inst Itype { imm: 1, rs1: A1, rd: A1, funct3: 5 }
+Executing 10011 at 0x11dac
+Inst Itype { imm: 1, rs1: A2, rd: A2, funct3: 1 }
+Executing 1100011 at 0x11db0
+Executing 10011 at 0x11d9c
+Inst Itype { imm: 1, rs1: A1, rd: A3, funct3: 7 }
+Executing 1100011 at 0x11da0
+Executing 10011 at 0x11da8
+Inst Itype { imm: 1, rs1: A1, rd: A1, funct3: 5 }
+Executing 10011 at 0x11dac
+Inst Itype { imm: 1, rs1: A2, rd: A2, funct3: 1 }
+Executing 1100011 at 0x11db0
+Executing 10011 at 0x11d9c
+Inst Itype { imm: 1, rs1: A1, rd: A3, funct3: 7 }
+Executing 1100011 at 0x11da0
+Executing 110011 at 0x11da4
+Executing 10011 at 0x11da8
+Inst Itype { imm: 1, rs1: A1, rd: A1, funct3: 5 }
+Executing 10011 at 0x11dac
+Inst Itype { imm: 1, rs1: A2, rd: A2, funct3: 1 }
+Executing 1100011 at 0x11db0
+Executing 10011 at 0x11d9c
+Inst Itype { imm: 1, rs1: A1, rd: A3, funct3: 7 }
+Executing 1100011 at 0x11da0
+Executing 10011 at 0x11da8
+Inst Itype { imm: 1, rs1: A1, rd: A1, funct3: 5 }
+Executing 10011 at 0x11dac
+Inst Itype { imm: 1, rs1: A2, rd: A2, funct3: 1 }
+Executing 1100011 at 0x11db0
+Executing 10011 at 0x11d9c
+Inst Itype { imm: 1, rs1: A1, rd: A3, funct3: 7 }
+Executing 1100011 at 0x11da0
+Executing 10011 at 0x11da8
+Inst Itype { imm: 1, rs1: A1, rd: A1, funct3: 5 }
+Executing 10011 at 0x11dac
+Inst Itype { imm: 1, rs1: A2, rd: A2, funct3: 1 }
+Executing 1100011 at 0x11db0
+Executing 10011 at 0x11d9c
+Inst Itype { imm: 1, rs1: A1, rd: A3, funct3: 7 }
+Executing 1100011 at 0x11da0
+Executing 10011 at 0x11da8
+Inst Itype { imm: 1, rs1: A1, rd: A1, funct3: 5 }
+Executing 10011 at 0x11dac
+Inst Itype { imm: 1, rs1: A2, rd: A2, funct3: 1 }
+Executing 1100011 at 0x11db0
+Executing 10011 at 0x11d9c
+Inst Itype { imm: 1, rs1: A1, rd: A3, funct3: 7 }
+Executing 1100011 at 0x11da0
+Executing 10011 at 0x11da8
+Inst Itype { imm: 1, rs1: A1, rd: A1, funct3: 5 }
+Executing 10011 at 0x11dac
+Inst Itype { imm: 1, rs1: A2, rd: A2, funct3: 1 }
+Executing 1100011 at 0x11db0
+Executing 10011 at 0x11d9c
+Inst Itype { imm: 1, rs1: A1, rd: A3, funct3: 7 }
+Executing 1100011 at 0x11da0
+Executing 10011 at 0x11da8
+Inst Itype { imm: 1, rs1: A1, rd: A1, funct3: 5 }
+Executing 10011 at 0x11dac
+Inst Itype { imm: 1, rs1: A2, rd: A2, funct3: 1 }
+Executing 1100011 at 0x11db0
+Executing 10011 at 0x11d9c
+Inst Itype { imm: 1, rs1: A1, rd: A3, funct3: 7 }
+Executing 1100011 at 0x11da0
+Executing 10011 at 0x11da8
+Inst Itype { imm: 1, rs1: A1, rd: A1, funct3: 5 }
+Executing 10011 at 0x11dac
+Inst Itype { imm: 1, rs1: A2, rd: A2, funct3: 1 }
+Executing 1100011 at 0x11db0
+Executing 10011 at 0x11d9c
+Inst Itype { imm: 1, rs1: A1, rd: A3, funct3: 7 }
+Executing 1100011 at 0x11da0
+Executing 10011 at 0x11da8
+Inst Itype { imm: 1, rs1: A1, rd: A1, funct3: 5 }
+Executing 10011 at 0x11dac
+Inst Itype { imm: 1, rs1: A2, rd: A2, funct3: 1 }
+Executing 1100011 at 0x11db0
+Executing 10011 at 0x11d9c
+Inst Itype { imm: 1, rs1: A1, rd: A3, funct3: 7 }
+Executing 1100011 at 0x11da0
+Executing 110011 at 0x11da4
+Executing 10011 at 0x11da8
+Inst Itype { imm: 1, rs1: A1, rd: A1, funct3: 5 }
+Executing 10011 at 0x11dac
+Inst Itype { imm: 1, rs1: A2, rd: A2, funct3: 1 }
+Executing 1100011 at 0x11db0
+Executing 1100111 at 0x11db4
+Executing 100011 at 0x11cdc
+Executing 110011 at 0x11ce0
+Executing 100011 at 0x11ce4
+Executing 1100011 at 0x11ce8
+Executing 100011 at 0x11cec
+Executing 100011 at 0x11cf0
+Executing 100011 at 0x11cf4
+Executing 10011 at 0x11cf8
+Inst Itype { imm: 25, rs1: Zero, rd: A2, funct3: 0 }
+Executing 100011 at 0x11cfc
+Executing 1100011 at 0x11d00
+Executing 100011 at 0x11d04
+Executing 100011 at 0x11d08
+Executing 100011 at 0x11d0c
+Executing 100011 at 0x11d10
+Executing 100011 at 0x11d14
+Executing 100011 at 0x11d18
+Executing 100011 at 0x11d1c
+Executing 10011 at 0x11d20
+Inst Itype { imm: 4, rs1: S1, rd: A2, funct3: 7 }
+Executing 10011 at 0x11d24
+Inst Itype { imm: 24, rs1: A2, rd: A3, funct3: 6 }
+Executing 110011 at 0x11d28
+Executing 10011 at 0x11d2c
+Inst Itype { imm: 32, rs1: Zero, rd: A4, funct3: 0 }
+Executing 100011 at 0x11d30
+Executing 1100011 at 0x11d34
+Executing 10011 at 0x11d38
+Inst Itype { imm: 32, rs1: A0, rd: A0, funct3: 1 }
+Executing 10011 at 0x11d3c
+Inst Itype { imm: 32, rs1: A0, rd: A1, funct3: 5 }
+Executing 110011 at 0x11d40
+Executing 110011 at 0x11d44
+Executing 10011 at 0x11d48
+Inst Itype { imm: 31, rs1: Zero, rd: A3, funct3: 0 }
+Executing 100011 at 0x11d4c
+Executing 100011 at 0x11d50
+Executing 100011 at 0x11d54
+Executing 100011 at 0x11d58
+Executing 10011 at 0x11d5c
+Inst Itype { imm: -32, rs1: A2, rd: A2, funct3: 0 }
+Executing 10011 at 0x11d60
+Inst Itype { imm: 32, rs1: A1, rd: A1, funct3: 0 }
+Executing 1100011 at 0x11d64
+Executing 100011 at 0x11d4c
+Executing 100011 at 0x11d50
+Executing 100011 at 0x11d54
+Executing 100011 at 0x11d58
+Executing 10011 at 0x11d5c
+Inst Itype { imm: -32, rs1: A2, rd: A2, funct3: 0 }
+Executing 10011 at 0x11d60
+Inst Itype { imm: 32, rs1: A1, rd: A1, funct3: 0 }
+Executing 1100011 at 0x11d64
+Executing 100011 at 0x11d4c
+Executing 100011 at 0x11d50
+Executing 100011 at 0x11d54
+Executing 100011 at 0x11d58
+Executing 10011 at 0x11d5c
+Inst Itype { imm: -32, rs1: A2, rd: A2, funct3: 0 }
+Executing 10011 at 0x11d60
+Inst Itype { imm: 32, rs1: A1, rd: A1, funct3: 0 }
+Executing 1100011 at 0x11d64
+Executing 100011 at 0x11d4c
+Executing 100011 at 0x11d50
+Executing 100011 at 0x11d54
+Executing 100011 at 0x11d58
+Executing 10011 at 0x11d5c
+Inst Itype { imm: -32, rs1: A2, rd: A2, funct3: 0 }
+Executing 10011 at 0x11d60
+Inst Itype { imm: 32, rs1: A1, rd: A1, funct3: 0 }
+Executing 1100011 at 0x11d64
+Executing 100011 at 0x11d4c
+Executing 100011 at 0x11d50
+Executing 100011 at 0x11d54
+Executing 100011 at 0x11d58
+Executing 10011 at 0x11d5c
+Inst Itype { imm: -32, rs1: A2, rd: A2, funct3: 0 }
+Executing 10011 at 0x11d60
+Inst Itype { imm: 32, rs1: A1, rd: A1, funct3: 0 }
+Executing 1100011 at 0x11d64
+Executing 100011 at 0x11d4c
+Executing 100011 at 0x11d50
+Executing 100011 at 0x11d54
+Executing 100011 at 0x11d58
+Executing 10011 at 0x11d5c
+Inst Itype { imm: -32, rs1: A2, rd: A2, funct3: 0 }
+Executing 10011 at 0x11d60
+Inst Itype { imm: 32, rs1: A1, rd: A1, funct3: 0 }
+Executing 1100011 at 0x11d64
+Executing 100011 at 0x11d4c
+Executing 100011 at 0x11d50
+Executing 100011 at 0x11d54
+Executing 100011 at 0x11d58
+Executing 10011 at 0x11d5c
+Inst Itype { imm: -32, rs1: A2, rd: A2, funct3: 0 }
+Executing 10011 at 0x11d60
+Inst Itype { imm: 32, rs1: A1, rd: A1, funct3: 0 }
+Executing 1100011 at 0x11d64
+Executing 100011 at 0x11d4c
+Executing 100011 at 0x11d50
+Executing 100011 at 0x11d54
+Executing 100011 at 0x11d58
+Executing 10011 at 0x11d5c
+Inst Itype { imm: -32, rs1: A2, rd: A2, funct3: 0 }
+Executing 10011 at 0x11d60
+Inst Itype { imm: 32, rs1: A1, rd: A1, funct3: 0 }
+Executing 1100011 at 0x11d64
+Executing 10011 at 0x11d68
+Inst Itype { imm: 0, rs1: S0, rd: A0, funct3: 0 }
+Executing 11 at 0x11d6c
+Executing 11 at 0x11d70
+Executing 11 at 0x11d74
+Executing 11 at 0x11d78
+Executing 11 at 0x11d7c
+Executing 10011 at 0x11d80
+Inst Itype { imm: 48, rs1: Sp, rd: Sp, funct3: 0 }
+Executing 1100111 at 0x11d84
+Executing 110111 at 0x11204
+Executing 100011 at 0x11208
+Executing 11 at 0x1120c
+Executing 10011 at 0x11210
+Inst Itype { imm: 8, rs1: S1, rd: S1, funct3: 0 }
+Executing 1100011 at 0x11214
+Executing 110111 at 0x11218
+Executing 100011 at 0x1121c
+Executing 11 at 0x11220
+Executing 1100011 at 0x11224
+Executing 110111 at 0x11274
+Executing 100011 at 0x11278
+Executing 11 at 0x1127c
+Executing 110111 at 0x11280
+Executing 100011 at 0x11284
+Executing 1100011 at 0x11288
+Executing 1100011 at 0x11290
+Executing 110111 at 0x1129c
+Executing 100011 at 0x112a0
+Executing 110111 at 0x112a4
+Executing 100011 at 0x112a8
+Executing 10011 at 0x112ac
+Inst Itype { imm: 1, rs1: S0, rd: A1, funct3: 0 }
+Executing 10011 at 0x112b0
+Inst Itype { imm: 47, rs1: Zero, rd: A2, funct3: 0 }
+Executing 11 at 0x112b4
+Executing 1100011 at 0x112b8
+Executing 1100011 at 0x112bc
+Executing 10011 at 0x112c8
+Inst Itype { imm: 1, rs1: A1, rd: A1, funct3: 0 }
+Executing 1101111 at 0x112cc
+Executing 11 at 0x112b4
+Executing 1100011 at 0x112b8
+Executing 1100011 at 0x112bc
+Executing 10011 at 0x112c8
+Inst Itype { imm: 1, rs1: A1, rd: A1, funct3: 0 }
+Executing 1101111 at 0x112cc
+Executing 11 at 0x112b4
+Executing 1100011 at 0x112b8
+Executing 1100011 at 0x112bc
+Executing 10011 at 0x112c8
+Inst Itype { imm: 1, rs1: A1, rd: A1, funct3: 0 }
+Executing 1101111 at 0x112cc
+Executing 11 at 0x112b4
+Executing 1100011 at 0x112b8
+Executing 1100011 at 0x112bc
+Executing 10011 at 0x112c8
+Inst Itype { imm: 1, rs1: A1, rd: A1, funct3: 0 }
+Executing 1101111 at 0x112cc
+Executing 11 at 0x112b4
+Executing 1100011 at 0x112b8
+Executing 1100011 at 0x112bc
+Executing 1101111 at 0x112c0
+Executing 10011 at 0x112d0
+Inst Itype { imm: 40, rs1: Sp, rd: A0, funct3: 0 }
+Executing 1101111 at 0x112d4
+Executing 10011 at 0x1160c
+Inst Itype { imm: -16, rs1: Sp, rd: Sp, funct3: 0 }
+Executing 100011 at 0x11610
+Executing 11 at 0x11614
+Executing 1100011 at 0x11618
+Executing 10011 at 0x1161c
+Inst Itype { imm: 0, rs1: Zero, rd: A2, funct3: 0 }
+Executing 10011 at 0x11620
+Inst Itype { imm: 0, rs1: Zero, rd: T3, funct3: 0 }
+Executing 11 at 0x11624
+Executing 11 at 0x11628
+Executing 10011 at 0x1162c
+Inst Itype { imm: 6, rs1: Zero, rd: A4, funct3: 0 }
+Executing 110111 at 0x11630
+Executing 10011 at 0x11634
+Inst Itype { imm: 0, rs1: A5, rd: A5, funct3: 0 }
+Executing 10011 at 0x11638
+Inst Itype { imm: 1, rs1: A5, rd: A6, funct3: 3 }
+Executing 10011 at 0x1163c
+Inst Itype { imm: 7, rs1: Zero, rd: A7, funct3: 0 }
+Executing 110111 at 0x11640
+Executing 11011 at 0x11644
+Executing 110111 at 0x11648
+Executing 10011 at 0x1164c
+Inst Itype { imm: 0, rs1: A3, rd: T2, funct3: 0 }
+Executing 11 at 0x11650
+Itype { imm: 0, rs1: T2, rd: T5, funct3: 2 }

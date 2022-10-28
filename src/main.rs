@@ -205,7 +205,7 @@ impl Mmu {
         Some(())
     }
 
-    pub fn read_into(&self, addr: VirtAddr, buf: &mut [u8], exp_perms: Perm) -> Option<()> {
+    pub fn read_into(&self, addr: VirtAddr, buf: &mut [u8]) -> Option<()> {
         self.read_into_perms(addr, buf, Perm(PERM_READ))
     }
 
@@ -239,8 +239,8 @@ struct Emulator {
 }
 
 /// 64-bit RISC-V registers
-#[derive(Clone, Copy, Debug)]
-#[repr(u64)]
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+#[repr(usize)]
 enum Register {
     Zero = 0,
     Ra,
@@ -314,12 +314,18 @@ impl Emulator {
 
     /// Get a register from the guest
     pub fn reg(&self, register: Register) -> u64 {
-        self.registers[register as usize]
+        if register != Register::Zero {
+            self.registers[register as usize]
+        } else {
+            0
+        }
     }
 
     /// Set a register in the guest
     pub fn set_reg(&mut self, register: Register, value: u64) {
-        self.registers[register as usize] = value;
+        if register != Register::Zero {
+            self.registers[register as usize] = value;
+        }
     }
 
     /// Load a file into the emulators address space using the sections as described
@@ -360,13 +366,15 @@ impl Emulator {
     }
 
     pub fn run(&mut self) -> Option<()> {
-        loop {
+        'next_inst: loop {
             // Get the current program counter
             let pc = self.reg(Register::Pc);
             let inst: u32 = self.memory.read_perms(VirtAddr(pc as usize), Perm(PERM_EXEC))?;
 
             // Extract the opcode from the instruction
             let opcode = inst & 0b1111111;
+
+            print!("Executing {:b} at {:#x}\n", opcode, pc);
             match opcode {
                 0b0110111 => {
                     // LUI -> Load upper immediate
@@ -374,10 +382,531 @@ impl Emulator {
 
                     self.set_reg(inst.rd, inst.imm as i64 as u64);
                 }
+                0b0010111 => {
+                    // AUIPC -> Add upper immediate to pc
+                    let inst = Utype::from(inst);
+                    self.set_reg(inst.rd, (inst.imm as i64 as u64).wrapping_add(pc));
+                }
+                0b1101111 => {
+                    // JAL
+                    let inst = Jtype::from(inst);
+                    // Save the return address
+                    self.set_reg(inst.rd, pc.wrapping_add(4));
+                    self.set_reg(Register::Pc, pc.wrapping_add(inst.imm as i64 as u64));
+                    continue 'next_inst;
+                }
+                0b1100111 => {
+                    // We know it's an Itype
+                    let inst = Itype::from(inst);
+
+                    match inst.funct3 {
+                        0b000 => {
+                        // JALR
+                        // Compute the target address
+                        let target_address = self.reg(inst.rs1).wrapping_add(inst.imm as i64 as u64);
+                        // Set the least significant bit to 0
+                        //let target_address = target_address & (0xffff_ffff - 1);
+                        self.set_reg(inst.rd, pc.wrapping_add(4));
+
+                        self.set_reg(Register::Pc, target_address);
+                        continue 'next_inst;
+                        }
+                        _ => unimplemented!("Unexpected 0b1100111"),
+                    }
+
+                }
+                0b1100011 => {
+                    // We know it's a BType
+                    let inst = Btype::from(inst);
+
+                    let rs1 = self.reg(inst.rs1);
+                    let rs2 = self.reg(inst.rs2);
+
+                    match inst.funct3 {
+                        0b000 => {
+                            // BEQ
+                            if rs1 == rs2 {
+                                self.set_reg(Register::Pc, pc.wrapping_add(inst.imm as i64 as u64));
+                                continue 'next_inst;
+                            }
+                        }
+                        0b001 => {
+                            // BNE
+                            if rs1 != rs2 {
+                                self.set_reg(Register::Pc, pc.wrapping_add(inst.imm as i64 as u64));
+                                continue 'next_inst;
+                            }
+                        }
+                        0b100 => {
+                            // BLT
+                            if (rs1 as i64) < (rs2 as i64) {
+                                self.set_reg(Register::Pc, pc.wrapping_add(inst.imm as i64 as u64));
+                                continue 'next_inst;
+                            }
+                        }
+                        0b101 => {
+                            // BGE
+                            if (rs1 as i64) >= (rs2 as i64) {
+                                self.set_reg(Register::Pc, pc.wrapping_add(inst.imm as i64 as u64));
+                                continue 'next_inst;
+                            }
+                        }
+                        0b110 => {
+                            // BLTU
+                            if (rs1 as u64) < (rs2 as u64) {
+                                self.set_reg(Register::Pc, pc.wrapping_add(inst.imm as i64 as u64));
+                                continue 'next_inst;
+                            }
+                        }
+                        0b111 => {
+                            // BGEU
+                            if (rs1 as u64) >= (rs2 as u64) {
+                                self.set_reg(Register::Pc, pc.wrapping_add(inst.imm as i64 as u64));
+                                continue 'next_inst;
+                            }
+                        }
+                        _ => unimplemented!("Unexpected 0b1100011"),
+                    }
+                }
+                0b0000011 => {
+                    // We know it's an Itype
+                    let inst = Itype::from(inst);
+                    let addr = VirtAddr(
+                        self.reg(inst.rs1).wrapping_add(inst.imm as i64 as u64) as usize);
+
+                    match inst.funct3 {
+                        0b000 => {
+                            // LB
+                            let mut tmp = [0u8; 1];
+                            self.memory.read_into(addr, &mut tmp)?;
+                            self.set_reg(inst.rd, i8::from_le_bytes(tmp) as i64 as u64);
+                        }
+                        0b001 => {
+                            // LH
+                            let mut tmp = [0u8; 2];
+                            self.memory.read_into(addr, &mut tmp)?;
+                            self.set_reg(inst.rd, i16::from_le_bytes(tmp) as i64 as u64);
+                        }
+                        0b010 => {
+                            // LW
+                            println!("{:?}", inst);
+                            let mut tmp = [0u8; 4];
+                            println!("{:?}", inst);
+                            self.memory.read_into(addr, &mut tmp)?;
+                            println!("{:?}", inst);
+                            self.set_reg(inst.rd, i32::from_le_bytes(tmp) as i64 as u64);
+                        }
+                        0b100 => {
+                            // LBU
+                            let mut tmp = [0u8; 1];
+                            self.memory.read_into(addr, &mut tmp)?;
+                            self.set_reg(inst.rd, u8::from_le_bytes(tmp) as u64);
+                        }
+                        0b101 => {
+                            // LHU
+                            let mut tmp = [0u8; 2];
+                            self.memory.read_into(addr, &mut tmp)?;
+                            self.set_reg(inst.rd, u16::from_le_bytes(tmp) as u64);
+                        }
+                        0b110 => {
+                            // LWU
+                            let mut tmp = [0u8; 4];
+                            self.memory.read_into(addr, &mut tmp)?;
+                            self.set_reg(inst.rd, u32::from_le_bytes(tmp) as u64);
+                        }
+                        0b011 => {
+                            // LD
+                            let mut tmp = [0u8; 8];
+                            self.memory.read_into(addr, &mut tmp)?;
+                            self.set_reg(inst.rd, i64::from_le_bytes(tmp) as u64);
+                        }
+                        _ => unimplemented!("Unexpeced 0b0000011"),
+                    }
+                }
+                0b0100011 => {
+                    // We know it's an Stype
+                    let inst = Stype::from(inst);
+                    let addr = VirtAddr(
+                        self.reg(inst.rs1).wrapping_add(inst.imm as i64 as u64) as usize);
+
+                    match inst.funct3 {
+                        0b000 => {
+                            // SB -> Store byte
+                            let val = self.reg(inst.rs2) as u8;
+                            self.memory.write(addr, val)?;
+                        }
+                        0b001 => {
+                            // SH -> Store half word
+                            let val = self.reg(inst.rs2) as u16;
+                            self.memory.write(addr, val)?;
+                        }
+                        0b010 => {
+                            // SW -> Store word
+                            let val = self.reg(inst.rs2) as u32;
+                            self.memory.write(addr, val)?;
+                        }
+                        0b011 => {
+                            // SD -> Store word
+                            let val = self.reg(inst.rs2) as u64;
+                            self.memory.write(addr, val)?;
+                        }
+                        _ => unimplemented!("Unexpeced 0b0100011"),
+                    }
+                }
+                0b0010011 => {
+                    // We know it's an Itype
+                    let inst = Itype::from(inst);
+
+                    let rs1 = self.reg(inst.rs1);
+                    let imm = inst.imm as i64 as u64;
+
+                    println!("Inst {:?}", inst);
+
+
+                    match inst.funct3 {
+                        0b000 => {
+                            // ADDI
+                            self.set_reg(inst.rd, rs1.wrapping_add(imm));
+                        }
+                        0b001 => {
+                            // SLTI
+                            if (rs1 as i64) < (imm as i64) {
+                                self.set_reg(inst.rd, 1);
+                            } else {
+                                self.set_reg(inst.rd, 0);
+                            }
+                        }
+                        0b011 => {
+                            // SLTIU
+                            if (rs1 as u64) < (imm as u64) {
+                                self.set_reg(inst.rd, 1);
+                            } else {
+                                self.set_reg(inst.rd, 0);
+                            }
+                        }
+                        0b100 => {
+                            // XORI
+                            self.set_reg(inst.rd, rs1 ^ imm);
+                        }
+                        0b110 => {
+                            // ORI
+                            self.set_reg(inst.rd, rs1 | imm);
+                        }
+                        0b111 => {
+                            // ANDI
+                            self.set_reg(inst.rd, rs1 & imm);
+                        }
+                        0b001 => {
+                            // SLLI
+                            let shamt = inst.imm & 0b111111;
+                            self.set_reg(inst.rd, rs1 << shamt);
+                        }
+                        0b101 => {
+                            let mode = inst.imm >> 6 & 0b111111;
+
+                            match mode {
+                                0b000000 => {
+                                    // SRLI
+                                    let shamt = inst.imm & 0b111111;
+                                    self.set_reg(inst.rd, rs1 >> shamt);
+                                }
+                                0b010000 => {
+                                    // SRAI
+                                    let shamt = inst.imm & 0b111111;
+                                    self.set_reg(inst.rd, ((rs1 as i64) >> shamt) as u64);
+                                }
+                                _ => unreachable!(),
+                            }
+                        }
+                        _ => unimplemented!("Unexpeced 0b0010011"),
+                    }
+                }
+                0b0110011 => {
+                    // We know its an Rtype
+                    let inst = Rtype::from(inst);
+
+                    let rs1 = self.reg(inst.rs1);
+                    let rs2 = self.reg(inst.rs2);
+
+                    match (inst.funct7, inst.funct3) {
+                        (0b0000000, 0b000) => {
+                            // ADD
+                            self.set_reg(inst.rd, rs1.wrapping_add(rs2));
+                        }
+                        (0b0100000, 0b000) => {
+                            // SUB
+                            self.set_reg(inst.rd, rs1.wrapping_sub(rs2));
+                        }
+                        (0b0000000, 0b001) => {
+                            // SLL
+                            let shamt = rs2 & 0b111111;
+                            self.set_reg(inst.rd, rs1 << shamt);
+                        }
+                        (0b0000000, 0b010) => {
+                            // SLT
+                            if (rs1 as i64) < (rs2 as i64) {
+                                self.set_reg(inst.rd, 1);
+                            } else {
+                                self.set_reg(inst.rd, 0);
+                            }
+                        }
+                        (0b0000000, 0b011) => {
+                            // SLTU
+                            if (rs1 as u64) < (rs2 as u64) {
+                                self.set_reg(inst.rd, 1);
+                            } else {
+                                self.set_reg(inst.rd, 0);
+                            }
+                        }
+                        (0b0000000, 0b100) => {
+                            // XOR
+                            self.set_reg(inst.rd, rs1 ^ rs2);
+                        }
+                        (0b0000000, 0b101) => {
+                            // SRL
+                            let shamt = rs2 & 0b111111;
+                            self.set_reg(inst.rd, rs1 >> shamt);
+                        }
+                        (0b0100000, 0b101) => {
+                            // SRA
+                            let shamt = rs2 & 0b111111;
+                            self.set_reg(inst.rd, ((rs1 as i64) >> shamt) as u64);
+                        }
+                        (0b0000000, 0b110) => {
+                            // OR
+                            self.set_reg(inst.rd, rs1 | rs2);
+                        }
+                        (0b0000000, 0b111) => {
+                            // AND
+                            self.set_reg(inst.rd, rs1 & rs2);
+                        }
+                        _ => unreachable!(),
+                    }
+                }
+                0b0001111 => {
+                    let inst = Itype::from(inst);
+
+                    match inst.funct3 {
+                        0b000 => {
+                            // FENCE
+                        }
+                        _ => unreachable!(),
+                    }
+                }
+                0b1110011 => {
+                    if inst ==0b00000000000000000000000001110011 {
+                        // ECALL
+                        panic!("SYSCALL");
+                    } else if inst ==0b00000000000100000000000001110011 {
+                        // EBREAK
+                        panic!("SYSCALL");
+                    } else {
+                        unreachable!();
+                    }
+                }
+                0b0011011 => {
+                    // We know it's an Itype
+                    let inst = Itype::from(inst);
+
+                    let rs1 = self.reg(inst.rs1) as u32;
+                    let imm = inst.imm as u32;
+
+
+                    match inst.funct3 {
+                        0b000 => {
+                            // ADDIW
+                            self.set_reg(inst.rd, rs1.wrapping_add(imm) as i32 as i64 as u64);
+                        }
+                        0b001 => {
+                            let mode = (inst.imm >> 5) & 0b1111111;
+
+                            match mode {
+                                0b0000000 => {
+                                    // SLLIW
+                                    let shamt = inst.imm & 0b11111;
+                                    self.set_reg(inst.rd, (rs1 << shamt) as i32 as i64 as u64);
+                                }
+                                _ => unreachable!(),
+                            }
+                        }
+                        0b101 => {
+                            let mode = (inst.imm >> 5) & 0b1111111;
+
+                            match mode {
+                                0b0000000 => {
+                                    // SRLIW
+                                    let shamt = inst.imm & 0b11111;
+                                    self.set_reg(inst.rd, (rs1 >> shamt) as i32 as i64 as u64);
+                                }
+                                0b0100000 => {
+                                    // SRAIW
+                                    let shamt = inst.imm & 0b11111;
+                                    self.set_reg(inst.rd, ((rs1 as i32) >> shamt) as i64 as u64);
+                                }
+                                _ => unreachable!(),
+                            }
+                        }
+                        _ => unimplemented!("Unexpeced 0b0011011"),
+                    }
+                }
+                0b0111011 => {
+                    // We know it's an Rtype
+                    let inst = Rtype::from(inst);
+
+                    let rs1 = self.reg(inst.rs1) as u32;
+                    let rs2 = self.reg(inst.rs2) as u32;
+
+                    match (inst.funct7, inst.funct3) {
+                        (0b0000000, 0b000) => {
+                            // ADDW
+                            self.set_reg(inst.rd, rs1.wrapping_add(rs2) as i32 as i64 as u64);
+                        }
+                        (0b0100000, 0b000) => {
+                            // SUBW
+                            self.set_reg(inst.rd, rs1.wrapping_sub(rs2) as i32 as i64 as u64);
+                        }
+                        (0b0000000, 0b001) => {
+                            // SLLW
+                            let shamt = rs2 & 0b11111;
+                            self.set_reg(inst.rd, (rs1 << shamt) as i32 as i64 as u64);
+                        }
+                        (0b0000000, 0b101) => {
+                            // SRLW
+                            let shamt = rs2 & 0b11111;
+                            self.set_reg(inst.rd, (rs1 >> shamt) as i32 as i64 as u64);
+                        }
+                        (0b0100000, 0b101) => {
+                            // SRAW
+                            let shamt = rs2 & 0b11111;
+                            self.set_reg(inst.rd, ((rs1 as i32) >> shamt) as i64 as u64);
+                        }
+                        _ => unreachable!(),
+                    }
+                }
                 _ => unimplemented!("Unhandled opcode {:#09b}\n", opcode),
             }
 
-            print!("{:#x}\n", inst);
+            // Update PC to the next instruction
+            self.set_reg(Register::Pc, pc.wrapping_add(4));
+        }
+    }
+}
+
+#[derive(Debug)]
+struct Rtype {
+    funct7: u32,
+    funct3: u32,
+    rs1: Register,
+    rs2: Register,
+    rd: Register,
+}
+
+impl From<u32> for Rtype {
+    fn from(inst: u32) -> Self {
+        Rtype {
+            funct7: (inst >> 25) & 0b1111111,
+            funct3: (inst >> 12) & 0b111,
+            rs1: Register::from((inst >> 15) & 0b11111),
+            rs2: Register::from((inst >> 20) & 0b11111),
+            rd: Register::from((inst >> 7) & 0b11111),
+        }
+    }
+}
+
+#[derive(Debug)]
+struct Stype {
+    imm: i32,
+    funct3: u32,
+    rs1: Register,
+    rs2: Register,
+}
+
+impl From<u32> for Stype {
+    fn from(inst: u32) -> Self {
+        let imm115 = (inst >> 25) & 0b1111111;
+        let imm40 = (inst >> 7) & 0b11111;
+
+        let imm = (imm115 << 5) | imm40;
+        let imm = ((imm as i32) << 20) >> 20;
+
+        Stype {
+            imm,
+            funct3: (inst >> 12) & 0b111,
+            rs1: Register::from((inst >> 15) & 0b11111),
+            rs2: Register::from((inst >> 20) & 0b11111),
+        }
+    }
+}
+
+#[derive(Debug)]
+struct Btype {
+    imm: i32,
+    funct3: u32,
+    rs1: Register,
+    rs2: Register,
+}
+
+impl From<u32> for Btype {
+    fn from(inst: u32) -> Self {
+        let imm12 = (inst >> 31) & 1;
+        let imm105 = (inst >> 25) & 0b111111;
+        let imm41 = (inst >> 8) & 0b1111;
+        let imm11 = (inst >> 7) & 0b1;
+
+        let imm = (imm12 << 12) | (imm105 << 5) | (imm41 << 1) | (imm11 << 11);
+
+        // sing-extend that
+        let imm = ((imm as i32) << 19) >> 19;
+
+        Btype {
+            imm: imm,
+            funct3: (inst >> 12) & 0b111,
+            rs1: Register::from((inst >> 15) & 0b11111),
+            rs2: Register::from((inst >> 20) & 0b11111),
+        }
+    }
+}
+
+#[derive(Debug)]
+struct Itype {
+    imm: i32,
+    rs1: Register,
+    rd: Register,
+    funct3: u32,
+}
+
+impl From<u32> for Itype {
+    fn from(inst: u32) -> Self {
+        let imm = ((inst as i32) >> 20) as i32;
+
+        Itype {
+            imm: imm,
+            rd: Register::from((inst >> 7) & 0b11111),
+            funct3: (inst >> 12) & 0b111,
+            rs1: Register::from((inst >> 15) & 0b11111),
+        }
+    }
+}
+
+#[derive(Debug)]
+struct Jtype {
+    imm: i32,
+    rd: Register,
+}
+
+impl From<u32> for Jtype {
+    fn from(inst: u32) -> Self {
+        let imm20 = (inst >> 31) & 1;
+        let imm101 = (inst >> 21) & 0b1111111111;
+        let imm11 = (inst >> 20) & 0b1;
+        let imm1912 = (inst >> 12) & 0b11111111;
+
+        let imm = (imm20 << 20) | (imm1912 << 12) | (imm11 << 11) | (imm101 << 1);
+        let imm = ((imm as i32) << 11) >> 11;
+
+        Jtype {
+            imm: imm,
+            rd: Register::from((inst >> 7) & 0b11111),
         }
     }
 }
@@ -392,7 +921,7 @@ impl From<u32> for Utype {
     fn from(inst: u32) -> Self {
         Utype {
             imm: (inst & !0xfff) as i32,
-            rd: Register::from((inst >> 7)),
+            rd: Register::from((inst >> 7) & 0b11111),
         }
     }
 }
@@ -435,6 +964,32 @@ fn main() {
 
     // Set the program entry point
     emu.set_reg(Register::Pc, 0x11190);
+
+    // Set up a stack
+    let stack = emu.memory.allocate(32 * 1024).expect("Failed to allocate stack");
+    // Go to the top of the stack
+    emu.set_reg(Register::Sp, stack.0 as u64 + 32 * 1024);
+
+    // Set up null terminated arg vectors
+    let argv = emu.memory.allocate(8).expect("Failed to allocate argv");
+    emu.memory.write_from(argv, b"test\0").expect("Failed to null-terminate argv");
+
+    macro_rules! push {
+        ($expr:expr) => {
+            let sp = emu.reg(Register::Sp) - core::mem::size_of_val(&$expr) as u64;
+            emu.memory.write(VirtAddr(sp as usize), $expr).expect("Push failed");
+            emu.set_reg(Register::Sp, sp);
+        }
+    }
+
+    // Push arguments from last to first on the stack
+    push!(0u64); // Auxp
+    push!(0u64); // Envp
+    push!(0u64); // Argv end
+    push!(argv.0); // Argv first argument
+    push!(0u64); // Argc
+
+    // Allocate 32Kb and set up the stack
 
     emu.run().expect("Failed to execute emulator");
 }
