@@ -2,6 +2,7 @@
 
 use crate::primitive::Primitive;
 use std::path::Path;
+use crate::emulator::VmExit;
 
 pub const PERM_READ: u8 = 1 << 0;
 pub const PERM_WRITE: u8 = 1 << 1;
@@ -12,7 +13,7 @@ pub const PERM_RAW: u8 = 1 << 3;
 /// Block size used for resettin and tracking memory which has been modified. The larger this is,
 /// the fewer but more expensive memcpys() need to occur, the smaller, the greater but less
 /// expensive memcpys() need to occur
-pub const DIRTY_BLOCK_SIZE: usize = 4096;
+pub const DIRTY_BLOCK_SIZE: usize = 128;
 
 /// A permissions byte which corresponds to a memory byte and defines the permissions is has
 #[repr(transparent)]
@@ -107,7 +108,7 @@ impl Mmu {
         }
 
         // Mark the memory as uninitialized and writable
-        self.set_permissions(base, size, Perm(PERM_RAW | PERM_WRITE));
+        self.set_permissions(base, size, Perm(PERM_RAW | PERM_WRITE)).ok()?;
 
         // Update the new alloc
         self.curr_base = new_base;
@@ -116,27 +117,34 @@ impl Mmu {
     }
 
     /// Apply permissions to a region of memory
-    pub fn set_permissions(&mut self, addr: VirtAddr, size: usize, perm: Perm) -> Option<()> {
+    pub fn set_permissions(&mut self, addr: VirtAddr, size: usize, perm: Perm) -> Result<(), VmExit> {
         // Apply permissions
-        self.permissions.get_mut(addr.0..addr.0.checked_add(size)?)?
+        self.permissions.get_mut(addr.0..addr.0.checked_add(size)
+                .ok_or(VmExit::AddressIntegerOverflow)?)
+            .ok_or(VmExit::AddressMiss(addr, size))?
             .iter_mut().for_each(|x| *x = perm);
-        Some(())
+
+        Ok(())
     }
 
     /// Write the bytes from `buf` into `addr`
-    pub fn write_from(&mut self, addr: VirtAddr, buf: &[u8]) -> Option<()> {
+    pub fn write_from(&mut self, addr: VirtAddr, buf: &[u8]) -> Result<(), VmExit> {
         // Get permissions for the desired address space
-        let perms = self.permissions.get_mut(addr.0..addr.0.checked_add(buf.len())?)?;
+        let perms = self.permissions.get_mut(
+            addr.0..addr.0.checked_add(buf.len()).ok_or(VmExit::AddressIntegerOverflow)?)
+            .ok_or(VmExit::AddressMiss(addr, buf.len()))?;
 
         // Presume that no bits are read-after-write
         let mut has_raw = false;
         // Check if the bytes are writable, if not, issue permission denied
-        if !perms.iter().all(|x| {
-            // Check if any of the bits has read-after-write permission
-            has_raw |= (x.0 & PERM_RAW) != 0;
-            (x.0 & PERM_WRITE) != 0
-        }) {
-            return None;
+        for (idx, &perm) in perms.iter().enumerate() {
+            // Accumulate if any permission has the raw bit set, this will allow us to bypass
+            // permission updates if no RAW is in use
+            has_raw |= (perm.0 & PERM_RAW) != 0;
+            if (perm.0 & PERM_WRITE) == 0 {
+                // Permission denied, return error
+                return Err(VmExit::WriteFault(VirtAddr(addr.0 + idx), buf.len()));
+            }
         }
 
         // Compute dirty bit blocks
@@ -158,8 +166,8 @@ impl Mmu {
             }
         }
 
-        // Write the address space with the `buf` content
-        self.memory.get_mut(addr.0..addr.0.checked_add(buf.len())?)?.copy_from_slice(buf);
+        // Copy the buffer into memory
+        self.memory[addr.0..addr.0 + buf.len()].copy_from_slice(buf);
 
         // Update RaW bits
         if has_raw {
@@ -172,43 +180,65 @@ impl Mmu {
             });
         }
 
-        Some(())
+        Ok(())
+    }
+
+    /// Return an immutable slice to memory at `addr` for `size` bytes that has been validated to
+    /// match all `exp_perms`
+    pub fn peek_perms(&self, addr: VirtAddr, size: usize, exp_perms: Perm) -> Result<&[u8], VmExit> {
+        // Get permissions for the address space
+        let perms = self.permissions.get(
+            addr.0..addr.0.checked_add(size).ok_or(VmExit::AddressIntegerOverflow)?)
+            .ok_or(VmExit::AddressMiss(addr, size))?;
+
+        // Check permissions
+        for (idx, &perm) in perms.iter().enumerate() {
+            if (perm.0 &exp_perms.0) != exp_perms.0 {
+                return Err(VmExit::ReadFault(VirtAddr(addr.0 + idx), size));
+            }
+        }
+
+        // Copy the buffer
+        Ok(&self.memory[addr.0..addr.0 + size])
     }
 
     /// Read the bytes at `addr` into `buf` assuming all `exp_perms` bits are set in the
     /// permission bytes. If this is zero, we ignore permissions entirely
-    pub fn read_into_perms(&self, addr: VirtAddr, buf: &mut [u8], exp_perms: Perm) -> Option<()> {
+    pub fn read_into_perms(&self, addr: VirtAddr, buf: &mut [u8], exp_perms: Perm) -> Result<(), VmExit> {
         // Get permissions for the address space
-        let perms = self
-            .permissions
-            .get(addr.0..addr.0.checked_add(buf.len())?)?;
+        let perms = self.permissions.get(
+            addr.0..addr.0.checked_add(buf.len()).ok_or(VmExit::AddressIntegerOverflow)?)
+            .ok_or(VmExit::AddressMiss(addr, buf.len()))?;
 
-        // Check that all the bytes we want to read have the expected permissions
-        if exp_perms.0 != 0 && !perms.iter().all(|x| (x.0 & exp_perms.0) == exp_perms.0) {
-            return None;
+        // Check permissions
+        for (idx, &perm) in perms.iter().enumerate() {
+            if (perm.0 &exp_perms.0) != exp_perms.0 {
+                return Err(VmExit::ReadFault(VirtAddr(addr.0 + idx), buf.len()));
+            }
         }
 
         // Apply permissions
-        buf.copy_from_slice(self.memory.get(addr.0..addr.0.checked_add(buf.len())?)?);
-        Some(())
+        buf.copy_from_slice(&self.memory[addr.0..addr.0 + buf.len()]);
+
+        Ok(())
     }
 
-    pub fn read_into(&self, addr: VirtAddr, buf: &mut [u8]) -> Option<()> {
+    pub fn read_into(&self, addr: VirtAddr, buf: &mut [u8]) -> Result<(), VmExit> {
         self.read_into_perms(addr, buf, Perm(PERM_READ))
     }
 
     /// Read a type `T` as `vaddr`, expecting `perms`
-    pub fn read_perms<T: Primitive>(&mut self, addr: VirtAddr, exp_perms: Perm) -> Option<T> {
+    pub fn read_perms<T: Primitive>(&mut self, addr: VirtAddr, exp_perms: Perm) -> Result<T, VmExit> {
         let mut tmp = [0u8; 16];
         self.read_into_perms(addr, &mut tmp[..core::mem::size_of::<T>()], exp_perms)?;
-        Some(unsafe { core::ptr::read_unaligned(tmp.as_ptr() as *const T) })
+        Ok(unsafe { core::ptr::read_unaligned(tmp.as_ptr() as *const T) })
     }
 
-    pub fn read<T: Primitive>(&mut self, addr: VirtAddr) -> Option<T> {
+    pub fn read<T: Primitive>(&mut self, addr: VirtAddr) -> Result<T, VmExit> {
         self.read_perms(addr, Perm(PERM_READ))
     }
 
-    pub fn write<T: Primitive>(&mut self, addr: VirtAddr, val: T) -> Option<()> {
+    pub fn write<T: Primitive>(&mut self, addr: VirtAddr, val: T) -> Result<(), VmExit> {
         let val = unsafe {
             core::slice::from_raw_parts(&val as *const T as *const u8, core::mem::size_of::<T>())
         };
@@ -217,8 +247,8 @@ impl Mmu {
     }
 
     /// Load a file into the emulators address space using the sections as described
-    pub fn load<P: AsRef<Path>>(&mut self, filename: P, sections: &[Section]) -> Option<()> {
-        let bytes = std::fs::read(filename).ok()?;
+    pub fn load<P: AsRef<Path>>(&mut self, filename: P, sections: &[Section]) -> Result<(), VmExit> {
+        let bytes = std::fs::read(filename).expect("Failed to read file");
 
         for section in sections {
             // Set memory to writable
@@ -228,14 +258,15 @@ impl Mmu {
             // Write in the original file contents
             self.write_from(
                 section.virt_addr,
-                bytes.get(section.file_off..section.file_off.checked_add(section.file_size)?)?,
+                &bytes[section.file_off..section.file_off + section.file_size],
             )?;
 
             // Write in any padding with zeros
             if section.mem_size > section.file_size {
                 let padding = vec![0u8; section.mem_size - section.file_size];
                 self.write_from(
-                    VirtAddr(section.virt_addr.0.checked_add(section.file_size)?),
+                    VirtAddr(section.virt_addr.0.checked_add(section.file_size)
+                        .ok_or(VmExit::AddressIntegerOverflow)?),
                     &padding
                 )?;
             }
@@ -250,7 +281,7 @@ impl Mmu {
             ));
         }
 
-        Some(())
+        Ok(())
     }
 }
 
