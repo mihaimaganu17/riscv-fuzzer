@@ -5,7 +5,14 @@ pub mod emulator;
 use emulator::{Register, Emulator, VmExit};
 use mmu::{VirtAddr, PERM_WRITE, PERM_EXEC, PERM_READ, Perm, Section};
 use std::sync::atomic::{AtomicU64, Ordering};
-use std::sync::Arc;
+use std::sync::{Arc, Mutex};
+
+/// If true, the guest writes to stdout and std err will be printed to our own stdout and stderr
+const VERBOSE_GUEST_PRINTS: bool = false;
+
+fn rdtsc() -> u64 {
+    unsafe { std::arch::x86_64::_rdtsc() }
+}
 
 fn handle_syscall(emu: &mut Emulator) -> Result<(), VmExit> {
     // Get the syscall number
@@ -53,11 +60,11 @@ fn handle_syscall(emu: &mut Emulator) -> Result<(), VmExit> {
                 // Look at the buffer!
                 let data = emu.memory.peek_perms(VirtAddr(buf), len, Perm(PERM_READ))?;
 
-                /*
-                if let Ok(st) = core::str::from_utf8(data) {
-                    print!("{}", st);
+                if VERBOSE_GUEST_PRINTS {
+                    if let Ok(st) = core::str::from_utf8(data) {
+                        print!("{}", st);
+                    }
                 }
-                */
 
                 // Update number of bytes writen
                 bytes_written += len as u64;
@@ -79,31 +86,62 @@ fn handle_syscall(emu: &mut Emulator) -> Result<(), VmExit> {
 /// Statistics during fuzzing
 #[derive(Default)]
 struct Statistics {
-    fuzz_cases: AtomicU64,
+    /// Number of fuzz cases
+    fuzz_cases: u64,
+    /// Number of instructions executred
+    inst_exec: u64,
+    /// Total number of CPU cycles spent inthe workers
+    total_cycles: u64,
+    /// Total number of CPU cycles spent resetting the guest
+    reset_cycles: u64,
+    /// Total number of CPU cycles spent emulating
+    vm_cycles: u64,
 }
 
-fn worker(mut emu: Emulator, original: Arc<Emulator>, stats: Arc<Statistics>) {
+fn worker(mut emu: Emulator, original: Arc<Emulator>, stats: Arc<Mutex<Statistics>>) {
+    const BATCH_SIZE: usize = 10;
     loop {
-        // Reset emu to original state
-        emu.reset(&*original);
+        let batch_start = rdtsc();
 
-        let vmexit = loop {
-            let vmexit = emu.run().expect_err("Failed to execute emulator");
-            match vmexit {
-                VmExit::Syscall => {
-                    if let Err(vmexit) = handle_syscall(&mut emu) {
-                        break vmexit;
+        let mut local_stats = Statistics::default();
+
+        for _ in 0..BATCH_SIZE {
+            // Reset emu to original state
+            let it = rdtsc();
+            emu.reset(&*original);
+            local_stats.reset_cycles += (rdtsc() - it);
+
+            let vmexit = loop {
+                let it = rdtsc();
+                let vmexit = emu.run(&mut local_stats.inst_exec).expect_err("Failed to execute emulator");
+                local_stats.vm_cycles += (rdtsc() - it);
+
+                match vmexit {
+                    VmExit::Syscall => {
+                        if let Err(vmexit) = handle_syscall(&mut emu) {
+                            break vmexit;
+                        }
+                        // Advance PC(always)
+                        let pc = emu.reg(Register::Pc);
+                        emu.set_reg(Register::Pc, pc.wrapping_add(4));
                     }
-                    // Advance PC(always)
-                    let pc = emu.reg(Register::Pc);
-                    emu.set_reg(Register::Pc, pc.wrapping_add(4));
+                    _ => break vmexit,
                 }
-                _ => break vmexit,
-            }
-        };
+            };
+            local_stats.fuzz_cases += 1;
+        }
 
-        stats.fuzz_cases.fetch_add(1, Ordering::Relaxed);
+        let mut stats = stats.lock().unwrap();
+
+
+        stats.fuzz_cases += local_stats.fuzz_cases;
+        stats.inst_exec+= local_stats.inst_exec;
+        stats.reset_cycles += local_stats.reset_cycles;
+        stats.vm_cycles += local_stats.vm_cycles;
+
         //print!("Vm exit with {:#x?}\n", vmexit);
+        let batch_end = rdtsc() - batch_start;
+        stats.total_cycles += batch_end;
     }
 }
 
@@ -165,16 +203,13 @@ fn main() {
 
     use std::time::{Duration, Instant};
 
-    // Start a timer
-    let start = Instant::now();
-
     // Wrap the original emulator in an `Arc`
     let emu = Arc::new(emu);
 
     // Create a new stats structure
-    let stats = Arc::new(Statistics::default());
+    let stats = Arc::new(Mutex::new(Statistics::default()));
 
-    for _ in 0..12 {
+    for _ in 0..16 {
         let new_emu= emu.fork();
         let stats = stats.clone();
         let parent = emu.clone();
@@ -183,11 +218,29 @@ fn main() {
         });
     }
 
+    // Start a timer
+    let start = Instant::now();
+
+    // Save the time stamp of start of execution
+    let start_cycles = rdtsc();
+
+    let mut last_cases = 0;
+    let mut last_inst = 0;
+
     loop {
         std::thread::sleep(Duration::from_millis(1000));
+        let stats = stats.lock().unwrap();
         let elapsed = start.elapsed().as_secs_f64();
-        let fuzz_cases = stats.fuzz_cases.load(Ordering::Relaxed);
-        print!("[{:10.4}] Fuzz cases {:10} | fcps {:10.2}\n", elapsed, fuzz_cases,
-            fuzz_cases as f64 / elapsed);
+        let fuzz_cases = stats.fuzz_cases;
+        let instrs = stats.inst_exec;
+
+        // Compute performance numbers
+        let resetc = stats.reset_cycles as f64 / stats.total_cycles as f64;
+        let vmc = stats.vm_cycles as f64 / stats.total_cycles as f64;
+        print!("[{:10.4}] Fuzz cases {:10} | fcps {:10.2} | inst/sec {:10.1}\n\
+            reset {:8.4} | vm {:8.4}\n",
+            elapsed, fuzz_cases, fuzz_cases - last_cases, instrs - last_inst, resetc, vmc);
+        last_cases = fuzz_cases;
+        last_inst = instrs;
     }
 }
