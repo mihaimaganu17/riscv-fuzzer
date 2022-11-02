@@ -147,34 +147,27 @@ fn worker(mut emu: Emulator, original: Arc<Emulator>, stats: Arc<Mutex<Statistic
 
 fn main() {
     // Make an emulator with 1 Meg of memory
-    let mut emu = Emulator::new(32 * 1024 * 1024);
+    let mut emu = Emulator::new(64 * 1024 * 1024);
 
-    emu.memory.load("./test_app", &[
+    emu.memory.load("./objdump", &[
         Section {
             file_off: 0x0000000000000000,
             virt_addr: VirtAddr(0x0000000000010000),
-            file_size: 0x0000000000000190,
-            mem_size: 0x0000000000000190,
-            permissions: Perm(PERM_READ),
+            file_size: 0x0000000000168564,
+            mem_size: 0x0000000000168564,
+            permissions: Perm(PERM_READ | PERM_EXEC),
         },
         Section {
-            file_off: 0x0000000000000190,
-            virt_addr: VirtAddr(0x0000000000011190),
-            file_size: 0x00000000000020fc,
-            mem_size: 0x00000000000020fc,
-            permissions: Perm(PERM_EXEC),
-        },
-        Section {
-            file_off: 0x0000000000002290,
-            virt_addr: VirtAddr(0x0000000000014290),
-            file_size: 0x0000000000000108,
-            mem_size: 0x0000000000000760,
+            file_off: 0x0000000000169000,
+            virt_addr: VirtAddr(0x0000000000179000),
+            file_size: 0x00000000000034ea,
+            mem_size: 0x000000000000ee20,
             permissions: Perm(PERM_READ | PERM_WRITE),
         },
     ]).expect("Failed to load test application into address space");
 
     // Set the program entry point
-    emu.set_reg(Register::Pc, 0x11190);
+    emu.set_reg(Register::Pc, 0x10a0c);
 
     // Set up a stack
     let stack = emu.memory.allocate(32 * 1024).expect("Failed to allocate stack");
@@ -209,7 +202,7 @@ fn main() {
     // Create a new stats structure
     let stats = Arc::new(Mutex::new(Statistics::default()));
 
-    for _ in 0..16 {
+    for _ in 0..1 {
         let new_emu= emu.fork();
         let stats = stats.clone();
         let parent = emu.clone();
