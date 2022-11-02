@@ -19,63 +19,9 @@ fn handle_syscall(emu: &mut Emulator) -> Result<(), VmExit> {
     let num = emu.reg(Register::A7);
 
     match num {
-        96 => {
-            // set_tid_address(), just return the TID
-            emu.set_reg(Register::A0, 1337);
-            Ok(())
-        }
-        29 => {
-            // ioctl()
-            emu.set_reg(Register::A0, !0);
-            Ok(())
-        }
-        66 => {
-            // writev()
-            let fd = emu.reg(Register::A0);
-            let iov = emu.reg(Register::A1);
-            let iovcnt = emu.reg(Register::A2);
-
-            // We currently only handle stdout and stderr
-            if fd != 1  && fd != 2 {
-                // Return error
-                emu.set_reg(Register::A0, !0);
-                return Ok(());
-            }
-
-            let mut bytes_written = 0;
-
-            for idx in 0..iovcnt {
-                // Compute the pointer the IO vector entry corresponding to this index
-                // and validate that is will not overflow pointer size for the size of
-                // the `_iovec`
-                let ptr = 16u64.checked_mul(idx)
-                    .and_then(|x| x.checked_add(iov))
-                    .and_then(|x| x.checked_add(15))
-                    .ok_or(VmExit::SyscallIntegerOverflow)? as usize - 15;
-
-                // Read the iovec entry pointer and length
-                let buf: usize = emu.memory.read(VirtAddr(ptr + 0))?;
-                let len: usize = emu.memory.read(VirtAddr(ptr + 8))?;
-
-                // Look at the buffer!
-                let data = emu.memory.peek_perms(VirtAddr(buf), len, Perm(PERM_READ))?;
-
-                if VERBOSE_GUEST_PRINTS {
-                    if let Ok(st) = core::str::from_utf8(data) {
-                        print!("{}", st);
-                    }
-                }
-
-                // Update number of bytes writen
-                bytes_written += len as u64;
-            }
-
-            // Return number of bytes written
-            emu.set_reg(Register::A0, bytes_written);
-            Ok(())
-        }
-        94 => {
-            Err(VmExit::Exit)
+        214 => {
+            let increment: i64 = emu.reg(Register::A0) as i64;
+            panic!("Brk increment {}\n", increment);
         }
         _ => {
             panic!("Unhandled syscall {}\n", num);
