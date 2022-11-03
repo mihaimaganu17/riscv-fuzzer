@@ -171,6 +171,58 @@ pub enum VmExit {
     WriteFault(VirtAddr, usize),
 }
 
+use std::fmt;
+
+impl fmt::Display for Emulator {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, r#"
+            Zero {:016x} ra {:016x} sp {:016x} gp {:016x}
+            tp {:016x} t0 {:016x} t1 {:016x} s2 {:016x}
+            s0 {:016x} s1 {:016x} a0 {:016x} a1 {:016x}
+            a2 {:016x} a3 {:016x} a4 {:016x} a5 {:016x}
+            a6 {:016x} a7 {:016x} s2 {:016x} s3 {:016x}
+            s4 {:016x} s5 {:016x} s6 {:016x} s7 {:016x}
+            s8 {:016x} s9 {:016x} s10 {:016x} s11 {:016x}
+            t3 {:016x} t4 {:016x} t5 {:016x} t6 {:016x}
+            pc {:016x}
+            "#,
+            self.reg(Register::Zero),
+            self.reg(Register::Ra),
+            self.reg(Register::Sp),
+            self.reg(Register::Gp),
+            self.reg(Register::Tp),
+            self.reg(Register::T0),
+            self.reg(Register::T1),
+            self.reg(Register::T2),
+            self.reg(Register::S0),
+            self.reg(Register::S1),
+            self.reg(Register::A0),
+            self.reg(Register::A1),
+            self.reg(Register::A2),
+            self.reg(Register::A3),
+            self.reg(Register::A4),
+            self.reg(Register::A5),
+            self.reg(Register::A6),
+            self.reg(Register::A7),
+            self.reg(Register::S2),
+            self.reg(Register::S3),
+            self.reg(Register::S4),
+            self.reg(Register::S5),
+            self.reg(Register::S6),
+            self.reg(Register::S7),
+            self.reg(Register::S8),
+            self.reg(Register::S9),
+            self.reg(Register::S10),
+            self.reg(Register::S11),
+            self.reg(Register::T3),
+            self.reg(Register::T4),
+            self.reg(Register::T5),
+            self.reg(Register::T6),
+            self.reg(Register::Pc),
+            )
+    }
+}
+
 /// 64-bit RISC-V registers
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 #[repr(usize)]
@@ -275,7 +327,7 @@ impl Emulator {
             // Extract the opcode from the instruction
             let opcode = inst & 0b1111111;
 
-            print!("Executing {:#x} {:b}\n", pc, opcode);
+            print!("{}\n\n", self);
 
             match opcode {
                 0b0110111 => {

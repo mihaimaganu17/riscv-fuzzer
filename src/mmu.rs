@@ -89,18 +89,18 @@ impl Mmu {
 
         // Clear the dirty list
         self.dirty.clear();
+
+        // Restore allocator state
+        self.curr_base = other.curr_base;
     }
 
     /// Allocate a region of memory as RW in the address space
     pub fn allocate(&mut self, size: usize) -> Option<VirtAddr> {
-        // 16-byte align the allocation
-        let size_aligned = (size + 0xf) & !0xf;
-
         // Get the current allocation base
         let base = self.curr_base;
 
         // Get the current allocation base
-        let new_base = VirtAddr(self.curr_base.0.checked_add(size_aligned)?);
+        let new_base = VirtAddr(self.curr_base.0.checked_add(size)?);
 
         // Check if we go OOM by allocating
         if new_base.0 > self.memory.len() {
@@ -277,7 +277,7 @@ impl Mmu {
             // Update the allocator beyond any sections we load
             self.curr_base = VirtAddr(std::cmp::max(
                 self.curr_base.0,
-                (section.virt_addr.0 + section.mem_size + 0xf) & !0xf
+                (section.virt_addr.0 + section.mem_size + 0xfff) & !0xfff
             ));
         }
 

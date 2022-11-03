@@ -20,8 +20,30 @@ fn handle_syscall(emu: &mut Emulator) -> Result<(), VmExit> {
 
     match num {
         214 => {
-            let increment: i64 = emu.reg(Register::A0) as i64;
-            panic!("Brk increment {}\n", increment);
+            let req_base = emu.reg(Register::A0);
+            let cur_base = emu.memory.allocate(0).unwrap();
+
+            print!("{:#x} {:#x}\n", cur_base.0, req_base);
+
+            let increment = (req_base as i64).checked_sub(cur_base.0 as i64)
+                .ok_or(VmExit::SyscallIntegerOverflow)?;
+
+            // We don't handle negative brk()'s
+            assert!(increment >= 0);
+
+            // Turn negative increments into a 0
+            let increment = core::cmp::max(0i64, increment) as usize;
+
+            // Atempt to extend data section by increment
+            if let Some(base) = emu.memory.allocate(increment) {
+                emu.set_reg(Register::A0, base.0 as u64);
+            } else {
+                emu.set_reg(Register::A0, !0);
+            }
+
+            print!("Brk returns {:x?}\n", emu.reg(Register::A0));
+
+            Ok(())
         }
         _ => {
             panic!("Unhandled syscall {}\n", num);
@@ -74,6 +96,8 @@ fn worker(mut emu: Emulator, original: Arc<Emulator>, stats: Arc<Mutex<Statistic
                     _ => break vmexit,
                 }
             };
+
+            print!("Vmexit {:#x} {:?}\n", emu.reg(Register::Pc), vmexit);
             local_stats.fuzz_cases += 1;
         }
 
@@ -121,7 +145,7 @@ fn main() {
     emu.set_reg(Register::Sp, stack.0 as u64 + 32 * 1024);
 
     // Set up null terminated arg vectors
-    let argv = emu.memory.allocate(8).expect("Failed to allocate argv");
+    let argv = emu.memory.allocate(4096).expect("Failed to allocate argv");
     emu.memory.write_from(argv, b"test\0").expect("Failed to null-terminate argv");
 
     macro_rules! push {
