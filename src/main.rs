@@ -103,7 +103,7 @@ struct Statistics {
 }
 
 fn worker(mut emu: Emulator, original: Arc<Emulator>, stats: Arc<Mutex<Statistics>>) {
-    const BATCH_SIZE: usize = 10;
+    const BATCH_SIZE: usize = 100;
     loop {
         let batch_start = rdtsc();
 
@@ -210,7 +210,7 @@ fn main() {
     // Create a new stats structure
     let stats = Arc::new(Mutex::new(Statistics::default()));
 
-    for _ in 0..1 {
+    for _ in 0..4 {
         let new_emu= emu.fork();
         let stats = stats.clone();
         let parent = emu.clone();
@@ -227,10 +227,13 @@ fn main() {
 
     let mut last_cases = 0;
     let mut last_inst = 0;
+    let mut last_time = Instant::now();
 
     loop {
         std::thread::sleep(Duration::from_millis(1000));
         let stats = stats.lock().unwrap();
+
+        let time_delta = last_time.elapsed().as_secs_f64();
         let elapsed = start.elapsed().as_secs_f64();
         let fuzz_cases = stats.fuzz_cases;
         let instrs = stats.inst_exec;
@@ -238,10 +241,13 @@ fn main() {
         // Compute performance numbers
         let resetc = stats.reset_cycles as f64 / stats.total_cycles as f64;
         let vmc = stats.vm_cycles as f64 / stats.total_cycles as f64;
-        print!("[{:10.4}] Fuzz cases {:10} | fcps {:10.2} | inst/sec {:10.1}\n\
+        print!("[{:10.4}] Fuzz cases {:10} | fcps {:10.1} | inst/sec {:10.1}\n\
             reset {:8.4} | vm {:8.4}\n",
-            elapsed, fuzz_cases, fuzz_cases - last_cases, instrs - last_inst, resetc, vmc);
+            elapsed, fuzz_cases,
+            (fuzz_cases - last_cases) as f64 / time_delta,
+            (instrs - last_inst) as f64 / time_delta, resetc, vmc);
         last_cases = fuzz_cases;
         last_inst = instrs;
+        last_time = Instant::now();
     }
 }
