@@ -8,7 +8,7 @@ use std::sync::atomic::{AtomicU64, Ordering};
 use std::sync::{Arc, Mutex};
 
 /// If true, the guest writes to stdout and std err will be printed to our own stdout and stderr
-const VERBOSE_GUEST_PRINTS: bool = true;
+const VERBOSE_GUEST_PRINTS: bool = false;
 
 fn rdtsc() -> u64 {
     unsafe { std::arch::x86_64::_rdtsc() }
@@ -35,7 +35,7 @@ fn handle_syscall(emu: &mut Emulator) -> Result<(), VmExit> {
             assert!(increment >= 0);
 
             // Atempt to extend data section by increment
-            if let Some(base) = emu.memory.allocate(increment as usize) {
+            if let Some(_base) = emu.memory.allocate(increment as usize) {
                 let new_base = cur_base.0 + increment as usize;
                 emu.set_reg(Register::A0, new_base as u64);
             } else {
@@ -43,6 +43,43 @@ fn handle_syscall(emu: &mut Emulator) -> Result<(), VmExit> {
             }
 
             Ok(())
+        }
+        64 => {
+            // write()
+            let fd = emu.reg(Register::A0);
+            let buf = emu.reg(Register::A1);
+            let len = emu.reg(Register::A2);
+
+            if fd == 1 || fd == 2 {
+                // Write to stdout and stderr
+
+                // Get access to the underlying bytes to write
+                let bytes = emu.memory.peek(VirtAddr(buf as usize), len as usize, Perm(PERM_READ))?;
+
+                if VERBOSE_GUEST_PRINTS {
+                    if let Ok(st) = core::str::from_utf8(bytes) {
+                        print!("{}", st);
+                    }
+                }
+
+                // Set that all byte were read in the return value
+                emu.set_reg(Register::A0, len);
+            } else {
+                // Unknown FD
+                emu.set_reg(Register::A0, !0);
+            }
+
+            Ok(())
+        }
+        57 => {
+            // close()
+            // Just return success for now
+            emu.set_reg(Register::A0, 0);
+            Ok(())
+        }
+        93 => {
+            // Exit()
+            Err(VmExit::Exit)
         }
         _ => {
             panic!("Unhandled syscall {}\n", num);
@@ -96,7 +133,7 @@ fn worker(mut emu: Emulator, original: Arc<Emulator>, stats: Arc<Mutex<Statistic
                 }
             };
 
-            print!("Vmexit {:#x} {:?}\n", emu.reg(Register::Pc), vmexit);
+            //print!("Vmexit {:#x} {:?}\n", emu.reg(Register::Pc), vmexit);
             local_stats.fuzz_cases += 1;
         }
 
@@ -201,9 +238,9 @@ fn main() {
         // Compute performance numbers
         let resetc = stats.reset_cycles as f64 / stats.total_cycles as f64;
         let vmc = stats.vm_cycles as f64 / stats.total_cycles as f64;
-        /*print!("[{:10.4}] Fuzz cases {:10} | fcps {:10.2} | inst/sec {:10.1}\n\
+        print!("[{:10.4}] Fuzz cases {:10} | fcps {:10.2} | inst/sec {:10.1}\n\
             reset {:8.4} | vm {:8.4}\n",
-            elapsed, fuzz_cases, fuzz_cases - last_cases, instrs - last_inst, resetc, vmc); */
+            elapsed, fuzz_cases, fuzz_cases - last_cases, instrs - last_inst, resetc, vmc);
         last_cases = fuzz_cases;
         last_inst = instrs;
     }
