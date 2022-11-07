@@ -1,6 +1,7 @@
 //! A 64-bit RISC-V RV64i interpreter
 
 use crate::mmu::{Mmu, Perm, VirtAddr, PERM_EXEC};
+use std::sync::Arc;
 use std::fmt;
 
 /// An R-type instruction
@@ -139,6 +140,16 @@ impl From<u32> for Utype {
     }
 }
 
+#[derive(Debug, Clone, Copy, PartialEq)]
+pub enum File {
+    Stdin,
+    Stdout,
+    Stderr,
+
+    // A file which is 
+    FuzzInput,
+}
+
 /// All the state of the emulated system
 pub struct Emulator {
     /// Memory for the emulator
@@ -146,6 +157,12 @@ pub struct Emulator {
 
     /// All RV64i registers
     registers: [u64; 33],
+
+    /// Fuzz input for the program
+    fuzz_input: Vec<u8>,
+
+    /// File Hande table (indexed by file descriptor)
+    files: Vec<Option<File>>,
 }
 
 #[derive(Clone, Copy, Debug)]
@@ -276,6 +293,12 @@ impl Emulator {
         Emulator {
             memory: Mmu::new(size),
             registers: [0; 33],
+            fuzz_input: Vec::new(),
+            files: vec![
+                Some(File::Stdin),
+                Some(File::Stdout),
+                Some(File::Stderr),
+            ]
         }
     }
 
@@ -284,6 +307,8 @@ impl Emulator {
         Emulator {
             memory: self.memory.fork(),
             registers: self.registers.clone(),
+            fuzz_input: self.fuzz_input.clone(),
+            files: self.files.clone(),
         }
     }
 
@@ -295,6 +320,30 @@ impl Emulator {
 
         // Reset register state
         self.registers = other.registers;
+
+        // Reset file state
+        self.files.clear();
+        self.files.extend_from_slice(&other.files);
+    }
+
+    /// Get access to a file descriptor for `fd`
+    pub fn get_file(&mut self, fd: usize) -> Option<&mut Option<File>> {
+        self.files.get_mut(fd)
+    }
+
+    /// Allocate a new file descriptor
+    pub fn alloc_file(&mut self) -> usize {
+        for (fd, file) in self.files.iter().enumerate() {
+            if file.is_none() {
+                // File not present, we can reuse the FD
+                return fd;
+            }
+        }
+
+        // If we got here, no FD is present, create a new one
+        let fd = self.files.len();
+        self.files.push(None);
+        fd
     }
 
     /// Get a register from the guest

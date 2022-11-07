@@ -2,7 +2,7 @@ pub mod primitive;
 pub mod mmu;
 pub mod emulator;
 
-use emulator::{Register, Emulator, VmExit};
+use emulator::{Register, Emulator, VmExit, File};
 use mmu::{VirtAddr, PERM_WRITE, PERM_EXEC, PERM_READ, Perm, Section};
 use std::sync::atomic::{AtomicU64, Ordering};
 use std::sync::{Arc, Mutex};
@@ -46,24 +46,30 @@ fn handle_syscall(emu: &mut Emulator) -> Result<(), VmExit> {
         }
         64 => {
             // write()
-            let fd = emu.reg(Register::A0);
+            let fd = emu.reg(Register::A0) as usize;
             let buf = emu.reg(Register::A1);
             let len = emu.reg(Register::A2);
 
-            if fd == 1 || fd == 2 {
-                // Write to stdout and stderr
+            let file = emu.get_file(fd);
 
-                // Get access to the underlying bytes to write
-                let bytes = emu.memory.peek(VirtAddr(buf as usize), len as usize, Perm(PERM_READ))?;
+            if let Some(Some(file)) = file {
+                if file == &File::Stdout || file == &File::Stderr {
+                    // Write to stdout and stderr
 
-                if VERBOSE_GUEST_PRINTS {
-                    if let Ok(st) = core::str::from_utf8(bytes) {
-                        print!("{}", st);
+                    // Get access to the underlying bytes to write
+                    let bytes = emu.memory.peek(VirtAddr(buf as usize), len as usize, Perm(PERM_READ))?;
+
+                    if VERBOSE_GUEST_PRINTS {
+                        if let Ok(st) = core::str::from_utf8(bytes) {
+                            print!("{}", st);
+                        }
                     }
-                }
 
-                // Set that all byte were read in the return value
-                emu.set_reg(Register::A0, len);
+                    // Set that all byte were read in the return value
+                    emu.set_reg(Register::A0, len);
+                } else {
+                    panic!("Write to valid but unhandled FD");
+                }
             } else {
                 // Unknown FD
                 emu.set_reg(Register::A0, !0);
@@ -71,10 +77,81 @@ fn handle_syscall(emu: &mut Emulator) -> Result<(), VmExit> {
 
             Ok(())
         }
+        1024 => {
+            // open()
+            let filename = emu.reg(Register::A0) as usize;
+            let flags = emu.reg(Register::A1);
+            let _mode = emu.reg(Register::A2);
+
+            // Determine the length of the filename
+            let mut fnlen = 0;
+            while emu.memory.read::<u8>(VirtAddr(filename + fnlen))? != 0 {
+                fnlen += 1;
+            }
+
+            let bytes = emu.memory.peek(VirtAddr(filename), fnlen, Perm(PERM_READ))?;
+
+            if bytes == b"test_app" {
+                // Create a new file descriptor
+                let fd = emu.alloc_file();
+
+                // Get access to the file, unwrap here is safe because there's no way the file is
+                // not a valid FD if we hot it from our own APIs
+                let file = emu.get_file(fd).unwrap();
+                //print!("Allocated FD {}\n", fd);
+
+                // Mark that this file be backed by our fuzz input
+                *file = Some(File::FuzzInput);
+
+                // Return a new fd
+                emu.set_reg(Register::A0, fd as u64);
+            } else {
+                print!("Unknon Filename is {:?}\n", core::str::from_utf8(bytes));
+                // Unknown filename
+                emu.set_reg(Register::A0, !0);
+            }
+
+            Ok(())
+        }
+        80 => {
+            // fstat()
+            let fd = emu.reg(Register::A0) as usize;
+            let statbuf = emu.reg(Register::A1);
+
+            // Check if the FD is valid
+            let file = emu.get_file(fd);
+            if file.is_none() || file.as_ref().unwrap().is_none() {
+                // FD was not valid, return out with an error
+                emu.set_reg(Register::A0, !0);
+                return Ok(());
+            }
+            panic!("Fstat of {:?}\n", file);
+
+            Ok(())
+
+        }
         57 => {
             // close()
-            // Just return success for now
-            emu.set_reg(Register::A0, 0);
+            let fd = emu.reg(Register::A0) as usize;
+
+            if let Some(file) = emu.get_file(fd) {
+                if file.is_some() {
+                    // File was present and currently open, close it
+
+                    // Close the file
+                    *file = None;
+
+                    // Just return success for now
+                    emu.set_reg(Register::A0, 0);
+                } else {
+                    // File was in a closed state
+                    emu.set_reg(Register::A0, !0);
+                }
+            } else {
+                emu.set_reg(Register::A0, !0);
+
+            }
+
             Ok(())
         }
         93 => {
@@ -82,7 +159,7 @@ fn handle_syscall(emu: &mut Emulator) -> Result<(), VmExit> {
             Err(VmExit::Exit)
         }
         _ => {
-            panic!("Unhandled syscall {}\n", num);
+            panic!("Unhandled syscall {} as {:#x}\n", num, emu.reg(Register::Pc));
         }
     }
 }
@@ -183,8 +260,14 @@ fn main() {
     emu.set_reg(Register::Sp, stack.0 as u64 + 32 * 1024);
 
     // Set up null terminated arg vectors
-    let argv = emu.memory.allocate(4096).expect("Failed to allocate argv");
-    emu.memory.write_from(argv, b"objdump\0").expect("Failed to null-terminate argv");
+    let progname = emu.memory.allocate(4096).expect("Failed to allocate argv");
+    emu.memory.write_from(progname, b"objdump\0").expect("Failed to null-terminate argv");
+
+    let arg1 = emu.memory.allocate(4096).expect("Failed to allocate arg1");
+    emu.memory.write_from(arg1, b"-x\0").expect("Failed to null-terminate arg1");
+
+    let arg2 = emu.memory.allocate(4096).expect("Failed to allocate arg2");
+    emu.memory.write_from(arg2, b"test_app\0").expect("Failed to null-terminate arg2");
 
     macro_rules! push {
         ($expr:expr) => {
@@ -199,8 +282,10 @@ fn main() {
     push!(0u64); // Auxp
     push!(0u64); // Envp
     push!(0u64); // Argv end
-    push!(argv.0); // Argv first argument
-    push!(1u64); // Argc
+    push!(arg2.0); // Argv first argument
+    push!(arg1.0); // Argv first argument
+    push!(progname.0); // Argv first argument
+    push!(3u64); // Argc
 
     use std::time::{Duration, Instant};
 
@@ -210,7 +295,7 @@ fn main() {
     // Create a new stats structure
     let stats = Arc::new(Mutex::new(Statistics::default()));
 
-    for _ in 0..4 {
+    for _ in 0..1 {
         let new_emu= emu.fork();
         let stats = stats.clone();
         let parent = emu.clone();
