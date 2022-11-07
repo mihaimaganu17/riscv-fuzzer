@@ -1,23 +1,26 @@
-use crate::mmu::{VirtAddr, PERM_EXEC, Perm, Mmu};
+//! A 64-bit RISC-V RV64i interpreter
+
+use crate::mmu::{Mmu, Perm, VirtAddr, PERM_EXEC};
+use std::fmt;
 
 /// An R-type instruction
 #[derive(Debug)]
 struct Rtype {
     funct7: u32,
-    rs2:    Register,
-    rs1:    Register,
+    rs2: Register,
+    rs1: Register,
     funct3: u32,
-    rd:     Register,
+    rd: Register,
 }
 
 impl From<u32> for Rtype {
     fn from(inst: u32) -> Self {
         Rtype {
             funct7: (inst >> 25) & 0b1111111,
-            rs2:    Register::from((inst >> 20) & 0b11111),
-            rs1:    Register::from((inst >> 15) & 0b11111),
+            rs2: Register::from((inst >> 20) & 0b11111),
+            rs1: Register::from((inst >> 15) & 0b11111),
             funct3: (inst >> 12) & 0b111,
-            rd:     Register::from((inst >>  7) & 0b11111),
+            rd: Register::from((inst >> 7) & 0b11111),
         }
     }
 }
@@ -25,24 +28,24 @@ impl From<u32> for Rtype {
 /// An S-type instruction
 #[derive(Debug)]
 struct Stype {
-    imm:    i32,
-    rs2:    Register,
-    rs1:    Register,
+    imm: i32,
+    rs2: Register,
+    rs1: Register,
     funct3: u32,
 }
 
 impl From<u32> for Stype {
     fn from(inst: u32) -> Self {
         let imm115 = (inst >> 25) & 0b1111111;
-        let imm40  = (inst >>  7) & 0b11111;
+        let imm40 = (inst >> 7) & 0b11111;
 
         let imm = (imm115 << 5) | imm40;
         let imm = ((imm as i32) << 20) >> 20;
 
         Stype {
-            imm:    imm,
-            rs2:    Register::from((inst >> 20) & 0b11111),
-            rs1:    Register::from((inst >> 15) & 0b11111),
+            imm: imm,
+            rs2: Register::from((inst >> 20) & 0b11111),
+            rs1: Register::from((inst >> 15) & 0b11111),
             funct3: (inst >> 12) & 0b111,
         }
     }
@@ -52,23 +55,22 @@ impl From<u32> for Stype {
 #[derive(Debug)]
 struct Jtype {
     imm: i32,
-    rd:  Register,
+    rd: Register,
 }
 
 impl From<u32> for Jtype {
     fn from(inst: u32) -> Self {
-        let imm20   = (inst >> 31) & 1;
-        let imm101  = (inst >> 21) & 0b1111111111;
-        let imm11   = (inst >> 20) & 1;
+        let imm20 = (inst >> 31) & 1;
+        let imm101 = (inst >> 21) & 0b1111111111;
+        let imm11 = (inst >> 20) & 1;
         let imm1912 = (inst >> 12) & 0b11111111;
 
-        let imm = (imm20 << 20) | (imm1912 << 12) | (imm11 << 11) |
-            (imm101 << 1);
+        let imm = (imm20 << 20) | (imm1912 << 12) | (imm11 << 11) | (imm101 << 1);
         let imm = ((imm as i32) << 11) >> 11;
 
         Jtype {
             imm: imm,
-            rd:  Register::from((inst >> 7) & 0b11111),
+            rd: Register::from((inst >> 7) & 0b11111),
         }
     }
 }
@@ -76,26 +78,26 @@ impl From<u32> for Jtype {
 /// A B-type instruction
 #[derive(Debug)]
 struct Btype {
-    imm:    i32,
-    rs2:    Register,
-    rs1:    Register,
+    imm: i32,
+    rs2: Register,
+    rs1: Register,
     funct3: u32,
 }
 
 impl From<u32> for Btype {
     fn from(inst: u32) -> Self {
-        let imm12  = (inst >> 31) & 1;
+        let imm12 = (inst >> 31) & 1;
         let imm105 = (inst >> 25) & 0b111111;
-        let imm41  = (inst >>  8) & 0b1111;
-        let imm11  = (inst >>  7) & 1;
+        let imm41 = (inst >> 8) & 0b1111;
+        let imm11 = (inst >> 7) & 1;
 
-        let imm = (imm12 << 12) | (imm11 << 11) |(imm105 << 5) | (imm41 << 1);
+        let imm = (imm12 << 12) | (imm11 << 11) | (imm105 << 5) | (imm41 << 1);
         let imm = ((imm as i32) << 19) >> 19;
 
         Btype {
-            imm:    imm,
-            rs2:    Register::from((inst >> 20) & 0b11111),
-            rs1:    Register::from((inst >> 15) & 0b11111),
+            imm: imm,
+            rs2: Register::from((inst >> 20) & 0b11111),
+            rs1: Register::from((inst >> 15) & 0b11111),
             funct3: (inst >> 12) & 0b111,
         }
     }
@@ -104,20 +106,20 @@ impl From<u32> for Btype {
 /// An I-type instruction
 #[derive(Debug)]
 struct Itype {
-    imm:    i32,
-    rs1:    Register,
+    imm: i32,
+    rs1: Register,
     funct3: u32,
-    rd:     Register,
+    rd: Register,
 }
 
 impl From<u32> for Itype {
     fn from(inst: u32) -> Self {
         let imm = (inst as i32) >> 20;
         Itype {
-            imm:    imm,
-            rs1:    Register::from((inst >> 15) & 0b11111),
+            imm: imm,
+            rs1: Register::from((inst >> 15) & 0b11111),
             funct3: (inst >> 12) & 0b111,
-            rd:     Register::from((inst >>  7) & 0b11111),
+            rd: Register::from((inst >> 7) & 0b11111),
         }
     }
 }
@@ -125,14 +127,14 @@ impl From<u32> for Itype {
 #[derive(Debug)]
 struct Utype {
     imm: i32,
-    rd:  Register,
+    rd: Register,
 }
 
 impl From<u32> for Utype {
     fn from(inst: u32) -> Self {
         Utype {
             imm: (inst & !0xfff) as i32,
-            rd:  Register::from((inst >> 7) & 0b11111),
+            rd: Register::from((inst >> 7) & 0b11111),
         }
     }
 }
@@ -146,8 +148,8 @@ pub struct Emulator {
     registers: [u64; 33],
 }
 
+#[derive(Clone, Copy, Debug)]
 /// Reasons why the VM exited
-#[derive(Debug)]
 pub enum VmExit {
     /// The VM exited due to a syscall instruction
     Syscall,
@@ -155,7 +157,8 @@ pub enum VmExit {
     /// The VM exited cleanly as requested by the VM
     Exit,
 
-    /// An integer overflow occured during a syscall due to bad supplied arguments by the program
+    /// An integer overflow occured during a syscall due to bad supplied
+    /// arguments by the program
     SyscallIntegerOverflow,
 
     /// A read or write memory request overflowed the address size
@@ -164,28 +167,26 @@ pub enum VmExit {
     /// The address requested was not in bounds of the guest memory space
     AddressMiss(VirtAddr, usize),
 
-    /// A read of `VirtAddr` of `usize` bytes failed due to missing permissions
-    ReadFault(VirtAddr, usize),
+    /// An read of `VirtAddr` failed due to missing permissions
+    ReadFault(VirtAddr),
 
-    /// A write of `VirtAddr` of `usize` bytes failed due to missing permissions
-    WriteFault(VirtAddr, usize),
+    /// An write of `VirtAddr` failed due to missing permissions
+    WriteFault(VirtAddr),
 }
-
-use std::fmt;
 
 impl fmt::Display for Emulator {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, r#"
-            Zero {:016x} ra {:016x} sp {:016x} gp {:016x}
-            tp {:016x} t0 {:016x} t1 {:016x} s2 {:016x}
-            s0 {:016x} s1 {:016x} a0 {:016x} a1 {:016x}
-            a2 {:016x} a3 {:016x} a4 {:016x} a5 {:016x}
-            a6 {:016x} a7 {:016x} s2 {:016x} s3 {:016x}
-            s4 {:016x} s5 {:016x} s6 {:016x} s7 {:016x}
-            s8 {:016x} s9 {:016x} s10 {:016x} s11 {:016x}
-            t3 {:016x} t4 {:016x} t5 {:016x} t6 {:016x}
-            pc {:016x}
-            "#,
+        write!(
+            f,
+            r#"zero {:016x} ra {:016x} sp  {:016x} gp  {:016x}
+tp   {:016x} t0 {:016x} t1  {:016x} t2  {:016x}
+s0   {:016x} s1 {:016x} a0  {:016x} a1  {:016x}
+a2   {:016x} a3 {:016x} a4  {:016x} a5  {:016x}
+a6   {:016x} a7 {:016x} s2  {:016x} s3  {:016x}
+s4   {:016x} s5 {:016x} s6  {:016x} s7  {:016x}
+s8   {:016x} s9 {:016x} s10 {:016x} s11 {:016x}
+t3   {:016x} t4 {:016x} t5  {:016x} t6  {:016x}
+pc   {:016x}"#,
             self.reg(Register::Zero),
             self.reg(Register::Ra),
             self.reg(Register::Sp),
@@ -218,8 +219,8 @@ impl fmt::Display for Emulator {
             self.reg(Register::T4),
             self.reg(Register::T5),
             self.reg(Register::T6),
-            self.reg(Register::Pc),
-            )
+            self.reg(Register::Pc)
+        )
     }
 }
 
@@ -265,10 +266,7 @@ pub enum Register {
 impl From<u32> for Register {
     fn from(val: u32) -> Self {
         assert!(val < 32);
-        unsafe {
-            core::ptr::read_unaligned(&(val as usize) as
-                                      *const usize as *const Register)
-        }
+        unsafe { core::ptr::read_unaligned(&(val as usize) as *const usize as *const Register) }
     }
 }
 
@@ -276,7 +274,7 @@ impl Emulator {
     /// Creates a new emulator with `size` bytes of memory
     pub fn new(size: usize) -> Self {
         Emulator {
-            memory:    Mmu::new(size),
+            memory: Mmu::new(size),
             registers: [0; 33],
         }
     }
@@ -284,7 +282,7 @@ impl Emulator {
     /// Fork an emulator into a new emulator which will diff from the original
     pub fn fork(&self) -> Self {
         Emulator {
-            memory:    self.memory.fork(),
+            memory: self.memory.fork(),
             registers: self.registers.clone(),
         }
     }
@@ -315,19 +313,20 @@ impl Emulator {
         }
     }
 
-    pub fn run(&mut self, instr_exec: &mut u64) -> Result<(), VmExit> {
+    pub fn run(&mut self, instrs_execed: &mut u64) -> Result<(), VmExit> {
         'next_inst: loop {
             // Get the current program counter
             let pc = self.reg(Register::Pc);
-            let inst: u32 = self.memory.read_perms(VirtAddr(pc as usize), 
-                                                   Perm(PERM_EXEC))?;
+            let inst: u32 = self
+                .memory
+                .read_perms(VirtAddr(pc as usize), Perm(PERM_EXEC))?;
 
-            // Update the number of instructions executed
-            *instr_exec += 1;
+            // Update number of instructions executed
+            *instrs_execed += 1;
+
             // Extract the opcode from the instruction
             let opcode = inst & 0b1111111;
-
-            print!("{}\n\n", self);
+            //print!("{}\n\n", self);
 
             match opcode {
                 0b0110111 => {
@@ -338,15 +337,13 @@ impl Emulator {
                 0b0010111 => {
                     // AUIPC
                     let inst = Utype::from(inst);
-                    self.set_reg(inst.rd,
-                                 (inst.imm as i64 as u64).wrapping_add(pc));
+                    self.set_reg(inst.rd, (inst.imm as i64 as u64).wrapping_add(pc));
                 }
                 0b1101111 => {
                     // JAL
                     let inst = Jtype::from(inst);
                     self.set_reg(inst.rd, pc.wrapping_add(4));
-                    self.set_reg(Register::Pc,
-                                 pc.wrapping_add(inst.imm as i64 as u64));
+                    self.set_reg(Register::Pc, pc.wrapping_add(inst.imm as i64 as u64));
                     continue 'next_inst;
                 }
                 0b1100111 => {
@@ -356,8 +353,7 @@ impl Emulator {
                     match inst.funct3 {
                         0b000 => {
                             // JALR
-                            let target = self.reg(inst.rs1).wrapping_add(
-                                    inst.imm as i64 as u64);
+                            let target = self.reg(inst.rs1).wrapping_add(inst.imm as i64 as u64);
                             self.set_reg(inst.rd, pc.wrapping_add(4));
                             self.set_reg(Register::Pc, target);
                             continue 'next_inst;
@@ -376,48 +372,42 @@ impl Emulator {
                         0b000 => {
                             // BEQ
                             if rs1 == rs2 {
-                                self.set_reg(Register::Pc,
-                                    pc.wrapping_add(inst.imm as i64 as u64));
+                                self.set_reg(Register::Pc, pc.wrapping_add(inst.imm as i64 as u64));
                                 continue 'next_inst;
                             }
                         }
                         0b001 => {
                             // BNE
                             if rs1 != rs2 {
-                                self.set_reg(Register::Pc,
-                                    pc.wrapping_add(inst.imm as i64 as u64));
+                                self.set_reg(Register::Pc, pc.wrapping_add(inst.imm as i64 as u64));
                                 continue 'next_inst;
                             }
                         }
                         0b100 => {
                             // BLT
                             if (rs1 as i64) < (rs2 as i64) {
-                                self.set_reg(Register::Pc,
-                                    pc.wrapping_add(inst.imm as i64 as u64));
+                                self.set_reg(Register::Pc, pc.wrapping_add(inst.imm as i64 as u64));
                                 continue 'next_inst;
                             }
                         }
                         0b101 => {
                             // BGE
                             if (rs1 as i64) >= (rs2 as i64) {
-                                self.set_reg(Register::Pc,
-                                    pc.wrapping_add(inst.imm as i64 as u64));
+                                self.set_reg(Register::Pc, pc.wrapping_add(inst.imm as i64 as u64));
                                 continue 'next_inst;
                             }
                         }
                         0b110 => {
                             // BLTU
                             if (rs1 as u64) < (rs2 as u64) {
-                                self.set_reg(Register::Pc,
-                                    pc.wrapping_add(inst.imm as i64 as u64));
+                                self.set_reg(Register::Pc, pc.wrapping_add(inst.imm as i64 as u64));
                                 continue 'next_inst;
                             }
                         }
                         0b111 => {
                             // BGEU
                             if (rs1 as u64) >= (rs2 as u64) {
-                                self.set_reg(Register::Pc,
-                                    pc.wrapping_add(inst.imm as i64 as u64));
+                                self.set_reg(Register::Pc, pc.wrapping_add(inst.imm as i64 as u64));
                                 continue 'next_inst;
                             }
                         }
@@ -429,31 +419,27 @@ impl Emulator {
                     let inst = Itype::from(inst);
 
                     // Compute the address
-                    let addr = VirtAddr(self.reg(inst.rs1)
-                        .wrapping_add(inst.imm as i64 as u64)
-                        as usize);
+                    let addr =
+                        VirtAddr(self.reg(inst.rs1).wrapping_add(inst.imm as i64 as u64) as usize);
 
                     match inst.funct3 {
                         0b000 => {
                             // LB
                             let mut tmp = [0u8; 1];
                             self.memory.read_into(addr, &mut tmp)?;
-                            self.set_reg(inst.rd,
-                                i8::from_le_bytes(tmp) as i64 as u64);
+                            self.set_reg(inst.rd, i8::from_le_bytes(tmp) as i64 as u64);
                         }
                         0b001 => {
                             // LH
                             let mut tmp = [0u8; 2];
                             self.memory.read_into(addr, &mut tmp)?;
-                            self.set_reg(inst.rd,
-                                i16::from_le_bytes(tmp) as i64 as u64);
+                            self.set_reg(inst.rd, i16::from_le_bytes(tmp) as i64 as u64);
                         }
                         0b010 => {
                             // LW
                             let mut tmp = [0u8; 4];
                             self.memory.read_into(addr, &mut tmp)?;
-                            self.set_reg(inst.rd,
-                                i32::from_le_bytes(tmp) as i64 as u64);
+                            self.set_reg(inst.rd, i32::from_le_bytes(tmp) as i64 as u64);
                         }
                         0b011 => {
                             // LD
@@ -465,22 +451,19 @@ impl Emulator {
                             // LBU
                             let mut tmp = [0u8; 1];
                             self.memory.read_into(addr, &mut tmp)?;
-                            self.set_reg(inst.rd,
-                                u8::from_le_bytes(tmp) as u64);
+                            self.set_reg(inst.rd, u8::from_le_bytes(tmp) as u64);
                         }
                         0b101 => {
                             // LHU
                             let mut tmp = [0u8; 2];
                             self.memory.read_into(addr, &mut tmp)?;
-                            self.set_reg(inst.rd,
-                                u16::from_le_bytes(tmp) as u64);
+                            self.set_reg(inst.rd, u16::from_le_bytes(tmp) as u64);
                         }
                         0b110 => {
                             // LWU
                             let mut tmp = [0u8; 4];
                             self.memory.read_into(addr, &mut tmp)?;
-                            self.set_reg(inst.rd,
-                                u32::from_le_bytes(tmp) as u64);
+                            self.set_reg(inst.rd, u32::from_le_bytes(tmp) as u64);
                         }
                         _ => unimplemented!("Unexpected 0b0000011"),
                     }
@@ -490,9 +473,8 @@ impl Emulator {
                     let inst = Stype::from(inst);
 
                     // Compute the address
-                    let addr = VirtAddr(self.reg(inst.rs1)
-                        .wrapping_add(inst.imm as i64 as u64)
-                        as usize);
+                    let addr =
+                        VirtAddr(self.reg(inst.rs1).wrapping_add(inst.imm as i64 as u64) as usize);
 
                     match inst.funct3 {
                         0b000 => {
@@ -582,8 +564,7 @@ impl Emulator {
                                 0b010000 => {
                                     // SRAI
                                     let shamt = inst.imm & 0b111111;
-                                    self.set_reg(inst.rd,
-                                        ((rs1 as i64) >> shamt) as u64);
+                                    self.set_reg(inst.rd, ((rs1 as i64) >> shamt) as u64);
                                 }
                                 _ => unreachable!(),
                             }
@@ -640,8 +621,7 @@ impl Emulator {
                         (0b0100000, 0b101) => {
                             // SRA
                             let shamt = rs2 & 0b111111;
-                            self.set_reg(inst.rd,
-                                ((rs1 as i64) >> shamt) as u64);
+                            self.set_reg(inst.rd, ((rs1 as i64) >> shamt) as u64);
                         }
                         (0b0000000, 0b110) => {
                             // OR
@@ -664,31 +644,26 @@ impl Emulator {
                     match (inst.funct7, inst.funct3) {
                         (0b0000000, 0b000) => {
                             // ADDW
-                            self.set_reg(inst.rd,
-                                rs1.wrapping_add(rs2) as i32 as i64 as u64);
+                            self.set_reg(inst.rd, rs1.wrapping_add(rs2) as i32 as i64 as u64);
                         }
                         (0b0100000, 0b000) => {
                             // SUBW
-                            self.set_reg(inst.rd,
-                                rs1.wrapping_sub(rs2) as i32 as i64 as u64);
+                            self.set_reg(inst.rd, rs1.wrapping_sub(rs2) as i32 as i64 as u64);
                         }
                         (0b0000000, 0b001) => {
                             // SLLW
                             let shamt = rs2 & 0b11111;
-                            self.set_reg(inst.rd,
-                                (rs1 << shamt) as i32 as i64 as u64);
+                            self.set_reg(inst.rd, (rs1 << shamt) as i32 as i64 as u64);
                         }
                         (0b0000000, 0b101) => {
                             // SRLW
                             let shamt = rs2 & 0b11111;
-                            self.set_reg(inst.rd,
-                                (rs1 >> shamt) as i32 as i64 as u64);
+                            self.set_reg(inst.rd, (rs1 >> shamt) as i32 as i64 as u64);
                         }
                         (0b0100000, 0b101) => {
                             // SRAW
                             let shamt = rs2 & 0b11111;
-                            self.set_reg(inst.rd,
-                                ((rs1 as i32) >> shamt) as i64 as u64);
+                            self.set_reg(inst.rd, ((rs1 as i32) >> shamt) as i64 as u64);
                         }
                         _ => unreachable!(),
                     }
@@ -706,9 +681,10 @@ impl Emulator {
                 0b1110011 => {
                     if inst == 0b00000000000000000000000001110011 {
                         // ECALL
-                        return Err(VmExit::Syscall)
+                        return Err(VmExit::Syscall);
                     } else if inst == 0b00000000000100000000000001110011 {
                         // EBREAK
+                        panic!("EBREAK");
                     } else {
                         unreachable!();
                     }
@@ -723,8 +699,7 @@ impl Emulator {
                     match inst.funct3 {
                         0b000 => {
                             // ADDIW
-                            self.set_reg(inst.rd,
-                                rs1.wrapping_add(imm) as i32 as i64 as u64);
+                            self.set_reg(inst.rd, rs1.wrapping_add(imm) as i32 as i64 as u64);
                         }
                         0b001 => {
                             let mode = (inst.imm >> 5) & 0b1111111;
@@ -733,8 +708,7 @@ impl Emulator {
                                 0b0000000 => {
                                     // SLLIW
                                     let shamt = inst.imm & 0b11111;
-                                    self.set_reg(inst.rd,
-                                        (rs1 << shamt) as i32 as i64 as u64);
+                                    self.set_reg(inst.rd, (rs1 << shamt) as i32 as i64 as u64);
                                 }
                                 _ => unreachable!(),
                             }
@@ -746,14 +720,12 @@ impl Emulator {
                                 0b0000000 => {
                                     // SRLIW
                                     let shamt = inst.imm & 0b11111;
-                                    self.set_reg(inst.rd,
-                                        (rs1 >> shamt) as i32 as i64 as u64)
+                                    self.set_reg(inst.rd, (rs1 >> shamt) as i32 as i64 as u64)
                                 }
                                 0b0100000 => {
                                     // SRAIW
                                     let shamt = inst.imm & 0b11111;
-                                    self.set_reg(inst.rd,
-                                        ((rs1 as i32) >> shamt) as i64 as u64);
+                                    self.set_reg(inst.rd, ((rs1 as i32) >> shamt) as i64 as u64);
                                 }
                                 _ => unreachable!(),
                             }
@@ -769,4 +741,3 @@ impl Emulator {
         }
     }
 }
-

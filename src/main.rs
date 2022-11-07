@@ -8,7 +8,7 @@ use std::sync::atomic::{AtomicU64, Ordering};
 use std::sync::{Arc, Mutex};
 
 /// If true, the guest writes to stdout and std err will be printed to our own stdout and stderr
-const VERBOSE_GUEST_PRINTS: bool = false;
+const VERBOSE_GUEST_PRINTS: bool = true;
 
 fn rdtsc() -> u64 {
     unsafe { std::arch::x86_64::_rdtsc() }
@@ -23,25 +23,24 @@ fn handle_syscall(emu: &mut Emulator) -> Result<(), VmExit> {
             let req_base = emu.reg(Register::A0);
             let cur_base = emu.memory.allocate(0).unwrap();
 
-            print!("{:#x} {:#x}\n", cur_base.0, req_base);
 
-            let increment = (req_base as i64).checked_sub(cur_base.0 as i64)
-                .ok_or(VmExit::SyscallIntegerOverflow)?;
+            let increment = if req_base != 0 {
+                (req_base as i64).checked_sub(cur_base.0 as i64)
+                    .ok_or(VmExit::SyscallIntegerOverflow)?
+            } else {
+                0
+            };
 
             // We don't handle negative brk()'s
             assert!(increment >= 0);
 
-            // Turn negative increments into a 0
-            let increment = core::cmp::max(0i64, increment) as usize;
-
             // Atempt to extend data section by increment
-            if let Some(base) = emu.memory.allocate(increment) {
-                emu.set_reg(Register::A0, base.0 as u64);
+            if let Some(base) = emu.memory.allocate(increment as usize) {
+                let new_base = cur_base.0 + increment as usize;
+                emu.set_reg(Register::A0, new_base as u64);
             } else {
                 emu.set_reg(Register::A0, !0);
             }
-
-            print!("Brk returns {:x?}\n", emu.reg(Register::A0));
 
             Ok(())
         }
@@ -117,27 +116,29 @@ fn worker(mut emu: Emulator, original: Arc<Emulator>, stats: Arc<Mutex<Statistic
 
 fn main() {
     // Make an emulator with 1 Meg of memory
-    let mut emu = Emulator::new(64 * 1024 * 1024);
+    let mut emu = Emulator::new(32 * 1024 * 1024);
 
     emu.memory.load("./objdump", &[
         Section {
             file_off: 0x0000000000000000,
             virt_addr: VirtAddr(0x0000000000010000),
-            file_size: 0x0000000000168564,
-            mem_size: 0x0000000000168564,
+            file_size: 0x00000000000e1a44,
+            mem_size: 0x00000000000e1a44,
             permissions: Perm(PERM_READ | PERM_EXEC),
         },
         Section {
-            file_off: 0x0000000000169000,
-            virt_addr: VirtAddr(0x0000000000179000),
-            file_size: 0x00000000000034ea,
-            mem_size: 0x000000000000ee20,
+            file_off: 0x00000000000e2000,
+            virt_addr: VirtAddr(0x00000000000f2000),
+            file_size: 0x0000000000001e32,
+            mem_size: 0x00000000000046c8,
             permissions: Perm(PERM_READ | PERM_WRITE),
         },
     ]).expect("Failed to load test application into address space");
 
+    println!("Food baby");
+
     // Set the program entry point
-    emu.set_reg(Register::Pc, 0x10a0c);
+    emu.set_reg(Register::Pc, 0x10554);
 
     // Set up a stack
     let stack = emu.memory.allocate(32 * 1024).expect("Failed to allocate stack");
@@ -146,7 +147,7 @@ fn main() {
 
     // Set up null terminated arg vectors
     let argv = emu.memory.allocate(4096).expect("Failed to allocate argv");
-    emu.memory.write_from(argv, b"test\0").expect("Failed to null-terminate argv");
+    emu.memory.write_from(argv, b"objdump\0").expect("Failed to null-terminate argv");
 
     macro_rules! push {
         ($expr:expr) => {
@@ -162,7 +163,7 @@ fn main() {
     push!(0u64); // Envp
     push!(0u64); // Argv end
     push!(argv.0); // Argv first argument
-    push!(0u64); // Argc
+    push!(1u64); // Argc
 
     use std::time::{Duration, Instant};
 
@@ -200,9 +201,9 @@ fn main() {
         // Compute performance numbers
         let resetc = stats.reset_cycles as f64 / stats.total_cycles as f64;
         let vmc = stats.vm_cycles as f64 / stats.total_cycles as f64;
-        print!("[{:10.4}] Fuzz cases {:10} | fcps {:10.2} | inst/sec {:10.1}\n\
+        /*print!("[{:10.4}] Fuzz cases {:10} | fcps {:10.2} | inst/sec {:10.1}\n\
             reset {:8.4} | vm {:8.4}\n",
-            elapsed, fuzz_cases, fuzz_cases - last_cases, instrs - last_inst, resetc, vmc);
+            elapsed, fuzz_cases, fuzz_cases - last_cases, instrs - last_inst, resetc, vmc); */
         last_cases = fuzz_cases;
         last_inst = instrs;
     }
