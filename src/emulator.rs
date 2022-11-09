@@ -1,7 +1,6 @@
 //! A 64-bit RISC-V RV64i interpreter
 
 use crate::mmu::{Mmu, Perm, VirtAddr, PERM_EXEC};
-use std::sync::Arc;
 use std::fmt;
 
 /// An R-type instruction
@@ -147,7 +146,18 @@ pub enum File {
     Stderr,
 
     // A file which is 
-    FuzzInput,
+    FuzzInput { cursor: usize },
+}
+
+/// A list of all open files
+#[derive(Clone, Debug, PartialEq)]
+pub struct Files(Vec<Option<File>>);
+
+impl Files {
+    /// Get access to a file descriptor for `fd`
+    pub fn get_file(&mut self, fd: usize) -> Option<&mut Option<File>> {
+        self.0.get_mut(fd)
+    }
 }
 
 /// All the state of the emulated system
@@ -159,13 +169,13 @@ pub struct Emulator {
     registers: [u64; 33],
 
     /// Fuzz input for the program
-    fuzz_input: Vec<u8>,
+    pub fuzz_input: Vec<u8>,
 
     /// File Hande table (indexed by file descriptor)
-    files: Vec<Option<File>>,
+    pub files: Files,
 }
 
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
 /// Reasons why the VM exited
 pub enum VmExit {
     /// The VM exited due to a syscall instruction
@@ -186,6 +196,9 @@ pub enum VmExit {
 
     /// An read of `VirtAddr` failed due to missing permissions
     ReadFault(VirtAddr),
+
+    /// A read memory which is uninitialized, but otherwise readable failed at `VirtAddr`
+    UninitFault(VirtAddr),
 
     /// An write of `VirtAddr` failed due to missing permissions
     WriteFault(VirtAddr),
@@ -294,11 +307,11 @@ impl Emulator {
             memory: Mmu::new(size),
             registers: [0; 33],
             fuzz_input: Vec::new(),
-            files: vec![
+            files: Files(vec![
                 Some(File::Stdin),
                 Some(File::Stdout),
                 Some(File::Stderr),
-            ]
+            ]),
         }
     }
 
@@ -322,18 +335,18 @@ impl Emulator {
         self.registers = other.registers;
 
         // Reset file state
-        self.files.clear();
-        self.files.extend_from_slice(&other.files);
+        self.files.0.clear();
+        self.files.0.extend_from_slice(&other.files.0);
     }
 
     /// Get access to a file descriptor for `fd`
     pub fn get_file(&mut self, fd: usize) -> Option<&mut Option<File>> {
-        self.files.get_mut(fd)
+        self.files.0.get_mut(fd)
     }
 
     /// Allocate a new file descriptor
     pub fn alloc_file(&mut self) -> usize {
-        for (fd, file) in self.files.iter().enumerate() {
+        for (fd, file) in self.files.0.iter().enumerate() {
             if file.is_none() {
                 // File not present, we can reuse the FD
                 return fd;
@@ -341,8 +354,8 @@ impl Emulator {
         }
 
         // If we got here, no FD is present, create a new one
-        let fd = self.files.len();
-        self.files.push(None);
+        let fd = self.files.0.len();
+        self.files.0.push(None);
         fd
     }
 

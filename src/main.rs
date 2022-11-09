@@ -4,7 +4,6 @@ pub mod emulator;
 
 use emulator::{Register, Emulator, VmExit, File};
 use mmu::{VirtAddr, PERM_WRITE, PERM_EXEC, PERM_READ, Perm, Section};
-use std::sync::atomic::{AtomicU64, Ordering};
 use std::sync::{Arc, Mutex};
 
 /// If true, the guest writes to stdout and std err will be printed to our own stdout and stderr
@@ -50,7 +49,7 @@ fn handle_syscall(emu: &mut Emulator) -> Result<(), VmExit> {
             let buf = emu.reg(Register::A1);
             let len = emu.reg(Register::A2);
 
-            let file = emu.get_file(fd);
+            let file = emu.files.get_file(fd);
 
             if let Some(Some(file)) = file {
                 if file == &File::Stdout || file == &File::Stderr {
@@ -77,11 +76,100 @@ fn handle_syscall(emu: &mut Emulator) -> Result<(), VmExit> {
 
             Ok(())
         }
+        63 => {
+            // read()
+            let fd = emu.reg(Register::A0) as usize;
+            let buf = emu.reg(Register::A1) as usize;
+            let len = emu.reg(Register::A2) as usize;
+
+            // Check if the FD is valid
+            let file = emu.files.get_file(fd);
+            if file.is_none() || file.as_ref().unwrap().is_none() {
+                // FD was not valid, return out with an error
+                emu.set_reg(Register::A0, !0);
+                return Ok(());
+            }
+
+
+            if let Some(Some(File::FuzzInput { ref mut cursor })) = file {
+                // Compute the ending cursor from this read
+                let result_cursor = core::cmp::min(
+                    cursor.saturating_add(len),
+                    emu.fuzz_input.len(),
+                );
+
+                // Write in the bytes
+                emu.memory.write_from(
+                    VirtAddr(buf),
+                    &emu.fuzz_input[*cursor..result_cursor],
+                )?;
+
+                // Compute bytes read
+                let bread = result_cursor - *cursor;
+
+                // Update the cursor
+                *cursor = result_cursor;
+
+                // Return number of bytes read
+                emu.set_reg(Register::A0, bread as u64);
+            } else {
+                unreachable!();
+            }
+
+            Ok(())
+        }
+        62 => {
+            // lseek()
+            let fd= emu.reg(Register::A0) as usize;
+            let offset = emu.reg(Register::A1) as i64;
+            let whence = emu.reg(Register::A2) as i32;
+
+            const SEEK_SET: i32 = 0;
+            const SEEK_CUR: i32 = 1;
+            const SEEK_END: i32 = 2;
+
+            // Check if the FD is valid
+            let file = emu.files.get_file(fd);
+            if file.is_none() || file.as_ref().unwrap().is_none() {
+                // FD was not valid, return out with an error
+                emu.set_reg(Register::A0, !0);
+                return Ok(());
+            }
+
+            if let Some(Some(File::FuzzInput { ref mut cursor })) = file {
+                let new_cursor = match whence {
+                    SEEK_SET => offset,
+                    SEEK_CUR => (*cursor as i64).saturating_add(offset),
+                    SEEK_END => (emu.fuzz_input.len() as i64).saturating_add(offset),
+                    _ => {
+                        // Invalid whence
+                        emu.set_reg(Register::A0, !0);
+                        return Ok(());
+                    }
+                };
+
+                // Make sure the cursor falls in bounds of [0, file_size]
+                let new_cursor = core::cmp::max(0, new_cursor);
+                let new_cursor = core::cmp::min(new_cursor, emu.fuzz_input.len() as i64);
+
+                // Update the cursor
+                *cursor = new_cursor as usize;
+
+                // Return the new cursor position
+                emu.set_reg(Register::A0, new_cursor as u64);
+            } else {
+                unreachable!();
+            }
+
+            Ok(())
+        }
         1024 => {
             // open()
             let filename = emu.reg(Register::A0) as usize;
             let flags = emu.reg(Register::A1);
             let _mode = emu.reg(Register::A2);
+
+            assert!(flags == 0, "Currently we only handle 0 RDONLY");
 
             // Determine the length of the filename
             let mut fnlen = 0;
@@ -97,11 +185,11 @@ fn handle_syscall(emu: &mut Emulator) -> Result<(), VmExit> {
 
                 // Get access to the file, unwrap here is safe because there's no way the file is
                 // not a valid FD if we hot it from our own APIs
-                let file = emu.get_file(fd).unwrap();
+                let file = emu.files.get_file(fd).unwrap();
                 //print!("Allocated FD {}\n", fd);
 
                 // Mark that this file be backed by our fuzz input
-                *file = Some(File::FuzzInput);
+                *file = Some(File::FuzzInput { cursor: 0 });
 
                 // Return a new fd
                 emu.set_reg(Register::A0, fd as u64);
@@ -118,23 +206,80 @@ fn handle_syscall(emu: &mut Emulator) -> Result<(), VmExit> {
             let fd = emu.reg(Register::A0) as usize;
             let statbuf = emu.reg(Register::A1);
 
+            /// Stat structure from kernel stat64
+            #[repr(C)]
+            #[derive(Default, Debug)]
+            struct Stat {
+                st_dev: u64,
+                st_ino: u64,
+                st_mode: u32,
+                st_nlink: u32,
+                st_uid: u32,
+                st_gid: u32,
+                st_rdev: u64,
+                __pad1: u64,
+
+                st_size: i64,
+                st_blksize: i32,
+                __pad2: i32,
+
+                st_blocks: i64,
+
+                st_atime: u64,
+                st_atimensec: u64,
+                st_mtime: u64,
+                st_mtimensec: u64,
+                st_ctime: u64,
+                st_ctimensec: u64,
+
+                __glibc_reserved: [i32; 2],
+            }
+
             // Check if the FD is valid
-            let file = emu.get_file(fd);
+            let file = emu.files.get_file(fd);
             if file.is_none() || file.as_ref().unwrap().is_none() {
                 // FD was not valid, return out with an error
                 emu.set_reg(Register::A0, !0);
                 return Ok(());
             }
-            panic!("Fstat of {:?}\n", file);
+
+            if let Some(Some(File::FuzzInput { .. })) = file {
+                let mut stat = Stat::default();
+                stat.st_dev = 0x803;
+                stat.st_ino = 0x81889;
+                stat.st_mode = 0x81a4;
+                stat.st_nlink = 0x1;
+                stat.st_uid = 0x3e8;
+                stat.st_gid = 0x3e8;
+                stat.st_rdev = 0x0;
+                stat.st_size = emu.fuzz_input.len() as i64;
+                stat.st_blksize = 0x1000;
+                stat.st_blocks = (emu.fuzz_input.len() as i64 + 511) / 512;
+                stat.st_atime = 0x5f0fe246;
+                stat.st_mtime = 0x5f0fe244;
+                stat.st_ctime = 0x5f0fe244;
+
+                // Cast the stat structure to raw bytes
+                let stat = unsafe {
+                    core::slice::from_raw_parts(&stat as *const Stat as *const u8,
+                        core::mem::size_of_val(&stat))
+                };
+
+                // Write in the stat data
+                emu.memory.write_from(VirtAddr(statbuf as usize), stat)?;
+
+            } else {
+                // Error
+                emu.set_reg(Register::A0, !0);
+            }
 
             Ok(())
-
         }
         57 => {
             // close()
             let fd = emu.reg(Register::A0) as usize;
 
-            if let Some(file) = emu.get_file(fd) {
+            if let Some(file) = emu.files.get_file(fd) {
                 if file.is_some() {
                     // File was present and currently open, close it
 
@@ -180,7 +325,7 @@ struct Statistics {
 }
 
 fn worker(mut emu: Emulator, original: Arc<Emulator>, stats: Arc<Mutex<Statistics>>) {
-    const BATCH_SIZE: usize = 100;
+    const BATCH_SIZE: usize = 1;
     loop {
         let batch_start = rdtsc();
 
@@ -190,12 +335,14 @@ fn worker(mut emu: Emulator, original: Arc<Emulator>, stats: Arc<Mutex<Statistic
             // Reset emu to original state
             let it = rdtsc();
             emu.reset(&*original);
-            local_stats.reset_cycles += (rdtsc() - it);
+            local_stats.reset_cycles += rdtsc() - it;
 
             let vmexit = loop {
                 let it = rdtsc();
                 let vmexit = emu.run(&mut local_stats.inst_exec).expect_err("Failed to execute emulator");
-                local_stats.vm_cycles += (rdtsc() - it);
+                local_stats.vm_cycles += rdtsc() - it;
+
+                emu.fuzz_input.extend_from_slice(include_bytes!("../xauth"));
 
                 match vmexit {
                     VmExit::Syscall => {
@@ -210,7 +357,9 @@ fn worker(mut emu: Emulator, original: Arc<Emulator>, stats: Arc<Mutex<Statistic
                 }
             };
 
-            //print!("Vmexit {:#x} {:?}\n", emu.reg(Register::Pc), vmexit);
+            if vmexit != VmExit::Exit {
+                panic!("Vmexit {:#x} {:?}\n", emu.reg(Register::Pc), vmexit);
+            }
             local_stats.fuzz_cases += 1;
         }
 
@@ -222,7 +371,6 @@ fn worker(mut emu: Emulator, original: Arc<Emulator>, stats: Arc<Mutex<Statistic
         stats.reset_cycles += local_stats.reset_cycles;
         stats.vm_cycles += local_stats.vm_cycles;
 
-        //print!("Vm exit with {:#x?}\n", vmexit);
         let batch_end = rdtsc() - batch_start;
         stats.total_cycles += batch_end;
     }
@@ -295,7 +443,7 @@ fn main() {
     // Create a new stats structure
     let stats = Arc::new(Mutex::new(Statistics::default()));
 
-    for _ in 0..1 {
+    for _ in 0..8 {
         let new_emu= emu.fork();
         let stats = stats.clone();
         let parent = emu.clone();
@@ -308,7 +456,7 @@ fn main() {
     let start = Instant::now();
 
     // Save the time stamp of start of execution
-    let start_cycles = rdtsc();
+    let _start_cycles = rdtsc();
 
     let mut last_cases = 0;
     let mut last_inst = 0;

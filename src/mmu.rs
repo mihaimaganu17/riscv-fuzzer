@@ -133,7 +133,10 @@ impl Mmu {
 
     /// Apply permissions to a region of memory
     pub fn set_permissions(&mut self, addr: VirtAddr, size: usize,
-                           perm: Perm) -> Option<()> {
+                           mut perm: Perm) -> Option<()> {
+        if perm.0 & PERM_RAW != 0 {
+            perm.0 |= PERM_READ;
+        }
         // Apply permissions
         self.permissions.get_mut(addr.0..addr.0.checked_add(size)?)?
             .iter_mut().for_each(|x| *x = perm);
@@ -194,7 +197,7 @@ impl Mmu {
 
         Ok(())
     }
-    
+
     /// Return an immutable slice to memory at `addr` for `size` bytes that
     /// has been validated to match all `exp_perms`
     pub fn peek(&self, addr: VirtAddr, size: usize,
@@ -207,14 +210,21 @@ impl Mmu {
         // Check permissions
         for (idx, &perm) in perms.iter().enumerate() {
             if (perm.0 & exp_perms.0) != exp_perms.0 {
-                return Err(VmExit::ReadFault(VirtAddr(addr.0 + idx)));
+                if exp_perms.0 == PERM_READ && (perm.0 & PERM_RAW) != 0 {
+                    // If we were attempting a normal read, and the readable memory was unreadable
+                    // but had the RAW bit set, report it as an uninitialized memory access rather
+                    // than a read access
+                    return Err(VmExit::UninitFault(VirtAddr(addr.0 + idx)));
+                } else {
+                    return Err(VmExit::ReadFault(VirtAddr(addr.0 + idx)));
+                }
             }
         }
 
         // Return a slice to the memory
         Ok(&self.memory[addr.0..addr.0 + size])
     }
-   
+
     /// Read the memory at `addr` into `buf`
     /// This function checks to see if all bits in `exp_perms` are set in the
     /// permission bytes. If this is zero, we ignore permissions entirely.
@@ -228,7 +238,14 @@ impl Mmu {
         // Check permissions
         for (idx, &perm) in perms.iter().enumerate() {
             if (perm.0 & exp_perms.0) != exp_perms.0 {
-                return Err(VmExit::ReadFault(VirtAddr(addr.0 + idx)));
+                if exp_perms.0 == PERM_READ && (perm.0 & PERM_RAW) != 0 {
+                    // If we were attempting a normal read, and the readable memory was unreadable
+                    // but had the RAW bit set, report it as an uninitialized memory access rather
+                    // than a read access
+                    return Err(VmExit::UninitFault(VirtAddr(addr.0 + idx)));
+                } else {
+                    return Err(VmExit::ReadFault(VirtAddr(addr.0 + idx)));
+                }
             }
         }
 
