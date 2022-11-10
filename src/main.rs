@@ -1,10 +1,12 @@
 pub mod primitive;
 pub mod mmu;
 pub mod emulator;
+pub mod jitcache;
 
 use emulator::{Register, Emulator, VmExit, File};
 use mmu::{VirtAddr, PERM_WRITE, PERM_EXEC, PERM_READ, Perm, Section};
 use std::sync::{Arc, Mutex};
+use jitcache::JitCache;
 
 /// If true, the guest writes to stdout and std err will be printed to our own stdout and stderr
 const VERBOSE_GUEST_PRINTS: bool = false;
@@ -56,7 +58,9 @@ fn handle_syscall(emu: &mut Emulator) -> Result<(), VmExit> {
                     // Write to stdout and stderr
 
                     // Get access to the underlying bytes to write
-                    let bytes = emu.memory.peek(VirtAddr(buf as usize), len as usize, Perm(PERM_READ))?;
+                    let bytes = emu
+                        .memory
+                        .peek(VirtAddr(buf as usize), len as usize, Perm(PERM_READ))?;
 
                     if VERBOSE_GUEST_PRINTS {
                         if let Ok(st) = core::str::from_utf8(bytes) {
@@ -377,8 +381,11 @@ fn worker(mut emu: Emulator, original: Arc<Emulator>, stats: Arc<Mutex<Statistic
 }
 
 fn main() {
-    // Make an emulator with 1 Meg of memory
-    let mut emu = Emulator::new(32 * 1024 * 1024);
+    // Create a JIT Cache
+    let jit_cache = Arc::new(JitCache::new(VirtAddr(1024 * 1024)));
+
+    // Create an emulator using the JIT
+    let mut emu = Emulator::new((32 * 1024 * 1024)).enable_jit(jit_cache);
 
     emu.memory.load("./objdump", &[
         Section {
@@ -443,7 +450,7 @@ fn main() {
     // Create a new stats structure
     let stats = Arc::new(Mutex::new(Statistics::default()));
 
-    for _ in 0..8 {
+    for _ in 0..1 {
         let new_emu= emu.fork();
         let stats = stats.clone();
         let parent = emu.clone();
