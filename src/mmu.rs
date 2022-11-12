@@ -270,7 +270,7 @@ impl Mmu {
     }
 
     /// Read a type `T` at `vaddr` expecting `perms`
-    pub fn read_perms<T: Primitive>(&mut self, addr: VirtAddr,
+    pub fn read_perms<T: Primitive>(&self, addr: VirtAddr,
                                     exp_perms: Perm) -> Result<T, VmExit> {
         let mut tmp = [0u8; 16];
         self.read_into_perms(addr, &mut tmp[..core::mem::size_of::<T>()],
@@ -279,7 +279,7 @@ impl Mmu {
     }
 
     /// Read a type `T` at `vaddr`
-    pub fn read<T: Primitive>(&mut self, addr: VirtAddr) -> Result<T, VmExit> {
+    pub fn read<T: Primitive>(&self, addr: VirtAddr) -> Result<T, VmExit> {
         self.read_perms(addr, Perm(PERM_READ))
     }
 

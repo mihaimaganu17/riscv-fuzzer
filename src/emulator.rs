@@ -480,7 +480,7 @@ impl Emulator {
     }
 
     /// Generates the assembly string for `pc` during JIT
-    pub fn generate_jit(&mut self, pc: VirtAddr, num_blocks: usize) -> Result<String, VmExit> {
+    pub fn generate_jit(&self, pc: VirtAddr, num_blocks: usize) -> Result<String, VmExit> {
         let mut asm = "[bits 64]\n".to_string();
 
         let mut pc = pc.0 as u64;
@@ -493,6 +493,9 @@ impl Emulator {
 
             // Extract the opcode from the instruction
             let opcode = inst & 0b1111111;
+
+            // Add a lable to this instruction
+            asm += &format!("inst pc {:#x}:\n", pc);
 
             // Produce the assembly statement to load RISC-V `reg` into `x86` reg
             macro_rules! load_reg {
