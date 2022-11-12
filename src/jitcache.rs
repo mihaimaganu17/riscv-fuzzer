@@ -39,6 +39,9 @@ pub struct JitCache {
 }
 
 // JIT calling convention
+// rax - Scratch
+// rbx - Scratch
+// rcx - Scratch
 // r8 - Pointer to the base of mmu memory
 // r9 - Pointer to the base of mmu permissions
 // r10 - Pointer to the base of mmu.dirty
@@ -46,7 +49,11 @@ pub struct JitCache {
 // r12 - Dirty index for the dirty list
 // r13 - Pointer to emu.registers
 // r14 - Pointer to the base of jitcache.blocks
-
+//
+// JIT -return code (in rax)
+// 1 - Brach resolution issue, rbx = PC that was not present
+// 2 - ECALL instruction
+// 3 - EBREAK instruction
 
 impl JitCache {
     /// Allocates a new `JitCache` which is capable of handling up to `max_guest_addr` in
@@ -62,6 +69,11 @@ impl JitCache {
         }
     }
 
+    /// Returns the maximum number of blocks this `JitCache` can translate
+    pub fn num_blocks(&self) -> usize {
+        self.blocks.len()
+    }
+
     /// Look up the JIT address for a given guest address
     pub fn lookup(&self, addr: VirtAddr) -> Option<usize> {
         // Make sure the address is aligned
@@ -74,6 +86,11 @@ impl JitCache {
         } else {
             Some(addr)
         }
+    }
+
+    /// Get the address of the JIT block translation table
+    pub fn translation_table(&self) -> usize {
+        self.blocks.as_ptr() as usize
     }
 
     /// Update the JIT for a given virtual address, returns the JIT address of the new (or
@@ -96,7 +113,7 @@ impl JitCache {
 
         // Number of remaining bytes in the JIT storage
         let jit_remain = jit.0.len() - jit_inuse;
-        assert!(code.len() > jit_remain, "Out of space in JIT");
+        assert!(jit_remain > code.len(), "Out of space in JIT");
 
         // Copy the new code into the JIT
         jit.0[jit_inuse..jit_inuse + code.len()].copy_from_slice(code);
@@ -110,6 +127,8 @@ impl JitCache {
 
         // Update the in use for the JIT
         jit.1 += code.len();
+
+        print!("Added jti for {:#x} -> {:#x}\n", addr.0, new_addr);
 
         new_addr
     }

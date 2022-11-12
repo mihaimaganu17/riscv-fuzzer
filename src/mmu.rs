@@ -140,6 +140,17 @@ impl Mmu {
         Some(())
     }
 
+    /// Get the tuple of (memory ptr, permissions pointer, dirty pointre, dirty bitmap pointer)
+    #[inline]
+    pub fn jit_addrs(&self) -> (usize, usize, usize, usize) {
+        (
+            self.memory.as_ptr() as usize,
+            self.permissions.as_ptr() as usize,
+            self.dirty.as_ptr() as usize,
+            self.dirty_bitmap.as_ptr() as usize,
+        )
+    }
+
     /// Write the bytes from `buf` into `addr`
     pub fn write_from(&mut self, addr: VirtAddr, buf: &[u8])
             -> Result<(), VmExit> {
@@ -169,9 +180,9 @@ impl Mmu {
         let block_end   = (addr.0 + buf.len()) / DIRTY_BLOCK_SIZE;
         for block in block_start..=block_end {
             // Determine the bitmap position of the dirty block
-            let idx = block_start / 64;
-            let bit = block_start % 64;
-            
+            let idx = block / 64;
+            let bit = block % 64;
+
             // Check if the block is not dirty
             if self.dirty_bitmap[idx] & (1 << bit) == 0 {
                 // Block is not dirty, add it to the dirty list
@@ -266,12 +277,12 @@ impl Mmu {
             exp_perms)?;
         Ok(unsafe { core::ptr::read_unaligned(tmp.as_ptr() as *const T) })
     }
-    
+
     /// Read a type `T` at `vaddr`
     pub fn read<T: Primitive>(&mut self, addr: VirtAddr) -> Result<T, VmExit> {
         self.read_perms(addr, Perm(PERM_READ))
     }
-    
+
     /// Write a `val` to `addr`
     pub fn write<T: Primitive>(&mut self, addr: VirtAddr,
                                val: T) -> Result<(), VmExit> {

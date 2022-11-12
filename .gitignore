@@ -1,3 +1,4 @@
 /target
 xauth
 *.swp
+.gdb_history

@@ -4,6 +4,8 @@ use crate::mmu::{Mmu, Perm, VirtAddr, PERM_EXEC};
 use crate::jitcache::JitCache;
 use std::sync::{Arc, Mutex};
 use std::fmt;
+use std::process::Command;
+use std::arch::asm;
 
 /// An R-type instruction
 #[derive(Debug)]
@@ -188,6 +190,9 @@ pub enum VmExit {
 
     /// The VM exited cleanly as requested by the VM
     Exit,
+
+    /// A branch occured to a location outside of the JIT cache region
+    JitOob,
 
     /// An integer overflow occured during a syscall due to bad supplied
     /// arguments by the program
@@ -399,29 +404,89 @@ impl Emulator {
 
     /// Run the VM using the JIT
     pub fn run_jit(&mut self, instrs_execed: &mut u64) -> Result<(), VmExit> {
+        let (memory, perms, dirty, dirty_bitmap) = self.memory.jit_addrs();
+        // Get the translation table
+        let trans_table = self.jit_cache.as_ref().unwrap().translation_table();
+
         loop {
             // Get the current PC
             let pc = self.reg(Register::Pc);
-            let jit = self.jit_cache.as_ref().unwrap().lookup(VirtAddr(pc as usize));
+            let (jit_addr, num_blocks) = {
+                let jit_cache = self.jit_cache.as_ref().unwrap();
+                (
+                    jit_cache.lookup(VirtAddr(pc as usize)),
+                    jit_cache.num_blocks(),
+                )
+            };
 
-            if jit.is_none() {
+            let jit_addr = if let Some(jit_addr) = jit_addr {
+                jit_addr
+            } else {
                 // Go through each instruction in the block, and accumulate an assembly string
                 // which we will assemble using `nasm` on the command line
-                self.generate_jit(VirtAddr(pc as usize))?;
-                panic!("JIT missed cache, need to JIT {:#x}\n", pc);
-            }
+                let asm = self.generate_jit(VirtAddr(pc as usize), num_blocks)?;
 
-            // Execute the JIT
+                // Write out the assembly
+                let asmfn = std::env::temp_dir().join("tmp.asm");
+                std::fs::write(&asmfn, &asm).expect("Failed to write out asm");
+
+                // Invoke NASM to generate the binary
+                let res = Command::new("nasm")
+                    .args(&["-f", "bin", "-o", "test", asmfn.to_str().unwrap()]).status()
+                    .expect("Failed to run `nasm`, is it in you path?");
+                assert!(res.success(), "nasm returned an error");
+
+                // Read the binary
+                let tmp = std::fs::read("test")
+                    .expect("Failed to read nasm output");
+
+                // Update the JIT tables
+                self.jit_cache.as_ref().unwrap().add_mapping(VirtAddr(pc as usize), &tmp)
+            };
+
+
+            unsafe {
+                // Invoke the JIT
+                let exit_code: u64;
+                let status: u64;
+                asm!(r#"
+                    call {entry}
+                "#,
+                // We discard these outputs(rax, rbx, rcx)
+                entry = in(reg) jit_addr,
+                out("rax") exit_code,
+                out("rdx") status,
+                out("rcx") _,
+                in("r8") memory,
+                in("r9") perms,
+                in("r10") dirty,
+                in("r11") dirty_bitmap,
+                in("r12") 0u64,
+                in("r13") self.registers.as_ptr(),
+                in("r14") trans_table,
+                );
+
+                match exit_code {
+                    1 => {
+                        // Branch decode request, update PC and re-enter
+                        self.set_reg(Register::Pc, status);
+                    }
+                    _ => unreachable!(),
+                }
+
+                print!("JIT exited with {} {:#x}\n", exit_code, status);
+            }
         }
     }
 
     /// Generates the assembly string for `pc` during JIT
-    pub fn generate_jit(&mut self, pc: VirtAddr) -> Result<String, VmExit> {
-        let mut asm = String::new();
+    pub fn generate_jit(&mut self, pc: VirtAddr, num_blocks: usize) -> Result<String, VmExit> {
+        let mut asm = "[bits 64]\n".to_string();
+
+        let mut pc = pc.0 as u64;
 
         'next_inst: loop {
             // Get the current program counter
-            let pc = self.reg(Register::Pc);
             let inst: u32 = self
                 .memory
                 .read_perms(VirtAddr(pc as usize), Perm(PERM_EXEC))?;
@@ -429,13 +494,37 @@ impl Emulator {
             // Extract the opcode from the instruction
             let opcode = inst & 0b1111111;
 
+            // Produce the assembly statement to load RISC-V `reg` into `x86` reg
+            macro_rules! load_reg {
+                ($x86reg:expr, $reg:expr) => {
+                    if $reg == Register::Zero {
+                        format!("xor {x86reg}, {x86reg}\n", x86reg = $x86reg)
+                    } else {
+                        format!("mov {x86reg}, [r13 + {reg} * 8]\n",
+                                x86reg = $x86reg, reg = $reg as usize)
+                    }
+                }
+            }
+
+            // Produce the assembly statement to store RISC-V `reg` into `x86` reg
+            macro_rules! store_reg {
+                ($reg:expr, $x86reg:expr) => {
+                    if $reg == Register::Zero {
+                        // If we are writing to the Zero register, do not emit any code
+                        String::new()
+                    } else {
+                        format!("mov [r13 + {reg} * 8], {x86reg}\n",
+                                x86reg = $x86reg,
+                                reg = $reg as usize)
+                    }
+                }
+            }
+
             match opcode {
                 0b0110111 => {
                     // LUI
                     let inst = Utype::from(inst);
-                    asm += &format!(r#"
-                        mov [r13 + {rd}*8], {imm:#x}
-                    "#, rd = inst.rd as usize, imm = inst.imm);
+                    asm += &store_reg!(inst.rd, inst.imm);
                 }
                 0b0010111 => {
                     // AUIPC
@@ -444,8 +533,8 @@ impl Emulator {
                     let val = (inst.imm as i64 as u64).wrapping_add(pc);
                     asm += &format!(r#"
                         mov rax, {imm:#x}
-                        mov [r13 + {rd}*8], rax
-                    "#, rd = inst.rd as usize, imm = val);
+                        {store_rd_from_rax}
+                    "#, store_rd_from_rax = store_reg!(inst.rd, "rax"), imm = val);
                 }
                 0b1101111 => {
                     // JAL
@@ -457,10 +546,32 @@ impl Emulator {
                     // Compute the branch target
                     let target = pc.wrapping_add(inst.imm as i64 as u64);
 
-                    asm += 
+                    if (target / 4) >= num_blocks as u64 {
+                        // Branch target is out of bounds
+                        return Err(VmExit::JitOob);
+                    }
 
-                    self.set_reg(Register::Pc, pc.wrapping_add(inst.imm as i64 as u64));
-                    continue 'next_inst;
+                    asm += &format!(r#"
+                        mov rax, {ret}
+                        {store_rd_from_rax}
+
+                        mov rax, [r14 + {target}]
+                        test rax, rax
+                        jz .jit_resolve
+
+                        jmp rax
+
+                        .jit_resolve:
+                        mov rax, 1
+                        mov rdx, {target_pc}
+                        ret
+                    "#, store_rd_from_rax = store_reg!(inst.rd, "rax"),
+                        ret = ret,
+                        target = (target / 4) * 8,
+                        target_pc = target,
+                    );
+
+                    break 'next_inst;
                 }
                 0b1100111 => {
                     // We know it's an Itype
@@ -469,10 +580,38 @@ impl Emulator {
                     match inst.funct3 {
                         0b000 => {
                             // JALR
-                            let target = self.reg(inst.rs1).wrapping_add(inst.imm as i64 as u64);
-                            self.set_reg(inst.rd, pc.wrapping_add(4));
-                            self.set_reg(Register::Pc, target);
-                            continue 'next_inst;
+
+                            // Compute the return address
+                            let ret = pc.wrapping_add(4);
+
+                            asm += &format!(r#"
+                                mov rax, {ret}
+                                {store_rd_from_rax}
+
+                                {load_rax_from_rs1}
+                                add rax, {imm}
+
+                                shr rax, 2
+                                cmp rax, {num_blocks}
+                                jae .jit_resolve
+
+                                mov rax, [r14 + rax*8]
+                                test rax, rax
+                                jz .jit_resolve
+
+                                jmp rax
+
+                                .jit_resolve:
+                                {load_rdx_from_rs1}
+                                add rdx, {imm}
+                                mov rax, 1
+                                ret
+                            "#, store_rd_from_rax = store_reg!(inst.rd, "rax"),
+                                load_rax_from_rs1 = load_reg!("rax", inst.rs1),
+                                load_rdx_from_rs1 = load_reg!("rdx", inst.rs1),
+                                imm = inst.imm, ret = ret, num_blocks = num_blocks);
+
+                            break 'next_inst;
                         }
                         _ => unimplemented!("Unexpected 0b1100111"),
                     }
@@ -481,51 +620,51 @@ impl Emulator {
                     // We know it's an Btype
                     let inst = Btype::from(inst);
 
-                    let rs1 = self.reg(inst.rs1);
-                    let rs2 = self.reg(inst.rs2);
-
                     match inst.funct3 {
-                        0b000 => {
-                            // BEQ
-                            if rs1 == rs2 {
-                                self.set_reg(Register::Pc, pc.wrapping_add(inst.imm as i64 as u64));
-                                continue 'next_inst;
+                        0b000 | 0b001 | 0b100 | 0b101 | 0b110 | 0b111 => {
+                            let cond = match inst.funct3 {
+                                0b000 => /* BEQ */ "jne",
+                                0b001 => /* BNE */ "je",
+                                0b100 => /* BLT */ "jnlt",
+                                0b101 => /* BGE */ "jnge",
+                                0b110 => /* BLTU */ "jnb",
+                                0b111 => /* BGEU */ "jnae",
+                                _ => unreachable!(),
+                            };
+
+                            let target = pc.wrapping_add(inst.imm as i64 as u64);
+
+                            if (target / 4) >= num_blocks as u64 {
+                                // Branch target is out of bounds
+                                return Err(VmExit::JitOob);
                             }
-                        }
-                        0b001 => {
-                            // BNE
-                            if rs1 != rs2 {
-                                self.set_reg(Register::Pc, pc.wrapping_add(inst.imm as i64 as u64));
-                                continue 'next_inst;
-                            }
-                        }
-                        0b100 => {
-                            // BLT
-                            if (rs1 as i64) < (rs2 as i64) {
-                                self.set_reg(Register::Pc, pc.wrapping_add(inst.imm as i64 as u64));
-                                continue 'next_inst;
-                            }
-                        }
-                        0b101 => {
-                            // BGE
-                            if (rs1 as i64) >= (rs2 as i64) {
-                                self.set_reg(Register::Pc, pc.wrapping_add(inst.imm as i64 as u64));
-                                continue 'next_inst;
-                            }
-                        }
-                        0b110 => {
-                            // BLTU
-                            if (rs1 as u64) < (rs2 as u64) {
-                                self.set_reg(Register::Pc, pc.wrapping_add(inst.imm as i64 as u64));
-                                continue 'next_inst;
-                            }
-                        }
-                        0b111 => {
-                            // BGEU
-                            if (rs1 as u64) >= (rs2 as u64) {
-                                self.set_reg(Register::Pc, pc.wrapping_add(inst.imm as i64 as u64));
-                                continue 'next_inst;
-                            }
+
+                            asm += &format!(r#"
+                                {load_rax_from_rs1}
+                                {load_rdx_from_rs2}
+
+                                cmp rax, rdx
+                                {cond} .fallthrough
+
+                                mov rax, [r14 + {target}]
+                                test rax, rax
+                                jz .jit_resolve
+
+                                jmp rax
+
+                                .jit_resolve:
+                                mov rax, 1
+                                mov rdx, {target_pc}
+                                ret
+
+                                .fallthrough:
+                            "#, cond = cond,
+                                load_rax_from_rs1 = load_reg!("rax", inst.rs1),
+                                load_rdx_from_rs2 = load_reg!("rdx", inst.rs2),
+                                target_pc = target,
+                                target = (target / 4) * 8,
+                                );
+
                         }
                         _ => unimplemented!("Unexpected 0b1100011"),
                     }
@@ -534,127 +673,135 @@ impl Emulator {
                     // We know it's an Itype
                     let inst = Itype::from(inst);
 
-                    // Compute the address
-                    let addr =
-                        VirtAddr(self.reg(inst.rs1).wrapping_add(inst.imm as i64 as u64) as usize);
+                    let (loadtyp, loadsz) = match inst.funct3 {
+                        0b000 => /* LB */ ("mov", "byte"),
+                        0b001 => /* LH */ ("mov", "word"),
+                        0b010 => /* LW */ ("mov", "dword"),
+                        0b011 => /* LD */ ("mov", "qword"),
+                        0b100 => /* LBU */ ("movzx", "byte"),
+                        0b101 => /* LHU */ ("movzx", "word"),
+                        0b110 => /* LWU */ ("movzx", "dword"),
+                        _ => unreachable!(),
+                    };
 
-                    match inst.funct3 {
-                        0b000 => {
-                            // LB
-                            let mut tmp = [0u8; 1];
-                            self.memory.read_into(addr, &mut tmp)?;
-                            self.set_reg(inst.rd, i8::from_le_bytes(tmp) as i64 as u64);
-                        }
-                        0b001 => {
-                            // LH
-                            let mut tmp = [0u8; 2];
-                            self.memory.read_into(addr, &mut tmp)?;
-                            self.set_reg(inst.rd, i16::from_le_bytes(tmp) as i64 as u64);
-                        }
-                        0b010 => {
-                            // LW
-                            let mut tmp = [0u8; 4];
-                            self.memory.read_into(addr, &mut tmp)?;
-                            self.set_reg(inst.rd, i32::from_le_bytes(tmp) as i64 as u64);
-                        }
-                        0b011 => {
-                            // LD
-                            let mut tmp = [0u8; 8];
-                            self.memory.read_into(addr, &mut tmp)?;
-                            self.set_reg(inst.rd, i64::from_le_bytes(tmp) as i64 as u64);
-                        }
-                        0b100 => {
-                            // LBU
-                            let mut tmp = [0u8; 1];
-                            self.memory.read_into(addr, &mut tmp)?;
-                            self.set_reg(inst.rd, u8::from_le_bytes(tmp) as u64);
-                        }
-                        0b101 => {
-                            // LHU
-                            let mut tmp = [0u8; 2];
-                            self.memory.read_into(addr, &mut tmp)?;
-                            self.set_reg(inst.rd, u16::from_le_bytes(tmp) as u64);
-                        }
-                        0b110 => {
-                            // LWU
-                            let mut tmp = [0u8; 4];
-                            self.memory.read_into(addr, &mut tmp)?;
-                            self.set_reg(inst.rd, u32::from_le_bytes(tmp) as u64);
-                        }
-                        _ => unimplemented!("Unexpected 0b0000011"),
-                    }
+                    asm += &format!(r#"
+                        {load_rax_from_rs1}
+                        add rax, {imm}
+
+                        {loadtyp} rax, {loadsz} [r8 + rax]
+                        {store_rax_into_rd}
+                    "#, load_rax_from_rs1 = load_reg!("rax", inst.rs1),
+                        imm = inst.imm,
+                        loadtyp = loadtyp,
+                        loadsz = loadsz,
+                        store_rax_into_rd = store_reg!(inst.rd, "rax"),
+                    );
                 }
                 0b0100011 => {
                     // We know it's an Stype
                     let inst = Stype::from(inst);
 
-                    // Compute the address
-                    let addr =
-                        VirtAddr(self.reg(inst.rs1).wrapping_add(inst.imm as i64 as u64) as usize);
+                    let (storetyp, storesz) = match inst.funct3 {
+                        0b000 => /* SB */ ("mov", "byte"),
+                        0b001 => /* SH */ ("mov", "word"),
+                        0b010 => /* SW */ ("mov", "dword"),
+                        0b011 => /* SD */ ("mov", "qword"),
+                        _ => unreachable!(),
+                    };
 
-                    match inst.funct3 {
-                        0b000 => {
-                            // SB
-                            let val = self.reg(inst.rs2) as u8;
-                            self.memory.write(addr, val)?;
-                        }
-                        0b001 => {
-                            // SH
-                            let val = self.reg(inst.rs2) as u16;
-                            self.memory.write(addr, val)?;
-                        }
-                        0b010 => {
-                            // SW
-                            let val = self.reg(inst.rs2) as u32;
-                            self.memory.write(addr, val)?;
-                        }
-                        0b011 => {
-                            // SD
-                            let val = self.reg(inst.rs2) as u64;
-                            self.memory.write(addr, val)?;
-                        }
-                        _ => unimplemented!("Unexpected 0b0100011"),
-                    }
+                    asm += &format!(r#"
+                        {load_rax_from_rs1}
+                        {load_rdx_from_rs2}
+                        {storetyp} {storesz} [r8 + rax + {imm}], rdx
+                    "#,
+                        load_rax_from_rs1 = load_reg!("rax", inst.rs1),
+                        load_rdx_from_rs2 = load_reg!("rax", inst.rs2),
+                        imm = inst.imm,
+                        storetyp = storetyp,
+                        storesz = storesz,
+                    );
                 }
                 0b0010011 => {
                     // We know it's an Itype
                     let inst = Itype::from(inst);
 
-                    let rs1 = self.reg(inst.rs1);
-                    let imm = inst.imm as i64 as u64;
-
                     match inst.funct3 {
                         0b000 => {
                             // ADDI
-                            self.set_reg(inst.rd, rs1.wrapping_add(imm));
+                            asm += &format!(r#"
+                                {load_rax_from_rs1}
+                                add rax, {imm}
+                                {store_rax_into_rd}
+                                "#,
+                                load_rax_from_rs1 = load_reg!("rax", inst.rs1),
+                                imm = inst.imm,
+                                store_rax_into_rd = store_reg!(inst.rd, "rax"),
+                                );
                         }
                         0b010 => {
                             // SLTI
-                            if (rs1 as i64) < (imm as i64) {
-                                self.set_reg(inst.rd, 1);
-                            } else {
-                                self.set_reg(inst.rd, 0);
-                            }
+                            asm += &format!(r#"
+                                {load_rax_from_rs1}
+                                xor edx, edx
+                                cmp rax, {imm}
+                                setl bl
+                                {store_rdx_into_rd}
+                                "#,
+                                load_rax_from_rs1 = load_reg!("rax", inst.rs1),
+                                imm = inst.imm,
+                                store_rdx_into_rd = store_reg!(inst.rd, "rdx"),
+                                );
                         }
                         0b011 => {
                             // SLTIU
-                            if (rs1 as u64) < (imm as u64) {
-                                self.set_reg(inst.rd, 1);
-                            } else {
-                                self.set_reg(inst.rd, 0);
-                            }
+                            asm += &format!(r#"
+                                {load_rax_from_rs1}
+                                ; This zero extends the entire rdx register
+                                xor edx, edx
+                                cmp rax, {imm}
+                                setb bl
+                                {store_rdx_into_rd}
+                                "#,
+                                load_rax_from_rs1 = load_reg!("rax", inst.rs1),
+                                imm = inst.imm,
+                                store_rdx_into_rd = store_reg!(inst.rd, "rdx"),
+                                );
                         }
                         0b100 => {
                             // XORI
-                            self.set_reg(inst.rd, rs1 ^ imm);
+                            asm += &format!(r#"
+                                {load_rax_from_rs1}
+                                xor rax, {imm}
+                                {store_rax_into_rd}
+                                "#,
+                                load_rax_from_rs1 = load_reg!("rax", inst.rs1),
+                                imm = inst.imm,
+                                store_rax_into_rd = store_reg!(inst.rd, "rax"),
+                                );
                         }
                         0b110 => {
                             // ORI
-                            self.set_reg(inst.rd, rs1 | imm);
+                            asm += &format!(r#"
+                                {load_rax_from_rs1}
+                                or rax, {imm}
+                                {store_rax_into_rd}
+                                "#,
+                                load_rax_from_rs1 = load_reg!("rax", inst.rs1),
+                                imm = inst.imm,
+                                store_rax_into_rd = store_reg!(inst.rd, "rax"),
+                                );
                         }
                         0b111 => {
                             // ANDI
-                            self.set_reg(inst.rd, rs1 & imm);
+                            asm += &format!(r#"
+                                {load_rax_from_rs1}
+                                and rax, {imm}
+                                {store_rax_into_rd}
+                                "#,
+                                load_rax_from_rs1 = load_reg!("rax", inst.rs1),
+                                imm = inst.imm,
+                                store_rax_into_rd = store_reg!(inst.rd, "rax"),
+                                );
                         }
                         0b001 => {
                             let mode = (inst.imm >> 6) & 0b111111;
@@ -662,8 +809,15 @@ impl Emulator {
                             match mode {
                                 0b000000 => {
                                     // SLLI
-                                    let shamt = inst.imm & 0b111111;
-                                    self.set_reg(inst.rd, rs1 << shamt);
+                                    asm += &format!(r#"
+                                        {load_rax_from_rs1}
+                                        shl rax, {imm}
+                                        {store_rax_into_rd}
+                                        "#,
+                                        load_rax_from_rs1 = load_reg!("rax", inst.rs1),
+                                        imm = inst.imm,
+                                        store_rax_into_rd = store_reg!(inst.rd, "rax"),
+                                    );
                                 }
                                 _ => unreachable!(),
                             }
@@ -674,13 +828,27 @@ impl Emulator {
                             match mode {
                                 0b000000 => {
                                     // SRLI
-                                    let shamt = inst.imm & 0b111111;
-                                    self.set_reg(inst.rd, rs1 >> shamt);
+                                    asm += &format!(r#"
+                                        {load_rax_from_rs1}
+                                        shr rax, {imm}
+                                        {store_rax_into_rd}
+                                        "#,
+                                        load_rax_from_rs1 = load_reg!("rax", inst.rs1),
+                                        imm = inst.imm,
+                                        store_rax_into_rd = store_reg!(inst.rd, "rax"),
+                                    );
                                 }
                                 0b010000 => {
                                     // SRAI
-                                    let shamt = inst.imm & 0b111111;
-                                    self.set_reg(inst.rd, ((rs1 as i64) >> shamt) as u64);
+                                    asm += &format!(r#"
+                                        {load_rax_from_rs1}
+                                        sra rax, {imm}
+                                        {store_rax_into_rd}
+                                        "#,
+                                        load_rax_from_rs1 = load_reg!("rax", inst.rs1),
+                                        imm = inst.imm,
+                                        store_rax_into_rd = store_reg!(inst.rd, "rax"),
+                                    );
                                 }
                                 _ => unreachable!(),
                             }
@@ -692,60 +860,140 @@ impl Emulator {
                     // We know it's an Rtype
                     let inst = Rtype::from(inst);
 
-                    let rs1 = self.reg(inst.rs1);
-                    let rs2 = self.reg(inst.rs2);
-
                     match (inst.funct7, inst.funct3) {
                         (0b0000000, 0b000) => {
                             // ADD
-                            self.set_reg(inst.rd, rs1.wrapping_add(rs2));
+                            asm += &format!(r#"
+                                {load_rax_from_rs1}
+                                {load_rdx_from_rs2}
+                                add rax, rdx
+                                {store_rax_into_rd}
+                                "#,
+                                load_rax_from_rs1 = load_reg!("rax", inst.rs1),
+                                load_rdx_from_rs2 = load_reg!("rdx", inst.rs2),
+                                store_rax_into_rd = store_reg!(inst.rd, "rax"),
+                            );
                         }
                         (0b0100000, 0b000) => {
                             // SUB
-                            self.set_reg(inst.rd, rs1.wrapping_sub(rs2));
+                            asm += &format!(r#"
+                                {load_rax_from_rs1}
+                                {load_rdx_from_rs2}
+                                sub rax, rdx
+                                {store_rax_into_rd}
+                                "#,
+                                load_rax_from_rs1 = load_reg!("rax", inst.rs1),
+                                load_rdx_from_rs2 = load_reg!("rdx", inst.rs2),
+                                store_rax_into_rd = store_reg!(inst.rd, "rax"),
+                            );
                         }
                         (0b0000000, 0b001) => {
                             // SLL
-                            let shamt = rs2 & 0b111111;
-                            self.set_reg(inst.rd, rs1 << shamt);
+                            asm += &format!(r#"
+                                {load_rax_from_rs1}
+                                {load_rcx_from_rs2}
+                                shl rax, cl
+                                {store_rax_into_rd}
+                                "#,
+                                load_rax_from_rs1 = load_reg!("rax", inst.rs1),
+                                load_rcx_from_rs2 = load_reg!("rcx", inst.rs2),
+                                store_rax_into_rd = store_reg!(inst.rd, "rax"),
+                            );
                         }
                         (0b0000000, 0b010) => {
                             // SLT
-                            if (rs1 as i64) < (rs2 as i64) {
-                                self.set_reg(inst.rd, 1);
-                            } else {
-                                self.set_reg(inst.rd, 0);
-                            }
+                            asm += &format!(r#"
+                                {load_rax_from_rs1}
+                                {load_rdx_from_rs2}
+                                xor ecx, ecx
+                                cmp rax, rdx
+                                setl cl
+                                {store_rcx_into_rd}
+                                "#,
+                                load_rax_from_rs1 = load_reg!("rax", inst.rs1),
+                                load_rdx_from_rs2 = load_reg!("rdx", inst.rs2),
+                                store_rcx_into_rd = store_reg!(inst.rd, "rcx"),
+                            );
                         }
                         (0b0000000, 0b011) => {
                             // SLTU
-                            if (rs1 as u64) < (rs2 as u64) {
-                                self.set_reg(inst.rd, 1);
-                            } else {
-                                self.set_reg(inst.rd, 0);
-                            }
+                            asm += &format!(r#"
+                                {load_rax_from_rs1}
+                                {load_rdx_from_rs2}
+                                xor ecx, ecx
+                                cmp rax, rdx
+                                setb cl
+                                {store_rcx_into_rd}
+                                "#,
+                                load_rax_from_rs1 = load_reg!("rax", inst.rs1),
+                                load_rdx_from_rs2 = load_reg!("rdx", inst.rs2),
+                                store_rcx_into_rd = store_reg!(inst.rd, "rcx"),
+                            );
                         }
                         (0b0000000, 0b100) => {
                             // XOR
-                            self.set_reg(inst.rd, rs1 ^ rs2);
+                            asm += &format!(r#"
+                                {load_rax_from_rs1}
+                                {load_rdx_from_rs2}
+                                xor rax, rdx
+                                {store_rax_into_rd}
+                                "#,
+                                load_rax_from_rs1 = load_reg!("rax", inst.rs1),
+                                load_rdx_from_rs2 = load_reg!("rdx", inst.rs2),
+                                store_rax_into_rd = store_reg!(inst.rd, "rax"),
+                            );
                         }
                         (0b0000000, 0b101) => {
                             // SRL
-                            let shamt = rs2 & 0b111111;
-                            self.set_reg(inst.rd, rs1 >> shamt);
+                            asm += &format!(r#"
+                                {load_rax_from_rs1}
+                                {load_rcx_from_rs2}
+                                shr rax, cl
+                                {store_rax_into_rd}
+                                "#,
+                                load_rax_from_rs1 = load_reg!("rax", inst.rs1),
+                                load_rcx_from_rs2 = load_reg!("rcx", inst.rs2),
+                                store_rax_into_rd = store_reg!(inst.rd, "rax"),
+                            );
                         }
                         (0b0100000, 0b101) => {
                             // SRA
-                            let shamt = rs2 & 0b111111;
-                            self.set_reg(inst.rd, ((rs1 as i64) >> shamt) as u64);
+                            asm += &format!(r#"
+                                {load_rax_from_rs1}
+                                {load_rcx_from_rs2}
+                                sar rax, cl
+                                {store_rax_into_rd}
+                                "#,
+                                load_rax_from_rs1 = load_reg!("rax", inst.rs1),
+                                load_rcx_from_rs2 = load_reg!("rcx", inst.rs2),
+                                store_rax_into_rd = store_reg!(inst.rd, "rax"),
+                            );
                         }
                         (0b0000000, 0b110) => {
                             // OR
-                            self.set_reg(inst.rd, rs1 | rs2);
+                            asm += &format!(r#"
+                                {load_rax_from_rs1}
+                                {load_rdx_from_rs2}
+                                or rax, rdx
+                                {store_rax_into_rd}
+                                "#,
+                                load_rax_from_rs1 = load_reg!("rax", inst.rs1),
+                                load_rdx_from_rs2 = load_reg!("rdx", inst.rs2),
+                                store_rax_into_rd = store_reg!(inst.rd, "rax"),
+                            );
                         }
                         (0b0000000, 0b111) => {
                             // AND
-                            self.set_reg(inst.rd, rs1 & rs2);
+                            asm += &format!(r#"
+                                {load_rax_from_rs1}
+                                {load_rdx_from_rs2}
+                                and rax, rdx
+                                {store_rax_into_rd}
+                                "#,
+                                load_rax_from_rs1 = load_reg!("rax", inst.rs1),
+                                load_rdx_from_rs2 = load_reg!("rdx", inst.rs2),
+                                store_rax_into_rd = store_reg!(inst.rd, "rax"),
+                            );
                         }
                         _ => unreachable!(),
                     }
@@ -754,32 +1002,78 @@ impl Emulator {
                     // We know it's an Rtype
                     let inst = Rtype::from(inst);
 
-                    let rs1 = self.reg(inst.rs1) as u32;
-                    let rs2 = self.reg(inst.rs2) as u32;
-
                     match (inst.funct7, inst.funct3) {
                         (0b0000000, 0b000) => {
                             // ADDW
-                            self.set_reg(inst.rd, rs1.wrapping_add(rs2) as i32 as i64 as u64);
+                            asm += &format!(r#"
+                                {load_rax_from_rs1}
+                                {load_rdx_from_rs2}
+                                add eax, edx
+                                ; Sign extend
+                                movsx rax, eax
+                                {store_rax_into_rd}
+                                "#,
+                                load_rax_from_rs1 = load_reg!("rax", inst.rs1),
+                                load_rdx_from_rs2 = load_reg!("rdx", inst.rs2),
+                                store_rax_into_rd = store_reg!(inst.rd, "rax"),
+                            );
                         }
                         (0b0100000, 0b000) => {
                             // SUBW
-                            self.set_reg(inst.rd, rs1.wrapping_sub(rs2) as i32 as i64 as u64);
+                            asm += &format!(r#"
+                                {load_rax_from_rs1}
+                                {load_rdx_from_rs2}
+                                sub eax, edx
+                                ; Sign extend
+                                movsx rax, eax
+                                {store_rax_into_rd}
+                                "#,
+                                load_rax_from_rs1 = load_reg!("rax", inst.rs1),
+                                load_rdx_from_rs2 = load_reg!("rdx", inst.rs2),
+                                store_rax_into_rd = store_reg!(inst.rd, "rax"),
+                            );
                         }
                         (0b0000000, 0b001) => {
                             // SLLW
-                            let shamt = rs2 & 0b11111;
-                            self.set_reg(inst.rd, (rs1 << shamt) as i32 as i64 as u64);
+                            asm += &format!(r#"
+                                {load_rax_from_rs1}
+                                {load_rcx_from_rs2}
+                                shl eax, cl
+                                movsx rax, eax
+                                {store_rax_into_rd}
+                                "#,
+                                load_rax_from_rs1 = load_reg!("rax", inst.rs1),
+                                load_rcx_from_rs2 = load_reg!("rcx", inst.rs2),
+                                store_rax_into_rd = store_reg!(inst.rd, "rax"),
+                            );
                         }
                         (0b0000000, 0b101) => {
                             // SRLW
-                            let shamt = rs2 & 0b11111;
-                            self.set_reg(inst.rd, (rs1 >> shamt) as i32 as i64 as u64);
+                            asm += &format!(r#"
+                                {load_rax_from_rs1}
+                                {load_rcx_from_rs2}
+                                shr eax, cl
+                                movsx rax, eax
+                                {store_rax_into_rd}
+                                "#,
+                                load_rax_from_rs1 = load_reg!("rax", inst.rs1),
+                                load_rcx_from_rs2 = load_reg!("rcx", inst.rs2),
+                                store_rax_into_rd = store_reg!(inst.rd, "rax"),
+                            );
                         }
                         (0b0100000, 0b101) => {
                             // SRAW
-                            let shamt = rs2 & 0b11111;
-                            self.set_reg(inst.rd, ((rs1 as i32) >> shamt) as i64 as u64);
+                            asm += &format!(r#"
+                                {load_rax_from_rs1}
+                                {load_rcx_from_rs2}
+                                sar eax, cl
+                                movsx rax, eax
+                                {store_rax_into_rd}
+                                "#,
+                                load_rax_from_rs1 = load_reg!("rax", inst.rs1),
+                                load_rcx_from_rs2 = load_reg!("rcx", inst.rs2),
+                                store_rax_into_rd = store_reg!(inst.rd, "rax"),
+                            );
                         }
                         _ => unreachable!(),
                     }
@@ -797,10 +1091,17 @@ impl Emulator {
                 0b1110011 => {
                     if inst == 0b00000000000000000000000001110011 {
                         // ECALL
+                        asm += r#"
+                            mov rax, 2
+                            ret
+                        "#;
                         return Err(VmExit::Syscall);
                     } else if inst == 0b00000000000100000000000001110011 {
                         // EBREAK
-                        panic!("EBREAK");
+                        asm += r#"
+                            mov rax, 3
+                            ret
+                        "#;
                     } else {
                         unreachable!();
                     }
@@ -809,13 +1110,19 @@ impl Emulator {
                     // We know it's an Itype
                     let inst = Itype::from(inst);
 
-                    let rs1 = self.reg(inst.rs1) as u32;
-                    let imm = inst.imm as u32;
-
                     match inst.funct3 {
                         0b000 => {
                             // ADDIW
-                            self.set_reg(inst.rd, rs1.wrapping_add(imm) as i32 as i64 as u64);
+                            asm += &format!(r#"
+                                {load_rax_from_rs1}
+                                add eax, {imm}
+                                movsx rax, eax
+                                {store_rax_into_rd}
+                                "#,
+                                load_rax_from_rs1 = load_reg!("rax", inst.rs1),
+                                store_rax_into_rd = store_reg!(inst.rd, "rax"),
+                                imm = inst.imm,
+                            );
                         }
                         0b001 => {
                             let mode = (inst.imm >> 5) & 0b1111111;
@@ -823,8 +1130,16 @@ impl Emulator {
                             match mode {
                                 0b0000000 => {
                                     // SLLIW
-                                    let shamt = inst.imm & 0b11111;
-                                    self.set_reg(inst.rd, (rs1 << shamt) as i32 as i64 as u64);
+                                    asm += &format!(r#"
+                                        {load_rax_from_rs1}
+                                        shl eax, {imm}
+                                        movsx rax, eax
+                                        {store_rax_into_rd}
+                                        "#,
+                                        load_rax_from_rs1 = load_reg!("rax", inst.rs1),
+                                        imm = inst.imm,
+                                        store_rax_into_rd = store_reg!(inst.rd, "rax"),
+                                    );
                                 }
                                 _ => unreachable!(),
                             }
@@ -835,13 +1150,29 @@ impl Emulator {
                             match mode {
                                 0b0000000 => {
                                     // SRLIW
-                                    let shamt = inst.imm & 0b11111;
-                                    self.set_reg(inst.rd, (rs1 >> shamt) as i32 as i64 as u64)
+                                    asm += &format!(r#"
+                                        {load_rax_from_rs1}
+                                        shr eax, {imm}
+                                        movsx rax, eax
+                                        {store_rax_into_rd}
+                                        "#,
+                                        load_rax_from_rs1 = load_reg!("rax", inst.rs1),
+                                        imm = inst.imm,
+                                        store_rax_into_rd = store_reg!(inst.rd, "rax"),
+                                    );
                                 }
                                 0b0100000 => {
                                     // SRAIW
-                                    let shamt = inst.imm & 0b11111;
-                                    self.set_reg(inst.rd, ((rs1 as i32) >> shamt) as i64 as u64);
+                                    asm += &format!(r#"
+                                        {load_rax_from_rs1}
+                                        sar eax, {imm}
+                                        movsx rax, eax
+                                        {store_rax_into_rd}
+                                        "#,
+                                        load_rax_from_rs1 = load_reg!("rax", inst.rs1),
+                                        imm = inst.imm,
+                                        store_rax_into_rd = store_reg!(inst.rd, "rax"),
+                                    );
                                 }
                                 _ => unreachable!(),
                             }
@@ -851,11 +1182,9 @@ impl Emulator {
                 }
                 _ => unimplemented!("Unhandled opcode {:#09b}\n", opcode),
             }
-
-            // Update PC to the next instruction
-            self.set_reg(Register::Pc, pc.wrapping_add(4));
+            pc += 4;
         }
-
+        Ok(asm)
     }
 
     /// Run the VM using the emulator
