@@ -428,6 +428,7 @@ impl Emulator {
 
                 // Write out the assembly
                 let asmfn = std::env::temp_dir().join("tmp.asm");
+                println!("asmfn {:?}", asmfn.display());
                 std::fs::write(&asmfn, &asm).expect("Failed to write out asm");
 
                 // Invoke NASM to generate the binary
@@ -466,6 +467,8 @@ impl Emulator {
                 in("r14") trans_table,
                 );
 
+                print!("JIT exited with {} {:#x}\n", exit_code, status);
+
                 match exit_code {
                     1 => {
                         // Branch decode request, update PC and re-enter
@@ -474,7 +477,6 @@ impl Emulator {
                     _ => unreachable!(),
                 }
 
-                print!("JIT exited with {} {:#x}\n", exit_code, status);
             }
         }
     }
@@ -495,7 +497,7 @@ impl Emulator {
             let opcode = inst & 0b1111111;
 
             // Add a lable to this instruction
-            asm += &format!("inst pc {:#x}:\n", pc);
+            asm += &format!("inst_pc_{:#x}:\n", pc);
 
             // Produce the assembly statement to load RISC-V `reg` into `x86` reg
             macro_rules! load_reg {
@@ -503,7 +505,7 @@ impl Emulator {
                     if $reg == Register::Zero {
                         format!("xor {x86reg}, {x86reg}\n", x86reg = $x86reg)
                     } else {
-                        format!("mov {x86reg}, [r13 + {reg} * 8]\n",
+                        format!("mov {x86reg}, qword [r13 + {reg} * 8]\n",
                                 x86reg = $x86reg, reg = $reg as usize)
                     }
                 }
@@ -516,7 +518,7 @@ impl Emulator {
                         // If we are writing to the Zero register, do not emit any code
                         String::new()
                     } else {
-                        format!("mov [r13 + {reg} * 8], {x86reg}\n",
+                        format!("mov qword [r13 + {reg} * 8], {x86reg}\n",
                                 x86reg = $x86reg,
                                 reg = $reg as usize)
                     }
@@ -628,7 +630,7 @@ impl Emulator {
                             let cond = match inst.funct3 {
                                 0b000 => /* BEQ */ "jne",
                                 0b001 => /* BNE */ "je",
-                                0b100 => /* BLT */ "jnlt",
+                                0b100 => /* BLT */ "jnl",
                                 0b101 => /* BGE */ "jnge",
                                 0b110 => /* BLTU */ "jnb",
                                 0b111 => /* BGEU */ "jnae",
@@ -677,9 +679,9 @@ impl Emulator {
                     let inst = Itype::from(inst);
 
                     let (loadtyp, loadsz) = match inst.funct3 {
-                        0b000 => /* LB */ ("mov", "byte"),
-                        0b001 => /* LH */ ("mov", "word"),
-                        0b010 => /* LW */ ("mov", "dword"),
+                        0b000 => /* LB */ ("movsx", "byte"),
+                        0b001 => /* LH */ ("movsx", "word"),
+                        0b010 => /* LW */ ("movsx", "dword"),
                         0b011 => /* LD */ ("mov", "qword"),
                         0b100 => /* LBU */ ("movzx", "byte"),
                         0b101 => /* LHU */ ("movzx", "word"),
@@ -689,9 +691,7 @@ impl Emulator {
 
                     asm += &format!(r#"
                         {load_rax_from_rs1}
-                        add rax, {imm}
-
-                        {loadtyp} rax, {loadsz} [r8 + rax]
+                        {loadtyp} rax, {loadsz} [r8 + rax + {imm}]
                         {store_rax_into_rd}
                     "#, load_rax_from_rs1 = load_reg!("rax", inst.rs1),
                         imm = inst.imm,
@@ -704,24 +704,25 @@ impl Emulator {
                     // We know it's an Stype
                     let inst = Stype::from(inst);
 
-                    let (storetyp, storesz) = match inst.funct3 {
-                        0b000 => /* SB */ ("mov", "byte"),
-                        0b001 => /* SH */ ("mov", "word"),
-                        0b010 => /* SW */ ("mov", "dword"),
-                        0b011 => /* SD */ ("mov", "qword"),
+                    let (storetyp, storesz, regtype) = match inst.funct3 {
+                        0b000 => /* SB */ ("mov", "byte", "dl"),
+                        0b001 => /* SH */ ("mov", "word", "dx"),
+                        0b010 => /* SW */ ("mov", "dword", "edx"),
+                        0b011 => /* SD */ ("mov", "qword", "rdx"),
                         _ => unreachable!(),
                     };
 
                     asm += &format!(r#"
                         {load_rax_from_rs1}
                         {load_rdx_from_rs2}
-                        {storetyp} {storesz} [r8 + rax + {imm}], rdx
+                        {storetyp} {storesz} [r8 + rax + {imm}], {regtype}
                     "#,
                         load_rax_from_rs1 = load_reg!("rax", inst.rs1),
-                        load_rdx_from_rs2 = load_reg!("rax", inst.rs2),
+                        load_rdx_from_rs2 = load_reg!("rdx", inst.rs2),
                         imm = inst.imm,
                         storetyp = storetyp,
                         storesz = storesz,
+                        regtype = regtype,
                     );
                 }
                 0b0010011 => {
@@ -812,13 +813,14 @@ impl Emulator {
                             match mode {
                                 0b000000 => {
                                     // SLLI
+                                    let shamt = inst.imm & 0b111111;
                                     asm += &format!(r#"
                                         {load_rax_from_rs1}
                                         shl rax, {imm}
                                         {store_rax_into_rd}
                                         "#,
                                         load_rax_from_rs1 = load_reg!("rax", inst.rs1),
-                                        imm = inst.imm,
+                                        imm = shamt,
                                         store_rax_into_rd = store_reg!(inst.rd, "rax"),
                                     );
                                 }
@@ -831,25 +833,27 @@ impl Emulator {
                             match mode {
                                 0b000000 => {
                                     // SRLI
+                                    let shamt = inst.imm & 0b111111;
                                     asm += &format!(r#"
                                         {load_rax_from_rs1}
                                         shr rax, {imm}
                                         {store_rax_into_rd}
                                         "#,
                                         load_rax_from_rs1 = load_reg!("rax", inst.rs1),
-                                        imm = inst.imm,
+                                        imm = shamt,
                                         store_rax_into_rd = store_reg!(inst.rd, "rax"),
                                     );
                                 }
                                 0b010000 => {
                                     // SRAI
+                                    let shamt = inst.imm & 0b111111;
                                     asm += &format!(r#"
                                         {load_rax_from_rs1}
-                                        sra rax, {imm}
+                                        sar rax, {imm}
                                         {store_rax_into_rd}
                                         "#,
                                         load_rax_from_rs1 = load_reg!("rax", inst.rs1),
-                                        imm = inst.imm,
+                                        imm = shamt,
                                         store_rax_into_rd = store_reg!(inst.rd, "rax"),
                                     );
                                 }
@@ -1098,7 +1102,6 @@ impl Emulator {
                             mov rax, 2
                             ret
                         "#;
-                        return Err(VmExit::Syscall);
                     } else if inst == 0b00000000000100000000000001110011 {
                         // EBREAK
                         asm += r#"
@@ -1133,6 +1136,7 @@ impl Emulator {
                             match mode {
                                 0b0000000 => {
                                     // SLLIW
+                                    let shamt = inst.imm & 0b11111;
                                     asm += &format!(r#"
                                         {load_rax_from_rs1}
                                         shl eax, {imm}
@@ -1140,7 +1144,7 @@ impl Emulator {
                                         {store_rax_into_rd}
                                         "#,
                                         load_rax_from_rs1 = load_reg!("rax", inst.rs1),
-                                        imm = inst.imm,
+                                        imm = shamt,
                                         store_rax_into_rd = store_reg!(inst.rd, "rax"),
                                     );
                                 }
@@ -1153,6 +1157,7 @@ impl Emulator {
                             match mode {
                                 0b0000000 => {
                                     // SRLIW
+                                    let shamt = inst.imm & 0b11111;
                                     asm += &format!(r#"
                                         {load_rax_from_rs1}
                                         shr eax, {imm}
@@ -1160,12 +1165,13 @@ impl Emulator {
                                         {store_rax_into_rd}
                                         "#,
                                         load_rax_from_rs1 = load_reg!("rax", inst.rs1),
-                                        imm = inst.imm,
+                                        imm = shamt,
                                         store_rax_into_rd = store_reg!(inst.rd, "rax"),
                                     );
                                 }
                                 0b0100000 => {
                                     // SRAIW
+                                    let shamt = inst.imm & 0b11111;
                                     asm += &format!(r#"
                                         {load_rax_from_rs1}
                                         sar eax, {imm}
@@ -1173,7 +1179,7 @@ impl Emulator {
                                         {store_rax_into_rd}
                                         "#,
                                         load_rax_from_rs1 = load_reg!("rax", inst.rs1),
-                                        imm = inst.imm,
+                                        imm = shamt,
                                         store_rax_into_rd = store_reg!(inst.rd, "rax"),
                                     );
                                 }
