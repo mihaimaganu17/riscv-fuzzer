@@ -11,6 +11,10 @@ use crate::primitive::Primitive;
 /// It seems the sweet spot is often 128-4096 bytes
 const DIRTY_BLOCK_SIZE: usize = 128;
 
+/// If `true` the logic for uninitialized memory tracking will be disabled and all memory will be
+/// marked as readable if it has the RAW bit set
+const DISABLE_UNINIT: bool = true;
+
 pub const PERM_READ:  u8 = 1 << 0;
 pub const PERM_WRITE: u8 = 1 << 1;
 pub const PERM_EXEC:  u8 = 1 << 2;
@@ -134,6 +138,13 @@ impl Mmu {
     /// Apply permissions to a region of memory
     pub fn set_permissions(&mut self, addr: VirtAddr, size: usize,
                            mut perm: Perm) -> Option<()> {
+        if DISABLE_UNINIT {
+            // If memory is marked a RAW, mark it as readable right away if we have uninit tracking
+            // disabled
+            if perm.0 & PERM_RAW != 0 {
+                perm.0 |= PERM_READ;
+            }
+        }
         // Apply permissions
         self.permissions.get_mut(addr.0..addr.0.checked_add(size)?)?
             .iter_mut().for_each(|x| *x = perm);

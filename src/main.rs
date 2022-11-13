@@ -19,6 +19,8 @@ fn handle_syscall(emu: &mut Emulator) -> Result<(), VmExit> {
     // Get the syscall number
     let num = emu.reg(Register::A7);
 
+    print!("Syscall {}\n", num);
+
     match num {
         214 => {
             let req_base = emu.reg(Register::A0);

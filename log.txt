@@ -1,0 +1,2223 @@
+Food baby
+asmfn "/tmp/tmp.asm"
+Added jti for 0x10554 -> 0x7f2ebe964000
+JIT exited with 1 0xa5bc8
+asmfn "/tmp/tmp.asm"
+Added jti for 0xa5bc8 -> 0x7f2ebe964078
+JIT exited with 1 0xa5bd0
+asmfn "/tmp/tmp.asm"
+Added jti for 0xa5bd0 -> 0x7f2ebe964124
+JIT exited with 1 0x10574
+asmfn "/tmp/tmp.asm"
+Added jti for 0x10574 -> 0x7f2ebe96419f
+JIT exited with 1 0xbdff8
+asmfn "/tmp/tmp.asm"
+Added jti for 0xbdff8 -> 0x7f2ebe964214
+JIT exited with 1 0xc055c
+asmfn "/tmp/tmp.asm"
+Added jti for 0xc055c -> 0x7f2ebe96425f
+JIT exited with 1 0xc05c4
+asmfn "/tmp/tmp.asm"
+Added jti for 0xc05c4 -> 0x7f2ebe96446a
+JIT exited with 1 0xc0568
+asmfn "/tmp/tmp.asm"
+Added jti for 0xc0568 -> 0x7f2ebe9644a6
+JIT exited with 1 0xc05a4
+asmfn "/tmp/tmp.asm"
+Added jti for 0xc05a4 -> 0x7f2ebe96466c
+JIT exited with 1 0x1058c
+asmfn "/tmp/tmp.asm"
+Added jti for 0x1058c -> 0x7f2ebe9646f7
+JIT exited with 1 0xa4b3c
+asmfn "/tmp/tmp.asm"
+Added jti for 0xa4b3c -> 0x7f2ebe964719
+JIT exited with 1 0xa4b88
+asmfn "/tmp/tmp.asm"
+Added jti for 0xa4b88 -> 0x7f2ebe96483e
+JIT exited with 1 0x1053c
+asmfn "/tmp/tmp.asm"
+Added jti for 0x1053c -> 0x7f2ebe964921
+JIT exited with 1 0x10550
+asmfn "/tmp/tmp.asm"
+Added jti for 0x10550 -> 0x7f2ebe964985
+JIT exited with 1 0xa4bbc
+asmfn "/tmp/tmp.asm"
+Added jti for 0xa4bbc -> 0x7f2ebe9649b7
+JIT exited with 1 0xa4bac
+asmfn "/tmp/tmp.asm"
+Added jti for 0xa4bac -> 0x7f2ebe964a54
+JIT exited with 1 0x105e8
+asmfn "/tmp/tmp.asm"
+Added jti for 0x105e8 -> 0x7f2ebe964aae
+JIT exited with 1 0x10604
+asmfn "/tmp/tmp.asm"
+Added jti for 0x10604 -> 0x7f2ebe964b39
+JIT exited with 1 0x10590
+asmfn "/tmp/tmp.asm"
+Added jti for 0x10590 -> 0x7f2ebe964b6b
+JIT exited with 1 0x10118
+asmfn "/tmp/tmp.asm"
+Added jti for 0x10118 -> 0x7f2ebe964bb0
+JIT exited with 1 0xa4fbc
+asmfn "/tmp/tmp.asm"
+Added jti for 0xa4fbc -> 0x7f2ebe964ce4
+JIT exited with 1 0xa833c
+asmfn "/tmp/tmp.asm"
+Added jti for 0xa833c -> 0x7f2ebe964d8c
+JIT exited with 1 0xa8354
+asmfn "/tmp/tmp.asm"
+Added jti for 0xa8354 -> 0x7f2ebe964e4a
+JIT exited with 1 0xa4fe4
+asmfn "/tmp/tmp.asm"
+Added jti for 0xa4fe4 -> 0x7f2ebe964e8b
+JIT exited with 1 0xa500c
+asmfn "/tmp/tmp.asm"
+Added jti for 0xa500c -> 0x7f2ebe964f2b
+JIT exited with 1 0xa5018
+asmfn "/tmp/tmp.asm"
+Added jti for 0xa5018 -> 0x7f2ebe964f67
+JIT exited with 1 0xa502c
+asmfn "/tmp/tmp.asm"
+Added jti for 0xa502c -> 0x7f2ebe964fd0
+JIT exited with 1 0xa4fec
+asmfn "/tmp/tmp.asm"
+Added jti for 0xa4fec -> 0x7f2ebe96501e
+JIT exited with 1 0x10168
+asmfn "/tmp/tmp.asm"
+Added jti for 0x10168 -> 0x7f2ebe965091
+JIT exited with 1 0x10174
+asmfn "/tmp/tmp.asm"
+Added jti for 0x10174 -> 0x7f2ebe9650cf
+JIT exited with 1 0x9fbd8
+asmfn "/tmp/tmp.asm"
+Added jti for 0x9fbd8 -> 0x7f2ebe965123
+JIT exited with 1 0x9fbec
+asmfn "/tmp/tmp.asm"
+Added jti for 0x9fbec -> 0x7f2ebe965141
+JIT exited with 1 0x9fcc4
+asmfn "/tmp/tmp.asm"
+Added jti for 0x9fcc4 -> 0x7f2ebe96529d
+JIT exited with 1 0xa52a0
+asmfn "/tmp/tmp.asm"
+Added jti for 0xa52a0 -> 0x7f2ebe9652f2
+JIT exited with 1 0xa52b8
+asmfn "/tmp/tmp.asm"
+Added jti for 0xa52b8 -> 0x7f2ebe96532c
+JIT exited with 1 0xa5390
+asmfn "/tmp/tmp.asm"
+Added jti for 0xa5390 -> 0x7f2ebe96547e
+JIT exited with 1 0xa6128
+asmfn "/tmp/tmp.asm"
+Added jti for 0xa6128 -> 0x7f2ebe96550c
+JIT exited with 1 0xa53a8
+asmfn "/tmp/tmp.asm"
+Added jti for 0xa53a8 -> 0x7f2ebe96553e
+JIT exited with 1 0xa57a8
+asmfn "/tmp/tmp.asm"
+Added jti for 0xa57a8 -> 0x7f2ebe9656ad
+JIT exited with 1 0xa5310
+asmfn "/tmp/tmp.asm"
+Added jti for 0xa5310 -> 0x7f2ebe96570c
+JIT exited with 1 0xa5650
+asmfn "/tmp/tmp.asm"
+Added jti for 0xa5650 -> 0x7f2ebe96582f
+JIT exited with 1 0xa5414
+asmfn "/tmp/tmp.asm"
+Added jti for 0xa5414 -> 0x7f2ebe96588e
+JIT exited with 1 0xa563c
+asmfn "/tmp/tmp.asm"
+Added jti for 0xa563c -> 0x7f2ebe965d89
+JIT exited with 1 0xa5490
+asmfn "/tmp/tmp.asm"
+Added jti for 0xa5490 -> 0x7f2ebe965db7
+JIT exited with 1 0xa555c
+asmfn "/tmp/tmp.asm"
+Added jti for 0xa555c -> 0x7f2ebe96609c
+JIT exited with 1 0xa5578
+asmfn "/tmp/tmp.asm"
+Added jti for 0xa5578 -> 0x7f2ebe966238
+JIT exited with 1 0xa595c
+asmfn "/tmp/tmp.asm"
+Added jti for 0xa595c -> 0x7f2ebe96633c
+JIT exited with 1 0xa55a4
+asmfn "/tmp/tmp.asm"
+Added jti for 0xa55a4 -> 0x7f2ebe96636c
+JIT exited with 1 0xa77f0
+asmfn "/tmp/tmp.asm"
+Added jti for 0xa77f0 -> 0x7f2ebe9663ac
+JIT exited with 1 0xc0858
+asmfn "/tmp/tmp.asm"
+Added jti for 0xc0858 -> 0x7f2ebe966428
+JIT exited with 2 0xc0874
+Syscall 214
+asmfn "/tmp/tmp.asm"
+Added jti for 0xc0878 -> 0x7f2ebe9665cb
+JIT exited with 2 0xc0890
+Syscall 214
+asmfn "/tmp/tmp.asm"
+Added jti for 0xc0894 -> 0x7f2ebe9666ee
+JIT exited with 1 0xa7810
+asmfn "/tmp/tmp.asm"
+Added jti for 0xa7810 -> 0x7f2ebe96679a
+JIT exited with 1 0xa55b0
+asmfn "/tmp/tmp.asm"
+Added jti for 0xa55b0 -> 0x7f2ebe966830
+JIT exited with 1 0xa5884
+asmfn "/tmp/tmp.asm"
+Added jti for 0xa5884 -> 0x7f2ebe966a4d
+JIT exited with 1 0xa59e8
+asmfn "/tmp/tmp.asm"
+Added jti for 0xa59e8 -> 0x7f2ebe966be7
+JIT exited with 1 0xa589c
+asmfn "/tmp/tmp.asm"
+Added jti for 0xa589c -> 0x7f2ebe966c18
+JIT exited with 1 0xa597c
+asmfn "/tmp/tmp.asm"
+Added jti for 0xa597c -> 0x7f2ebe966d3c
+JIT exited with 1 0xc0888
+asmfn "/tmp/tmp.asm"
+Added jti for 0xc0888 -> 0x7f2ebe966dcc
+JIT exited with 2 0xc0890
+Syscall 214
+JIT exited with 1 0xa5998
+asmfn "/tmp/tmp.asm"
+Added jti for 0xa5998 -> 0x7f2ebe966ea2
+JIT exited with 1 0xa58dc
+asmfn "/tmp/tmp.asm"
+Added jti for 0xa58dc -> 0x7f2ebe966efc
+JIT exited with 1 0xa55f4
+asmfn "/tmp/tmp.asm"
+Added jti for 0xa55f4 -> 0x7f2ebe9670ca
+JIT exited with 1 0xa57e4
+asmfn "/tmp/tmp.asm"
+Added jti for 0xa57e4 -> 0x7f2ebe967183
+JIT exited with 1 0xa5614
+asmfn "/tmp/tmp.asm"
+Added jti for 0xa5614 -> 0x7f2ebe967226
+JIT exited with 1 0xa612c
+asmfn "/tmp/tmp.asm"
+Added jti for 0xa612c -> 0x7f2ebe9672a8
+JIT exited with 1 0xa5634
+asmfn "/tmp/tmp.asm"
+Added jti for 0xa5634 -> 0x7f2ebe9672da
+JIT exited with 1 0xa535c
+asmfn "/tmp/tmp.asm"
+Added jti for 0xa535c -> 0x7f2ebe967304
+JIT exited with 1 0x9fcd0
+asmfn "/tmp/tmp.asm"
+Added jti for 0x9fcd0 -> 0x7f2ebe9673e9
+JIT exited with 1 0xa88a4
+asmfn "/tmp/tmp.asm"
+Added jti for 0xa88a4 -> 0x7f2ebe967448
+JIT exited with 1 0xa88a8
+asmfn "/tmp/tmp.asm"
+Added jti for 0xa88a8 -> 0x7f2ebe9674df
+JIT exited with 1 0x9fce0
+asmfn "/tmp/tmp.asm"
+Added jti for 0x9fce0 -> 0x7f2ebe96756a
+JIT exited with 1 0xa5304
+asmfn "/tmp/tmp.asm"
+Added jti for 0xa5304 -> 0x7f2ebe9675aa
+JIT exited with 1 0x9fcec
+asmfn "/tmp/tmp.asm"
+Added jti for 0x9fcec -> 0x7f2ebe9676ee
+JIT exited with 1 0xa5b68
+asmfn "/tmp/tmp.asm"
+Added jti for 0xa5b68 -> 0x7f2ebe96775d
+JIT exited with 1 0xa5b70
+asmfn "/tmp/tmp.asm"
+Added jti for 0xa5b70 -> 0x7f2ebe967822
+JIT exited with 1 0x9fd00
+asmfn "/tmp/tmp.asm"
+Added jti for 0x9fd00 -> 0x7f2ebe9678b6
+JIT exited with 1 0x9fd10
+asmfn "/tmp/tmp.asm"
+Added jti for 0x9fd10 -> 0x7f2ebe967903
+JIT exited with 1 0x9fd34
+asmfn "/tmp/tmp.asm"
+Added jti for 0x9fd34 -> 0x7f2ebe9679c0
+JIT exited with 1 0x9fc98
+asmfn "/tmp/tmp.asm"
+Added jti for 0x9fc98 -> 0x7f2ebe9679fd
+JIT exited with 1 0x10188
+asmfn "/tmp/tmp.asm"
+Added jti for 0x10188 -> 0x7f2ebe967ac0
+JIT exited with 1 0x9fbe8
+asmfn "/tmp/tmp.asm"
+Added jti for 0x9fbe8 -> 0x7f2ebe967af3
+JIT exited with 1 0xa1158
+asmfn "/tmp/tmp.asm"
+Added jti for 0xa1158 -> 0x7f2ebe967b11
+JIT exited with 1 0xa1198
+asmfn "/tmp/tmp.asm"
+Added jti for 0xa1198 -> 0x7f2ebe967c32
+JIT exited with 1 0xa11ec
+asmfn "/tmp/tmp.asm"
+Added jti for 0xa11ec -> 0x7f2ebe967ce3
+JIT exited with 1 0xa11f4
+asmfn "/tmp/tmp.asm"
+Added jti for 0xa11f4 -> 0x7f2ebe967d11
+JIT exited with 1 0xa1200
+asmfn "/tmp/tmp.asm"
+Added jti for 0xa1200 -> 0x7f2ebe967d51
+JIT exited with 1 0xa1214
+asmfn "/tmp/tmp.asm"
+Added jti for 0xa1214 -> 0x7f2ebe967dbf
+JIT exited with 1 0xa11a4
+asmfn "/tmp/tmp.asm"
+Added jti for 0xa11a4 -> 0x7f2ebe967ddd
+JIT exited with 1 0xa11b4
+asmfn "/tmp/tmp.asm"
+Added jti for 0xa11b4 -> 0x7f2ebe967e4a
+JIT exited with 1 0x10190
+asmfn "/tmp/tmp.asm"
+Added jti for 0x10190 -> 0x7f2ebe967f11
+JIT exited with 1 0x9f948
+asmfn "/tmp/tmp.asm"
+Added jti for 0x9f948 -> 0x7f2ebe967f68
+JIT exited with 1 0x9f970
+asmfn "/tmp/tmp.asm"
+Added jti for 0x9f970 -> 0x7f2ebe968029
+JIT exited with 1 0xafdd8
+asmfn "/tmp/tmp.asm"
+Added jti for 0xafdd8 -> 0x7f2ebe968056
+JIT exited with 2 0xc0890
+Syscall 214
+JIT exited with 1 0x9f978
+asmfn "/tmp/tmp.asm"
+Added jti for 0x9f978 -> 0x7f2ebe968090
+JIT exited with 1 0x101a4
+asmfn "/tmp/tmp.asm"
+Added jti for 0x101a4 -> 0x7f2ebe9680f7
+JIT exited with 1 0x3c344
+asmfn "/tmp/tmp.asm"
+Added jti for 0x3c344 -> 0x7f2ebe968127
+JIT exited with 1 0x101ac
+asmfn "/tmp/tmp.asm"
+Added jti for 0x101ac -> 0x7f2ebe968159
+JIT exited with 1 0x2f1a8
+asmfn "/tmp/tmp.asm"
+Added jti for 0x2f1a8 -> 0x7f2ebe968186
+JIT exited with 1 0x3f42c
+asmfn "/tmp/tmp.asm"
+Added jti for 0x3f42c -> 0x7f2ebe9681f1
+JIT exited with 1 0x3f458
+asmfn "/tmp/tmp.asm"
+Added jti for 0x3f458 -> 0x7f2ebe9682a5
+JIT exited with 1 0x3f368
+asmfn "/tmp/tmp.asm"
+Added jti for 0x3f368 -> 0x7f2ebe9682f8
+JIT exited with 1 0x3f39c
+asmfn "/tmp/tmp.asm"
+Added jti for 0x3f39c -> 0x7f2ebe968377
+JIT exited with 1 0x3f388
+asmfn "/tmp/tmp.asm"
+Added jti for 0x3f388 -> 0x7f2ebe9683f2
+JIT exited with 1 0x3f398
+asmfn "/tmp/tmp.asm"
+Added jti for 0x3f398 -> 0x7f2ebe96843b
+JIT exited with 1 0x3f3c4
+asmfn "/tmp/tmp.asm"
+Added jti for 0x3f3c4 -> 0x7f2ebe9684db
+JIT exited with 1 0x9d4d0
+asmfn "/tmp/tmp.asm"
+Added jti for 0x9d4d0 -> 0x7f2ebe968523
+JIT exited with 1 0x9d590
+asmfn "/tmp/tmp.asm"
+Added jti for 0x9d590 -> 0x7f2ebe96890b
+JIT exited with 1 0x9d610
+asmfn "/tmp/tmp.asm"
+Added jti for 0x9d610 -> 0x7f2ebe968a09
+JIT exited with 1 0x9d5a0
+asmfn "/tmp/tmp.asm"
+Added jti for 0x9d5a0 -> 0x7f2ebe968aa8
+JIT exited with 1 0x9d704
+asmfn "/tmp/tmp.asm"
+Added jti for 0x9d704 -> 0x7f2ebe968b08
+JIT exited with 1 0x3f3d4
+asmfn "/tmp/tmp.asm"
+Added jti for 0x3f3d4 -> 0x7f2ebe968c07
+JIT exited with 1 0x3f3b8
+asmfn "/tmp/tmp.asm"
+Added jti for 0x3f3b8 -> 0x7f2ebe968d1c
+JIT exited with 1 0x9d5dc
+asmfn "/tmp/tmp.asm"
+Added jti for 0x9d5dc -> 0x7f2ebe968da2
+JIT exited with 1 0x9d534
+asmfn "/tmp/tmp.asm"
+Added jti for 0x9d534 -> 0x7f2ebe968ea5
+JIT exited with 1 0x9d740
+asmfn "/tmp/tmp.asm"
+Added jti for 0x9d740 -> 0x7f2ebe969118
+JIT exited with 1 0x9d754
+asmfn "/tmp/tmp.asm"
+Added jti for 0x9d754 -> 0x7f2ebe96938e
+JIT exited with 1 0x9d8b8
+asmfn "/tmp/tmp.asm"
+Added jti for 0x9d8b8 -> 0x7f2ebe969595
+JIT exited with 1 0x9d8ec
+asmfn "/tmp/tmp.asm"
+Added jti for 0x9d8ec -> 0x7f2ebe9697b6
+JIT exited with 1 0x9d934
+asmfn "/tmp/tmp.asm"
+Added jti for 0x9d934 -> 0x7f2ebe9698b9
+JIT exited with 1 0x9d944
+asmfn "/tmp/tmp.asm"
+Added jti for 0x9d944 -> 0x7f2ebe969994
+JIT exited with 1 0x9d910
+asmfn "/tmp/tmp.asm"
+Added jti for 0x9d910 -> 0x7f2ebe969a1a
+JIT exited with 1 0x9d920
+asmfn "/tmp/tmp.asm"
+Added jti for 0x9d920 -> 0x7f2ebe969a63
+JIT exited with 1 0x9d708
+asmfn "/tmp/tmp.asm"
+Added jti for 0x9d708 -> 0x7f2ebe969bce
+JIT exited with 1 0x3f3ec
+asmfn "/tmp/tmp.asm"
+Added jti for 0x3f3ec -> 0x7f2ebe969cc2
+JIT exited with 1 0x3f464
+asmfn "/tmp/tmp.asm"
+Added jti for 0x3f464 -> 0x7f2ebe969d42
+JIT exited with 1 0x2f1c4
+asmfn "/tmp/tmp.asm"
+Added jti for 0x2f1c4 -> 0x7f2ebe969de3
+JIT exited with 1 0x101b4
+asmfn "/tmp/tmp.asm"
+Added jti for 0x101b4 -> 0x7f2ebe969e6d
+JIT exited with 1 0x9e604
+asmfn "/tmp/tmp.asm"
+Added jti for 0x9e604 -> 0x7f2ebe969eff
+JIT exited with 1 0x9dad8
+asmfn "/tmp/tmp.asm"
+Added jti for 0x9dad8 -> 0x7f2ebe969f28
+JIT exited with 1 0x9db80
+asmfn "/tmp/tmp.asm"
+Added jti for 0x9db80 -> 0x7f2ebe96a14c
+JIT exited with 1 0x9db40
+asmfn "/tmp/tmp.asm"
+Added jti for 0x9db40 -> 0x7f2ebe96a47d
+JIT exited with 1 0xa49b8
+asmfn "/tmp/tmp.asm"
+Added jti for 0xa49b8 -> 0x7f2ebe96a4ea
+JIT exited with 1 0xa49dc
+asmfn "/tmp/tmp.asm"
+Added jti for 0xa49dc -> 0x7f2ebe96a54d
+JIT exited with 1 0xb4894
+asmfn "/tmp/tmp.asm"
+Added jti for 0xb4894 -> 0x7f2ebe96a62f
+JIT exited with 1 0xa4a14
+asmfn "/tmp/tmp.asm"
+Added jti for 0xa4a14 -> 0x7f2ebe96a661
+JIT exited with 1 0xa4a3c
+asmfn "/tmp/tmp.asm"
+Added jti for 0xa4a3c -> 0x7f2ebe96a70e
+JIT exited with 1 0xa4a34
+asmfn "/tmp/tmp.asm"
+Added jti for 0xa4a34 -> 0x7f2ebe96a771
+JIT exited with 1 0xa4a7c
+asmfn "/tmp/tmp.asm"
+Added jti for 0xa4a7c -> 0x7f2ebe96a806
+JIT exited with 1 0xa4a44
+asmfn "/tmp/tmp.asm"
+Added jti for 0xa4a44 -> 0x7f2ebe96a896
+JIT exited with 1 0xb4898
+asmfn "/tmp/tmp.asm"
+Added jti for 0xb4898 -> 0x7f2ebe96a8c7
+JIT exited with 1 0xa4a4c
+asmfn "/tmp/tmp.asm"
+Added jti for 0xa4a4c -> 0x7f2ebe96a8f9
+JIT exited with 1 0xa49d0
+asmfn "/tmp/tmp.asm"
+Added jti for 0xa49d0 -> 0x7f2ebe96a9c9
+JIT exited with 1 0x9db58
+asmfn "/tmp/tmp.asm"
+Added jti for 0x9db58 -> 0x7f2ebe96aa14
+JIT exited with 1 0x9dc2c
+asmfn "/tmp/tmp.asm"
+Added jti for 0x9dc2c -> 0x7f2ebe96aae2
+JIT exited with 1 0x9db90
+asmfn "/tmp/tmp.asm"
+Added jti for 0x9db90 -> 0x7f2ebe96ad17
+JIT exited with 1 0x9dba0
+asmfn "/tmp/tmp.asm"
+Added jti for 0x9dba0 -> 0x7f2ebe96afd8
+JIT exited with 1 0x9dbac
+asmfn "/tmp/tmp.asm"
+Added jti for 0x9dbac -> 0x7f2ebe96b23a
+JIT exited with 1 0x9dda4
+asmfn "/tmp/tmp.asm"
+Added jti for 0x9dda4 -> 0x7f2ebe96b450
+JIT exited with 1 0x9de04
+asmfn "/tmp/tmp.asm"
+Added jti for 0x9de04 -> 0x7f2ebe96b635
+JIT exited with 1 0x9dc70
+asmfn "/tmp/tmp.asm"
+Added jti for 0x9dc70 -> 0x7f2ebe96b709
+JIT exited with 1 0x9dd18
+asmfn "/tmp/tmp.asm"
+Added jti for 0x9dd18 -> 0x7f2ebe96b7df
+JIT exited with 1 0x9dcbc
+asmfn "/tmp/tmp.asm"
+Added jti for 0x9dcbc -> 0x7f2ebe96b888
+JIT exited with 1 0x9df5c
+asmfn "/tmp/tmp.asm"
+Added jti for 0x9df5c -> 0x7f2ebe96ba27
+JIT exited with 1 0x9e160
+asmfn "/tmp/tmp.asm"
+Added jti for 0x9e160 -> 0x7f2ebe96bbf7
+JIT exited with 1 0x9df60
+asmfn "/tmp/tmp.asm"
+Added jti for 0x9df60 -> 0x7f2ebe96bc43
+JIT exited with 1 0x9ddc4
+asmfn "/tmp/tmp.asm"
+Added jti for 0x9ddc4 -> 0x7f2ebe96bdee
+JIT exited with 1 0x101d8
+asmfn "/tmp/tmp.asm"
+Added jti for 0x101d8 -> 0x7f2ebe96bf22
+JIT exited with 1 0x1032c
+asmfn "/tmp/tmp.asm"
+Added jti for 0x1032c -> 0x7f2ebe96bfe2
+JIT exited with 1 0x101c0
+asmfn "/tmp/tmp.asm"
+Added jti for 0x101c0 -> 0x7f2ebe96c080
+JIT exited with 1 0x9dc40
+asmfn "/tmp/tmp.asm"
+Added jti for 0x9dc40 -> 0x7f2ebe96c0e5
+JIT exited with 1 0x9dc1c
+asmfn "/tmp/tmp.asm"
+Added jti for 0x9dc1c -> 0x7f2ebe96c2b4
+JIT exited with 1 0x103f4
+asmfn "/tmp/tmp.asm"
+Added jti for 0x103f4 -> 0x7f2ebe96c2e0
+JIT exited with 1 0x14430
+asmfn "/tmp/tmp.asm"
+Added jti for 0x14430 -> 0x7f2ebe96c444
+JIT exited with 1 0x3d02c
+asmfn "/tmp/tmp.asm"
+Added jti for 0x3d02c -> 0x7f2ebe96c4b4
+JIT exited with 1 0x3cef0
+asmfn "/tmp/tmp.asm"
+Added jti for 0x3cef0 -> 0x7f2ebe96c533
+JIT exited with 1 0x3c4f0
+asmfn "/tmp/tmp.asm"
+Added jti for 0x3c4f0 -> 0x7f2ebe96c587
+JIT exited with 1 0xa2448
+asmfn "/tmp/tmp.asm"
+Added jti for 0xa2448 -> 0x7f2ebe96c5f3
+JIT exited with 1 0xa245c
+asmfn "/tmp/tmp.asm"
+Added jti for 0xa245c -> 0x7f2ebe96c645
+JIT exited with 1 0xa214c
+asmfn "/tmp/tmp.asm"
+Added jti for 0xa214c -> 0x7f2ebe96c764
+JIT exited with 1 0xa24a0
+asmfn "/tmp/tmp.asm"
+Added jti for 0xa24a0 -> 0x7f2ebe96c828
+JIT exited with 1 0xa24ac
+asmfn "/tmp/tmp.asm"
+Added jti for 0xa24ac -> 0x7f2ebe96c862
+JIT exited with 1 0xa2520
+asmfn "/tmp/tmp.asm"
+Added jti for 0xa2520 -> 0x7f2ebe96ca6c
+JIT exited with 1 0xa2528
+asmfn "/tmp/tmp.asm"
+Added jti for 0xa2528 -> 0x7f2ebe96ca99
+JIT exited with 1 0x3c50c
+asmfn "/tmp/tmp.asm"
+Added jti for 0x3c50c -> 0x7f2ebe96cb2a
+JIT exited with 1 0x3cf04
+asmfn "/tmp/tmp.asm"
+Added jti for 0x3cf04 -> 0x7f2ebe96cbf1
+JIT exited with 1 0x9f5bc
+asmfn "/tmp/tmp.asm"
+Added jti for 0x9f5bc -> 0x7f2ebe96cc7e
+JIT exited with 1 0x9f5d4
+asmfn "/tmp/tmp.asm"
+Added jti for 0x9f5d4 -> 0x7f2ebe96ccde
+JIT exited with 1 0xa56c4
+asmfn "/tmp/tmp.asm"
+Added jti for 0xa56c4 -> 0x7f2ebe96cd45
+JIT exited with 1 0xa5808
+asmfn "/tmp/tmp.asm"
+Added jti for 0xa5808 -> 0x7f2ebe96ce06
+JIT exited with 1 0xa53d4
+asmfn "/tmp/tmp.asm"
+Added jti for 0xa53d4 -> 0x7f2ebe96ce59
+JIT exited with 2 0xc0890
+Syscall 214
+JIT exited with 1 0x9f5e8
+asmfn "/tmp/tmp.asm"
+Added jti for 0x9f5e8 -> 0x7f2ebe96cef2
+JIT exited with 1 0x3cf20
+asmfn "/tmp/tmp.asm"
+Added jti for 0x3cf20 -> 0x7f2ebe96cfdd
+JIT exited with 1 0x3f6bc
+asmfn "/tmp/tmp.asm"
+Added jti for 0x3f6bc -> 0x7f2ebe96d0ad
+JIT exited with 1 0x3f6e4
+asmfn "/tmp/tmp.asm"
+Added jti for 0x3f6e4 -> 0x7f2ebe96d14c
+JIT exited with 1 0x3f744
+asmfn "/tmp/tmp.asm"
+Added jti for 0x3f744 -> 0x7f2ebe96d2f6
+JIT exited with 1 0x3cf54
+asmfn "/tmp/tmp.asm"
+Added jti for 0x3cf54 -> 0x7f2ebe96d3a6
+JIT exited with 1 0x3d04c
+asmfn "/tmp/tmp.asm"
+Added jti for 0x3d04c -> 0x7f2ebe96d4d0
+JIT exited with 1 0x3f49c
+asmfn "/tmp/tmp.asm"
+Added jti for 0x3f49c -> 0x7f2ebe96d53b
+JIT exited with 1 0x3f518
+asmfn "/tmp/tmp.asm"
+Added jti for 0x3f518 -> 0x7f2ebe96d5ef
+JIT exited with 1 0x3f524
+asmfn "/tmp/tmp.asm"
+Added jti for 0x3f524 -> 0x7f2ebe96d627
+JIT exited with 1 0x3f4cc
+asmfn "/tmp/tmp.asm"
+Added jti for 0x3f4cc -> 0x7f2ebe96d676
+JIT exited with 1 0x3d060
+asmfn "/tmp/tmp.asm"
+Added jti for 0x3d060 -> 0x7f2ebe96d73d
+JIT exited with 1 0x38934
+asmfn "/tmp/tmp.asm"
+Added jti for 0x38934 -> 0x7f2ebe96d7b8
+JIT exited with 1 0x389bc
+asmfn "/tmp/tmp.asm"
+Added jti for 0x389bc -> 0x7f2ebe96d922
+JIT exited with 1 0xa3364
+asmfn "/tmp/tmp.asm"
+Added jti for 0xa3364 -> 0x7f2ebe96d967
+JIT exited with 1 0xa324c
+asmfn "/tmp/tmp.asm"
+Added jti for 0xa324c -> 0x7f2ebe96d9b9
+JIT exited with 1 0xa31a0
+asmfn "/tmp/tmp.asm"
+Added jti for 0xa31a0 -> 0x7f2ebe96da70
+JIT exited with 1 0xa323c
+asmfn "/tmp/tmp.asm"
+Added jti for 0xa323c -> 0x7f2ebe96db64
+JIT exited with 1 0xa31d8
+asmfn "/tmp/tmp.asm"
+Added jti for 0xa31d8 -> 0x7f2ebe96dba3
+JIT exited with 1 0xa320c
+asmfn "/tmp/tmp.asm"
+Added jti for 0xa320c -> 0x7f2ebe96dd07
+JIT exited with 1 0xa327c
+asmfn "/tmp/tmp.asm"
+Added jti for 0xa327c -> 0x7f2ebe96dd54
+JIT exited with 1 0xa2ed4
+asmfn "/tmp/tmp.asm"
+Added jti for 0xa2ed4 -> 0x7f2ebe96ddb6
+JIT exited with 1 0xa2fac
+asmfn "/tmp/tmp.asm"
+Added jti for 0xa2fac -> 0x7f2ebe96df2b
+JIT exited with 1 0xa2db8
+asmfn "/tmp/tmp.asm"
+Added jti for 0xa2db8 -> 0x7f2ebe96dfed
+JIT exited with 1 0xa2e04
+asmfn "/tmp/tmp.asm"
+Added jti for 0xa2e04 -> 0x7f2ebe96e0f0
+JIT exited with 1 0xa2fdc
+asmfn "/tmp/tmp.asm"
+Added jti for 0xa2fdc -> 0x7f2ebe96e1e0
+JIT exited with 1 0xa2fec
+asmfn "/tmp/tmp.asm"
+Added jti for 0xa2fec -> 0x7f2ebe96e228
+JIT exited with 1 0xa2ffc
+asmfn "/tmp/tmp.asm"
+Added jti for 0xa2ffc -> 0x7f2ebe96e270
+JIT exited with 1 0xa2ef8
+asmfn "/tmp/tmp.asm"
+Added jti for 0xa2ef8 -> 0x7f2ebe96e2a9
+JIT exited with 1 0xa2f34
+asmfn "/tmp/tmp.asm"
+Added jti for 0xa2f34 -> 0x7f2ebe96e388
+JIT exited with 1 0xa2f2c
+asmfn "/tmp/tmp.asm"
+Added jti for 0xa2f2c -> 0x7f2ebe96e46c
+JIT exited with 1 0xa2f9c
+asmfn "/tmp/tmp.asm"
+Added jti for 0xa2f9c -> 0x7f2ebe96e584
+JIT exited with 1 0xa3008
+asmfn "/tmp/tmp.asm"
+Added jti for 0xa3008 -> 0x7f2ebe96e5e5
+JIT exited with 1 0xa3014
+asmfn "/tmp/tmp.asm"
+Added jti for 0xa3014 -> 0x7f2ebe96e620
+JIT exited with 1 0xa303c
+asmfn "/tmp/tmp.asm"
+Added jti for 0xa303c -> 0x7f2ebe96e6c7
+JIT exited with 1 0xa2efc
+asmfn "/tmp/tmp.asm"
+Added jti for 0xa2efc -> 0x7f2ebe96e703
+JIT exited with 1 0xa2f70
+asmfn "/tmp/tmp.asm"
+Added jti for 0xa2f70 -> 0x7f2ebe96e7ce
+JIT exited with 1 0xa328c
+asmfn "/tmp/tmp.asm"
+Added jti for 0xa328c -> 0x7f2ebe96e881
+JIT exited with 1 0xa6130
+asmfn "/tmp/tmp.asm"
+Added jti for 0xa6130 -> 0x7f2ebe96e90c
+JIT exited with 1 0xc07d0
+asmfn "/tmp/tmp.asm"
+Added jti for 0xc07d0 -> 0x7f2ebe96e9ac
+JIT exited with 2 0xc07e0
+Syscall 1024
+asmfn "/tmp/tmp.asm"
+Added jti for 0xc07e4 -> 0x7f2ebe96ea82
+JIT exited with 1 0xa615c
+asmfn "/tmp/tmp.asm"
+Added jti for 0xa615c -> 0x7f2ebe96eb18
+JIT exited with 1 0xa32a8
+asmfn "/tmp/tmp.asm"
+Added jti for 0xa32a8 -> 0x7f2ebe96ebae
+JIT exited with 1 0x389cc
+asmfn "/tmp/tmp.asm"
+Added jti for 0x389cc -> 0x7f2ebe96ed72
+JIT exited with 1 0x38878
+asmfn "/tmp/tmp.asm"
+Added jti for 0x38878 -> 0x7f2ebe96edd2
+JIT exited with 1 0x388ac
+asmfn "/tmp/tmp.asm"
+Added jti for 0x388ac -> 0x7f2ebe96eea6
+JIT exited with 1 0x388f0
+asmfn "/tmp/tmp.asm"
+Added jti for 0x388f0 -> 0x7f2ebe96efc7
+JIT exited with 1 0x388cc
+asmfn "/tmp/tmp.asm"
+Added jti for 0x388cc -> 0x7f2ebe96efff
+JIT exited with 1 0x389dc
+asmfn "/tmp/tmp.asm"
+Added jti for 0x389dc -> 0x7f2ebe96f09d
+JIT exited with 1 0x3d078
+asmfn "/tmp/tmp.asm"
+Added jti for 0x3d078 -> 0x7f2ebe96f129
+JIT exited with 1 0x1444c
+asmfn "/tmp/tmp.asm"
+Added jti for 0x1444c -> 0x7f2ebe96f1ce
+JIT exited with 1 0x3c248
+asmfn "/tmp/tmp.asm"
+Added jti for 0x3c248 -> 0x7f2ebe96f22f
+JIT exited with 1 0x3be08
+asmfn "/tmp/tmp.asm"
+Added jti for 0x3be08 -> 0x7f2ebe96f258
+JIT exited with 1 0x3be98
+asmfn "/tmp/tmp.asm"
+Added jti for 0x3be98 -> 0x7f2ebe96f3a2
+JIT exited with 1 0x3bfc8
+asmfn "/tmp/tmp.asm"
+Added jti for 0x3bfc8 -> 0x7f2ebe96f4b7
+JIT exited with 1 0x3bed8
+asmfn "/tmp/tmp.asm"
+Added jti for 0x3bed8 -> 0x7f2ebe96f4e3
+JIT exited with 1 0x38478
+asmfn "/tmp/tmp.asm"
+Added jti for 0x38478 -> 0x7f2ebe96f658
+JIT exited with 1 0x38598
+asmfn "/tmp/tmp.asm"
+Added jti for 0x38598 -> 0x7f2ebe96f953
+JIT exited with 1 0x38554
+asmfn "/tmp/tmp.asm"
+Added jti for 0x38554 -> 0x7f2ebe96fa9b
+JIT exited with 1 0x385d4
+asmfn "/tmp/tmp.asm"
+Added jti for 0x385d4 -> 0x7f2ebe96faff
+JIT exited with 1 0x38568
+asmfn "/tmp/tmp.asm"
+Added jti for 0x38568 -> 0x7f2ebe96fb6e
+JIT exited with 1 0x3857c
+asmfn "/tmp/tmp.asm"
+Added jti for 0x3857c -> 0x7f2ebe96fbff
+JIT exited with 1 0xa3b68
+asmfn "/tmp/tmp.asm"
+Added jti for 0xa3b68 -> 0x7f2ebe96fc2d
+JIT exited with 1 0xa3b80
+asmfn "/tmp/tmp.asm"
+Added jti for 0xa3b80 -> 0x7f2ebe96fc8b
+JIT exited with 1 0xa3c20
+asmfn "/tmp/tmp.asm"
+Added jti for 0xa3c20 -> 0x7f2ebe96fefa
+JIT exited with 1 0xa3d80
+asmfn "/tmp/tmp.asm"
+Added jti for 0xa3d80 -> 0x7f2ebe970071
+JIT exited with 1 0xa5038
+asmfn "/tmp/tmp.asm"
+Added jti for 0xa5038 -> 0x7f2ebe9700ab
+JIT exited with 1 0xa5098
+asmfn "/tmp/tmp.asm"
+Added jti for 0xa5098 -> 0x7f2ebe970247
+JIT exited with 1 0xa3ff8
+asmfn "/tmp/tmp.asm"
+Added jti for 0xa3ff8 -> 0x7f2ebe9702b4
+JIT exited with 1 0xc0678
+asmfn "/tmp/tmp.asm"
+Added jti for 0xc0678 -> 0x7f2ebe970348
+JIT exited with 2 0xc0694
+Syscall 80
+asmfn "/tmp/tmp.asm"
+Added jti for 0xc0698 -> 0x7f2ebe970430
+JIT exited with 1 0xc09bc
+asmfn "/tmp/tmp.asm"
+Added jti for 0xc09bc -> 0x7f2ebe9704a9
+JIT exited with 1 0xc06b0
+asmfn "/tmp/tmp.asm"
+Added jti for 0xc06b0 -> 0x7f2ebe97064d
+JIT exited with 1 0xa4020
+asmfn "/tmp/tmp.asm"
+Added jti for 0xa4020 -> 0x7f2ebe9706c9
+JIT exited with 1 0xa50ac
+asmfn "/tmp/tmp.asm"
+Added jti for 0xa50ac -> 0x7f2ebe97075f
+JIT exited with 1 0xa50e0
+asmfn "/tmp/tmp.asm"
+Added jti for 0xa50e0 -> 0x7f2ebe970851
+JIT exited with 1 0xa3d8c
+asmfn "/tmp/tmp.asm"
+Added jti for 0xa3d8c -> 0x7f2ebe9709d7
+JIT exited with 1 0xa3c2c
+asmfn "/tmp/tmp.asm"
+Added jti for 0xa3c2c -> 0x7f2ebe9709f5
+JIT exited with 1 0xa3c64
+asmfn "/tmp/tmp.asm"
+Added jti for 0xa3c64 -> 0x7f2ebe970b2c
+JIT exited with 1 0xa2af0
+asmfn "/tmp/tmp.asm"
+Added jti for 0xa2af0 -> 0x7f2ebe970b66
+JIT exited with 1 0xa2b3c
+asmfn "/tmp/tmp.asm"
+Added jti for 0xa2b3c -> 0x7f2ebe970c85
+JIT exited with 1 0xa28a4
+asmfn "/tmp/tmp.asm"
+Added jti for 0xa28a4 -> 0x7f2ebe970cd5
+JIT exited with 1 0xa2a74
+asmfn "/tmp/tmp.asm"
+Added jti for 0xa2a74 -> 0x7f2ebe970ee7
+JIT exited with 1 0xa29d4
+asmfn "/tmp/tmp.asm"
+Added jti for 0xa29d4 -> 0x7f2ebe970f42
+JIT exited with 1 0xa3c70
+asmfn "/tmp/tmp.asm"
+Added jti for 0xa3c70 -> 0x7f2ebe970fc7
+JIT exited with 1 0xa81b0
+asmfn "/tmp/tmp.asm"
+Added jti for 0xa81b0 -> 0x7f2ebe97105f
+JIT exited with 1 0xb88c0
+asmfn "/tmp/tmp.asm"
+Added jti for 0xb88c0 -> 0x7f2ebe9710c0
+JIT exited with 1 0xc078c
+asmfn "/tmp/tmp.asm"
+Added jti for 0xc078c -> 0x7f2ebe971160
+JIT exited with 2 0xc079c
+Syscall 62
+asmfn "/tmp/tmp.asm"
+Added jti for 0xc07a0 -> 0x7f2ebe971232
+JIT exited with 1 0xb88ec
+asmfn "/tmp/tmp.asm"
+Added jti for 0xb88ec -> 0x7f2ebe9712c6
+JIT exited with 1 0xa81c8
+asmfn "/tmp/tmp.asm"
+Added jti for 0xa81c8 -> 0x7f2ebe97135c
+JIT exited with 1 0xa3c88
+asmfn "/tmp/tmp.asm"
+Added jti for 0xa3c88 -> 0x7f2ebe971443
+JIT exited with 1 0xa3cac
+asmfn "/tmp/tmp.asm"
+Added jti for 0xa3cac -> 0x7f2ebe971506
+JIT exited with 1 0xa3cdc
+asmfn "/tmp/tmp.asm"
+Added jti for 0xa3cdc -> 0x7f2ebe9715b2
+JIT exited with 1 0x38584
+asmfn "/tmp/tmp.asm"
+Added jti for 0x38584 -> 0x7f2ebe97169c
+JIT exited with 1 0x384fc
+asmfn "/tmp/tmp.asm"
+Added jti for 0x384fc -> 0x7f2ebe971723
+JIT exited with 1 0x3bf28
+asmfn "/tmp/tmp.asm"
+Added jti for 0x3bf28 -> 0x7f2ebe9717c5
+JIT exited with 1 0x37730
+asmfn "/tmp/tmp.asm"
+Added jti for 0x37730 -> 0x7f2ebe971817
+JIT exited with 1 0x3bf34
+asmfn "/tmp/tmp.asm"
+Added jti for 0x3bf34 -> 0x7f2ebe971859
+JIT exited with 1 0x350fc
+asmfn "/tmp/tmp.asm"
+Added jti for 0x350fc -> 0x7f2ebe9718e8
+JIT exited with 1 0x380ac
+asmfn "/tmp/tmp.asm"
+Added jti for 0x380ac -> 0x7f2ebe97197c
+JIT exited with 1 0x38174
+asmfn "/tmp/tmp.asm"
+Added jti for 0x38174 -> 0x7f2ebe971ab3
+JIT exited with 1 0x380f8
+asmfn "/tmp/tmp.asm"
+Added jti for 0x380f8 -> 0x7f2ebe971ade
+JIT exited with 1 0xa36ec
+asmfn "/tmp/tmp.asm"
+Added jti for 0xa36ec -> 0x7f2ebe971b59
+JIT exited with 1 0xa357c
+asmfn "/tmp/tmp.asm"
+Added jti for 0xa357c -> 0x7f2ebe971bc3
+JIT exited with 1 0xa35c8
+asmfn "/tmp/tmp.asm"
+Added jti for 0xa35c8 -> 0x7f2ebe971ce7
+JIT exited with 1 0xa3648
+asmfn "/tmp/tmp.asm"
+Added jti for 0xa3648 -> 0x7f2ebe971e81
+JIT exited with 1 0xa3618
+asmfn "/tmp/tmp.asm"
+Added jti for 0xa3618 -> 0x7f2ebe971f02
+JIT exited with 1 0xa5b88
+asmfn "/tmp/tmp.asm"
+Added jti for 0xa5b88 -> 0x7f2ebe971f24
+JIT exited with 1 0xa361c
+asmfn "/tmp/tmp.asm"
+Added jti for 0xa361c -> 0x7f2ebe971f56
+JIT exited with 1 0xa7624
+asmfn "/tmp/tmp.asm"
+Added jti for 0xa7624 -> 0x7f2ebe971fba
+JIT exited with 1 0xa7680
+asmfn "/tmp/tmp.asm"
+Added jti for 0xa7680 -> 0x7f2ebe972311
+JIT exited with 1 0xa7704
+asmfn "/tmp/tmp.asm"
+Added jti for 0xa7704 -> 0x7f2ebe9724f4
+JIT exited with 1 0xa76ac
+asmfn "/tmp/tmp.asm"
+Added jti for 0xa76ac -> 0x7f2ebe972586
+JIT exited with 1 0xa80c4
+asmfn "/tmp/tmp.asm"
+Added jti for 0xa80c4 -> 0x7f2ebe97267f
+JIT exited with 1 0xb9d7c
+asmfn "/tmp/tmp.asm"
+Added jti for 0xb9d7c -> 0x7f2ebe9726e0
+JIT exited with 1 0xc0814
+asmfn "/tmp/tmp.asm"
+Added jti for 0xc0814 -> 0x7f2ebe972780
+JIT exited with 2 0xc0824
+Syscall 63
+asmfn "/tmp/tmp.asm"
+Added jti for 0xc0828 -> 0x7f2ebe972852
+JIT exited with 1 0xb9da8
+asmfn "/tmp/tmp.asm"
+Added jti for 0xb9da8 -> 0x7f2ebe9728e6
+JIT exited with 1 0xa80dc
+asmfn "/tmp/tmp.asm"
+Added jti for 0xa80dc -> 0x7f2ebe97297c
+JIT exited with 1 0xa76dc
+asmfn "/tmp/tmp.asm"
+Added jti for 0xa76dc -> 0x7f2ebe972a27
+JIT exited with 1 0xa3634
+asmfn "/tmp/tmp.asm"
+Added jti for 0xa3634 -> 0x7f2ebe972ae6
+JIT exited with 1 0xa3660
+asmfn "/tmp/tmp.asm"
+Added jti for 0xa3660 -> 0x7f2ebe972bd5
+JIT exited with 1 0x38110
+asmfn "/tmp/tmp.asm"
+Added jti for 0x38110 -> 0x7f2ebe972d22
+JIT exited with 1 0x38150
+asmfn "/tmp/tmp.asm"
+Added jti for 0x38150 -> 0x7f2ebe972e18
+JIT exited with 1 0x35124
+asmfn "/tmp/tmp.asm"
+Added jti for 0x35124 -> 0x7f2ebe972ebb
+JIT exited with 1 0x3bf54
+asmfn "/tmp/tmp.asm"
+Added jti for 0x3bf54 -> 0x7f2ebe972ff4
+JIT exited with 1 0x3bfd0
+asmfn "/tmp/tmp.asm"
+Added jti for 0x3bfd0 -> 0x7f2ebe97329c
+JIT exited with 1 0x37728
+asmfn "/tmp/tmp.asm"
+Added jti for 0x37728 -> 0x7f2ebe9732be
+JIT exited with 1 0x3bfd4
+asmfn "/tmp/tmp.asm"
+Added jti for 0x3bfd4 -> 0x7f2ebe973300
+JIT exited with 1 0x3bf78
+asmfn "/tmp/tmp.asm"
+Added jti for 0x3bf78 -> 0x7f2ebe9733e6
+JIT exited with 1 0x3bf10
+asmfn "/tmp/tmp.asm"
+Added jti for 0x3bf10 -> 0x7f2ebe9735bb
+JIT exited with 1 0xa3d90
+asmfn "/tmp/tmp.asm"
+Added jti for 0xa3d90 -> 0x7f2ebe973635
+JIT exited with 2 0xc0694
+Syscall 80
+JIT exited with 1 0xa3da4
+asmfn "/tmp/tmp.asm"
+Added jti for 0xa3da4 -> 0x7f2ebe9736a2
+JIT exited with 1 0xa3f78
+asmfn "/tmp/tmp.asm"
+Added jti for 0xa3f78 -> 0x7f2ebe9738b9
+JIT exited with 1 0xa3c54
+asmfn "/tmp/tmp.asm"
+Added jti for 0xa3c54 -> 0x7f2ebe9738e5
+JIT exited with 1 0xa2a84
+asmfn "/tmp/tmp.asm"
+Added jti for 0xa2a84 -> 0x7f2ebe973952
+JIT exited with 1 0xa2930
+asmfn "/tmp/tmp.asm"
+Added jti for 0xa2930 -> 0x7f2ebe973980
+JIT exited with 1 0xa2950
+asmfn "/tmp/tmp.asm"
+Added jti for 0xa2950 -> 0x7f2ebe973a71
+JIT exited with 2 0xc079c
+Syscall 62
+JIT exited with 1 0xa295c
+asmfn "/tmp/tmp.asm"
+Added jti for 0xa295c -> 0x7f2ebe973ac7
+JIT exited with 1 0xa2a8c
+asmfn "/tmp/tmp.asm"
+Added jti for 0xa2a8c -> 0x7f2ebe973cd3
+JIT exited with 1 0xa29b0
+asmfn "/tmp/tmp.asm"
+Added jti for 0xa29b0 -> 0x7f2ebe973da4
+JIT exited with 1 0xa29d0
+asmfn "/tmp/tmp.asm"
+Added jti for 0xa29d0 -> 0x7f2ebe973e48
+JIT exited with 2 0xc079c
+Syscall 62
+JIT exited with 1 0xa3608
+asmfn "/tmp/tmp.asm"
+Added jti for 0xa3608 -> 0x7f2ebe973ed8
+JIT exited with 2 0xc0824
+Syscall 63
+JIT exited with 2 0xc0694
+Syscall 80
+JIT exited with 2 0xc079c
+Syscall 62
+JIT exited with 2 0xc079c
+Syscall 62
+JIT exited with 2 0xc0824
+Syscall 63
+JIT exited with 2 0xc0694
+Syscall 80
+JIT exited with 2 0xc079c
+Syscall 62
+JIT exited with 2 0xc079c
+Syscall 62
+JIT exited with 2 0xc0824
+Syscall 63
+JIT exited with 2 0xc0694
+Syscall 80
+JIT exited with 2 0xc079c
+Syscall 62
+JIT exited with 2 0xc079c
+Syscall 62
+JIT exited with 2 0xc0824
+Syscall 63
+JIT exited with 2 0xc0694
+Syscall 80
+JIT exited with 2 0xc079c
+Syscall 62
+JIT exited with 2 0xc079c
+Syscall 62
+JIT exited with 2 0xc0824
+Syscall 63
+JIT exited with 2 0xc0694
+Syscall 80
+JIT exited with 2 0xc079c
+Syscall 62
+JIT exited with 2 0xc079c
+Syscall 62
+JIT exited with 2 0xc0824
+Syscall 63
+JIT exited with 2 0xc0694
+Syscall 80
+JIT exited with 2 0xc079c
+Syscall 62
+JIT exited with 2 0xc079c
+Syscall 62
+JIT exited with 2 0xc0824
+Syscall 63
+JIT exited with 2 0xc0694
+Syscall 80
+JIT exited with 2 0xc079c
+Syscall 62
+JIT exited with 2 0xc079c
+Syscall 62
+JIT exited with 1 0x3c42c
+asmfn "/tmp/tmp.asm"
+Added jti for 0x3c42c -> 0x7f2ebe973f3a
+JIT exited with 1 0x3c43c
+asmfn "/tmp/tmp.asm"
+Added jti for 0x3c43c -> 0x7f2ebe973f80
+JIT exited with 2 0xc0694
+Syscall 80
+JIT exited with 2 0xc079c
+Syscall 62
+JIT exited with 2 0xc0694
+Syscall 80
+JIT exited with 2 0xc079c
+Syscall 62
+JIT exited with 2 0xc0694
+Syscall 80
+JIT exited with 2 0xc079c
+Syscall 62
+JIT exited with 1 0x3c16c
+asmfn "/tmp/tmp.asm"
+Added jti for 0x3c16c -> 0x7f2ebe973fd6
+JIT exited with 1 0x3c1e4
+asmfn "/tmp/tmp.asm"
+Added jti for 0x3c1e4 -> 0x7f2ebe974048
+JIT exited with 1 0x3c0b8
+asmfn "/tmp/tmp.asm"
+Added jti for 0x3c0b8 -> 0x7f2ebe9740de
+JIT exited with 1 0x3c0c0
+asmfn "/tmp/tmp.asm"
+Added jti for 0x3c0c0 -> 0x7f2ebe97410b
+JIT exited with 1 0x3be58
+asmfn "/tmp/tmp.asm"
+Added jti for 0x3be58 -> 0x7f2ebe974129
+JIT exited with 1 0x1445c
+asmfn "/tmp/tmp.asm"
+Added jti for 0x1445c -> 0x7f2ebe97423b
+JIT exited with 1 0x144b4
+asmfn "/tmp/tmp.asm"
+Added jti for 0x144b4 -> 0x7f2ebe9742ae
+JIT exited with 1 0x14334
+asmfn "/tmp/tmp.asm"
+Added jti for 0x14334 -> 0x7f2ebe9742df
+JIT exited with 1 0x3c44c
+asmfn "/tmp/tmp.asm"
+Added jti for 0x3c44c -> 0x7f2ebe974357
+JIT exited with 1 0x3c464
+asmfn "/tmp/tmp.asm"
+Added jti for 0x3c464 -> 0x7f2ebe9743b8
+JIT exited with 1 0x3bed0
+asmfn "/tmp/tmp.asm"
+Added jti for 0x3bed0 -> 0x7f2ebe97445a
+JIT exited with 1 0x4f374
+asmfn "/tmp/tmp.asm"
+Added jti for 0x4f374 -> 0x7f2ebe974603
+JIT exited with 2 0xc0824
+Syscall 63
+JIT exited with 1 0x4f3b4
+asmfn "/tmp/tmp.asm"
+Added jti for 0x4f3b4 -> 0x7f2ebe974713
+JIT exited with 1 0x4f414
+asmfn "/tmp/tmp.asm"
+Added jti for 0x4f414 -> 0x7f2ebe9747b0
+JIT exited with 1 0x4f668
+asmfn "/tmp/tmp.asm"
+Added jti for 0x4f668 -> 0x7f2ebe9749bf
+JIT exited with 1 0x4f468
+asmfn "/tmp/tmp.asm"
+Added jti for 0x4f468 -> 0x7f2ebe974a1d
+JIT exited with 1 0x3d79c
+asmfn "/tmp/tmp.asm"
+Added jti for 0x3d79c -> 0x7f2ebe974a58
+JIT exited with 1 0x3d7f8
+asmfn "/tmp/tmp.asm"
+Added jti for 0x3d7f8 -> 0x7f2ebe974bdc
+JIT exited with 1 0x4f474
+asmfn "/tmp/tmp.asm"
+Added jti for 0x4f474 -> 0x7f2ebe974c40
+JIT exited with 1 0x37f50
+asmfn "/tmp/tmp.asm"
+Added jti for 0x37f50 -> 0x7f2ebe974cb1
+JIT exited with 1 0x3f7c0
+asmfn "/tmp/tmp.asm"
+Added jti for 0x3f7c0 -> 0x7f2ebe974e45
+JIT exited with 2 0xc0890
+Syscall 214
+JIT exited with 1 0x3f7dc
+asmfn "/tmp/tmp.asm"
+Added jti for 0x3f7dc -> 0x7f2ebe974eb2
+JIT exited with 1 0x3f858
+asmfn "/tmp/tmp.asm"
+Added jti for 0x3f858 -> 0x7f2ebe975018
+JIT exited with 1 0x9f630
+asmfn "/tmp/tmp.asm"
+Added jti for 0x9f630 -> 0x7f2ebe975048
+JIT exited with 1 0x9f64c
+asmfn "/tmp/tmp.asm"
+Added jti for 0x9f64c -> 0x7f2ebe975183
+JIT exited with 1 0x9f6c0
+asmfn "/tmp/tmp.asm"
+Added jti for 0x9f6c0 -> 0x7f2ebe97524f
+JIT exited with 2 0xc0890
+Syscall 214
+JIT exited with 1 0x9f6c8
+asmfn "/tmp/tmp.asm"
+Added jti for 0x9f6c8 -> 0x7f2ebe97527d
+JIT exited with 1 0x3f860
+asmfn "/tmp/tmp.asm"
+Added jti for 0x3f860 -> 0x7f2ebe975352
+JIT exited with 1 0x3f820
+asmfn "/tmp/tmp.asm"
+Added jti for 0x3f820 -> 0x7f2ebe9753b0
+JIT exited with 1 0x3f830
+asmfn "/tmp/tmp.asm"
+Added jti for 0x3f830 -> 0x7f2ebe9753f3
+JIT exited with 1 0x37fc0
+asmfn "/tmp/tmp.asm"
+Added jti for 0x37fc0 -> 0x7f2ebe975491
+JIT exited with 1 0x4f488
+asmfn "/tmp/tmp.asm"
+Added jti for 0x4f488 -> 0x7f2ebe9755c8
+JIT exited with 1 0x4b31c
+asmfn "/tmp/tmp.asm"
+Added jti for 0x4b31c -> 0x7f2ebe97565c
+JIT exited with 1 0x4b358
+asmfn "/tmp/tmp.asm"
+Added jti for 0x4b358 -> 0x7f2ebe97573f
+JIT exited with 1 0x3c5d4
+asmfn "/tmp/tmp.asm"
+Added jti for 0x3c5d4 -> 0x7f2ebe9757c5
+JIT exited with 1 0x4b370
+asmfn "/tmp/tmp.asm"
+Added jti for 0x4b370 -> 0x7f2ebe97582d
+JIT exited with 1 0x4b384
+asmfn "/tmp/tmp.asm"
+Added jti for 0x4b384 -> 0x7f2ebe97589d
+JIT exited with 1 0x3c698
+asmfn "/tmp/tmp.asm"
+Added jti for 0x3c698 -> 0x7f2ebe97590d
+JIT exited with 1 0x4b398
+asmfn "/tmp/tmp.asm"
+Added jti for 0x4b398 -> 0x7f2ebe9759c7
+JIT exited with 1 0x4b484
+asmfn "/tmp/tmp.asm"
+Added jti for 0x4b484 -> 0x7f2ebe975a5b
+JIT exited with 1 0x3c7c8
+asmfn "/tmp/tmp.asm"
+Added jti for 0x3c7c8 -> 0x7f2ebe975a9e
+JIT exited with 1 0x4b48c
+asmfn "/tmp/tmp.asm"
+Added jti for 0x4b48c -> 0x7f2ebe975c0e
+JIT exited with 1 0x4b3b0
+asmfn "/tmp/tmp.asm"
+Added jti for 0x4b3b0 -> 0x7f2ebe975c2c
+JIT exited with 1 0x4b3c4
+asmfn "/tmp/tmp.asm"
+Added jti for 0x4b3c4 -> 0x7f2ebe975c98
+JIT exited with 1 0x4b3d8
+asmfn "/tmp/tmp.asm"
+Added jti for 0x4b3d8 -> 0x7f2ebe975d04
+JIT exited with 1 0x4b3ec
+asmfn "/tmp/tmp.asm"
+Added jti for 0x4b3ec -> 0x7f2ebe975d73
+JIT exited with 1 0x4b400
+asmfn "/tmp/tmp.asm"
+Added jti for 0x4b400 -> 0x7f2ebe975de2
+JIT exited with 1 0x4b414
+asmfn "/tmp/tmp.asm"
+Added jti for 0x4b414 -> 0x7f2ebe975e51
+JIT exited with 1 0x4b428
+asmfn "/tmp/tmp.asm"
+Added jti for 0x4b428 -> 0x7f2ebe975ec0
+JIT exited with 1 0x4b43c
+asmfn "/tmp/tmp.asm"
+Added jti for 0x4b43c -> 0x7f2ebe975f2f
+JIT exited with 1 0x4b450
+asmfn "/tmp/tmp.asm"
+Added jti for 0x4b450 -> 0x7f2ebe975f9e
+JIT exited with 1 0x4b464
+asmfn "/tmp/tmp.asm"
+Added jti for 0x4b464 -> 0x7f2ebe97600d
+JIT exited with 1 0x4f4a4
+asmfn "/tmp/tmp.asm"
+Added jti for 0x4f4a4 -> 0x7f2ebe97609f
+JIT exited with 1 0x4f678
+asmfn "/tmp/tmp.asm"
+Added jti for 0x4f678 -> 0x7f2ebe976597
+JIT exited with 1 0x4f4c8
+asmfn "/tmp/tmp.asm"
+Added jti for 0x4f4c8 -> 0x7f2ebe9765f6
+JIT exited with 1 0x4f540
+asmfn "/tmp/tmp.asm"
+Added jti for 0x4f540 -> 0x7f2ebe976a11
+JIT exited with 1 0x374b8
+asmfn "/tmp/tmp.asm"
+Added jti for 0x374b8 -> 0x7f2ebe976b3b
+JIT exited with 1 0x374cc
+asmfn "/tmp/tmp.asm"
+Added jti for 0x374cc -> 0x7f2ebe976b6f
+JIT exited with 1 0x4f580
+asmfn "/tmp/tmp.asm"
+Added jti for 0x4f580 -> 0x7f2ebe976c79
+JIT exited with 1 0x4f58c
+asmfn "/tmp/tmp.asm"
+Added jti for 0x4f58c -> 0x7f2ebe976d0e
+JIT exited with 1 0x37bac
+asmfn "/tmp/tmp.asm"
+Added jti for 0x37bac -> 0x7f2ebe976d4c
+JIT exited with 1 0x4f598
+asmfn "/tmp/tmp.asm"
+Added jti for 0x4f598 -> 0x7f2ebe976d99
+JIT exited with 1 0x4f6ac
+asmfn "/tmp/tmp.asm"
+Added jti for 0x4f6ac -> 0x7f2ebe976fa2
+JIT exited with 1 0x38678
+asmfn "/tmp/tmp.asm"
+Added jti for 0x38678 -> 0x7f2ebe976fdb
+JIT exited with 2 0xc0694
+Syscall 80
+JIT exited with 2 0xc079c
+Syscall 62
+JIT exited with 2 0xc079c
+Syscall 62
+JIT exited with 1 0x38684
+asmfn "/tmp/tmp.asm"
+Added jti for 0x38684 -> 0x7f2ebe977015
+JIT exited with 1 0x4f6b8
+asmfn "/tmp/tmp.asm"
+Added jti for 0x4f6b8 -> 0x7f2ebe977077
+JIT exited with 2 0xc0824
+Syscall 63
+JIT exited with 1 0x4f6d0
+asmfn "/tmp/tmp.asm"
+Added jti for 0x4f6d0 -> 0x7f2ebe9770f5
+JIT exited with 1 0x4aa88
+asmfn "/tmp/tmp.asm"
+Added jti for 0x4aa88 -> 0x7f2ebe977171
+JIT exited with 1 0x4aac4
+asmfn "/tmp/tmp.asm"
+Added jti for 0x4aac4 -> 0x7f2ebe97726d
+JIT exited with 1 0x4aae0
+asmfn "/tmp/tmp.asm"
+Added jti for 0x4aae0 -> 0x7f2ebe9772ff
+JIT exited with 1 0x4aaf4
+asmfn "/tmp/tmp.asm"
+Added jti for 0x4aaf4 -> 0x7f2ebe97736b
+JIT exited with 1 0x4abac
+asmfn "/tmp/tmp.asm"
+Added jti for 0x4abac -> 0x7f2ebe9773ff
+JIT exited with 1 0x4abb4
+asmfn "/tmp/tmp.asm"
+Added jti for 0x4abb4 -> 0x7f2ebe977442
+JIT exited with 1 0x4ab0c
+asmfn "/tmp/tmp.asm"
+Added jti for 0x4ab0c -> 0x7f2ebe977460
+JIT exited with 1 0x4ab20
+asmfn "/tmp/tmp.asm"
+Added jti for 0x4ab20 -> 0x7f2ebe9774cc
+JIT exited with 1 0x4ab34
+asmfn "/tmp/tmp.asm"
+Added jti for 0x4ab34 -> 0x7f2ebe977538
+JIT exited with 1 0x4ab48
+asmfn "/tmp/tmp.asm"
+Added jti for 0x4ab48 -> 0x7f2ebe9775a7
+JIT exited with 1 0x4ab5c
+asmfn "/tmp/tmp.asm"
+Added jti for 0x4ab5c -> 0x7f2ebe977616
+JIT exited with 1 0x4ab70
+asmfn "/tmp/tmp.asm"
+Added jti for 0x4ab70 -> 0x7f2ebe977682
+JIT exited with 1 0x4ab84
+asmfn "/tmp/tmp.asm"
+Added jti for 0x4ab84 -> 0x7f2ebe9776ee
+JIT exited with 1 0x4f6e8
+asmfn "/tmp/tmp.asm"
+Added jti for 0x4f6e8 -> 0x7f2ebe977798
+JIT exited with 1 0x4f720
+asmfn "/tmp/tmp.asm"
+Added jti for 0x4f720 -> 0x7f2ebe97789b
+JIT exited with 1 0x3d718
+asmfn "/tmp/tmp.asm"
+Added jti for 0x3d718 -> 0x7f2ebe97796c
+JIT exited with 1 0x3d730
+asmfn "/tmp/tmp.asm"
+Added jti for 0x3d730 -> 0x7f2ebe977b01
+JIT exited with 1 0x4f754
+asmfn "/tmp/tmp.asm"
+Added jti for 0x4f754 -> 0x7f2ebe977c31
+JIT exited with 1 0x4f980
+asmfn "/tmp/tmp.asm"
+Added jti for 0x4f980 -> 0x7f2ebe977d4b
+JIT exited with 1 0x3d774
+asmfn "/tmp/tmp.asm"
+Added jti for 0x3d774 -> 0x7f2ebe977daa
+JIT exited with 1 0x9f678
+asmfn "/tmp/tmp.asm"
+Added jti for 0x9f678 -> 0x7f2ebe977dcc
+JIT exited with 1 0x3d778
+asmfn "/tmp/tmp.asm"
+Added jti for 0x3d778 -> 0x7f2ebe977eef
+JIT exited with 1 0x3d760
+asmfn "/tmp/tmp.asm"
+Added jti for 0x3d760 -> 0x7f2ebe977f4d
+JIT exited with 1 0x4f994
+asmfn "/tmp/tmp.asm"
+Added jti for 0x4f994 -> 0x7f2ebe977fb0
+JIT exited with 1 0x4f9b4
+asmfn "/tmp/tmp.asm"
+Added jti for 0x4f9b4 -> 0x7f2ebe97804c
+JIT exited with 1 0x4f804
+asmfn "/tmp/tmp.asm"
+Added jti for 0x4f804 -> 0x7f2ebe9780ac
+JIT exited with 1 0x4f824
+asmfn "/tmp/tmp.asm"
+Added jti for 0x4f824 -> 0x7f2ebe978213
+JIT exited with 1 0x4f8a4
+asmfn "/tmp/tmp.asm"
+Added jti for 0x4f8a4 -> 0x7f2ebe97830d
+JIT exited with 1 0x4f8b4
+asmfn "/tmp/tmp.asm"
+Added jti for 0x4f8b4 -> 0x7f2ebe978355
+JIT exited with 1 0x4f858
+asmfn "/tmp/tmp.asm"
+Added jti for 0x4f858 -> 0x7f2ebe97847d
+JIT exited with 1 0x4f85c
+asmfn "/tmp/tmp.asm"
+Added jti for 0x4f85c -> 0x7f2ebe97849f
+JIT exited with 1 0xa2200
+asmfn "/tmp/tmp.asm"
+Added jti for 0xa2200 -> 0x7f2ebe9785ac
+JIT exited with 1 0xa21b8
+asmfn "/tmp/tmp.asm"
+Added jti for 0xa21b8 -> 0x7f2ebe9785da
+JIT exited with 1 0xa21e0
+asmfn "/tmp/tmp.asm"
+Added jti for 0xa21e0 -> 0x7f2ebe978770
+JIT exited with 1 0xa21f0
+asmfn "/tmp/tmp.asm"
+Added jti for 0xa21f0 -> 0x7f2ebe97882c
+JIT exited with 1 0xa2208
+asmfn "/tmp/tmp.asm"
+Added jti for 0xa2208 -> 0x7f2ebe978899
+JIT exited with 1 0x4f88c
+asmfn "/tmp/tmp.asm"
+Added jti for 0x4f88c -> 0x7f2ebe9788d7
+JIT exited with 1 0x4f89c
+asmfn "/tmp/tmp.asm"
+Added jti for 0x4f89c -> 0x7f2ebe9789a5
+JIT exited with 2 0xc0824
+Syscall 63
+JIT exited with 1 0x4f5a8
+asmfn "/tmp/tmp.asm"
+Added jti for 0x4f5a8 -> 0x7f2ebe978a26
+JIT exited with 1 0x4f9c4
+asmfn "/tmp/tmp.asm"
+Added jti for 0x4f9c4 -> 0x7f2ebe978bc5
+JIT exited with 1 0x595c8
+asmfn "/tmp/tmp.asm"
+Added jti for 0x595c8 -> 0x7f2ebe978bf3
+JIT exited with 1 0x58abc
+asmfn "/tmp/tmp.asm"
+Added jti for 0x58abc -> 0x7f2ebe978d73
+JIT exited with 1 0x58bc8
+asmfn "/tmp/tmp.asm"
+Added jti for 0x58bc8 -> 0x7f2ebe97900c
+JIT exited with 1 0x589d4
+asmfn "/tmp/tmp.asm"
+Added jti for 0x589d4 -> 0x7f2ebe97902e
+JIT exited with 1 0x58a44
+asmfn "/tmp/tmp.asm"
+Added jti for 0x58a44 -> 0x7f2ebe97921e
+JIT exited with 1 0x58a58
+asmfn "/tmp/tmp.asm"
+Added jti for 0x58a58 -> 0x7f2ebe97927e
+JIT exited with 2 0xc0694
+Syscall 80
+JIT exited with 2 0xc079c
+Syscall 62
+JIT exited with 2 0xc079c
+Syscall 62
+JIT exited with 1 0x58a70
+asmfn "/tmp/tmp.asm"
+Added jti for 0x58a70 -> 0x7f2ebe9792fd
+JIT exited with 2 0xc0824
+Syscall 63
+JIT exited with 1 0x58a84
+asmfn "/tmp/tmp.asm"
+Added jti for 0x58a84 -> 0x7f2ebe979371
+JIT exited with 1 0x58a1c
+asmfn "/tmp/tmp.asm"
+Added jti for 0x58a1c -> 0x7f2ebe9793e0
+JIT exited with 1 0x58bcc
+asmfn "/tmp/tmp.asm"
+Added jti for 0x58bcc -> 0x7f2ebe979491
+JIT exited with 1 0x58b14
+asmfn "/tmp/tmp.asm"
+Added jti for 0x58b14 -> 0x7f2ebe9794d4
+JIT exited with 1 0x59628
+asmfn "/tmp/tmp.asm"
+Added jti for 0x59628 -> 0x7f2ebe979606
+JIT exited with 1 0x59844
+asmfn "/tmp/tmp.asm"
+Added jti for 0x59844 -> 0x7f2ebe9796c2
+JIT exited with 1 0x59f28
+asmfn "/tmp/tmp.asm"
+Added jti for 0x59f28 -> 0x7f2ebe9797be
+JIT exited with 1 0x59780
+asmfn "/tmp/tmp.asm"
+Added jti for 0x59780 -> 0x7f2ebe979963
+JIT exited with 1 0x4f9cc
+asmfn "/tmp/tmp.asm"
+Added jti for 0x4f9cc -> 0x7f2ebe979a33
+JIT exited with 1 0x4f5b8
+asmfn "/tmp/tmp.asm"
+Added jti for 0x4f5b8 -> 0x7f2ebe979a76
+JIT exited with 1 0x4f8f4
+asmfn "/tmp/tmp.asm"
+Added jti for 0x4f8f4 -> 0x7f2ebe979bab
+JIT exited with 1 0x4f904
+asmfn "/tmp/tmp.asm"
+Added jti for 0x4f904 -> 0x7f2ebe979bf1
+JIT exited with 2 0xc0694
+Syscall 80
+JIT exited with 2 0xc079c
+Syscall 62
+JIT exited with 2 0xc079c
+Syscall 62
+JIT exited with 1 0x4f924
+asmfn "/tmp/tmp.asm"
+Added jti for 0x4f924 -> 0x7f2ebe979c8c
+JIT exited with 1 0x4f950
+asmfn "/tmp/tmp.asm"
+Added jti for 0x4f950 -> 0x7f2ebe979d32
+JIT exited with 2 0xc0824
+Syscall 63
+JIT exited with 1 0x4f960
+asmfn "/tmp/tmp.asm"
+Added jti for 0x4f960 -> 0x7f2ebe979d77
+JIT exited with 1 0x4f940
+asmfn "/tmp/tmp.asm"
+Added jti for 0x4f940 -> 0x7f2ebe979e0d
+JIT exited with 1 0x4f0d8
+asmfn "/tmp/tmp.asm"
+Added jti for 0x4f0d8 -> 0x7f2ebe979e2f
+JIT exited with 1 0x4f118
+asmfn "/tmp/tmp.asm"
+Added jti for 0x4f118 -> 0x7f2ebe979f3a
+JIT exited with 1 0x4f134
+asmfn "/tmp/tmp.asm"
+Added jti for 0x4f134 -> 0x7f2ebe979fcc
+JIT exited with 1 0x4f14c
+asmfn "/tmp/tmp.asm"
+Added jti for 0x4f14c -> 0x7f2ebe97a047
+JIT exited with 1 0x4f1d8
+asmfn "/tmp/tmp.asm"
+Added jti for 0x4f1d8 -> 0x7f2ebe97a0db
+JIT exited with 1 0x4f1e0
+asmfn "/tmp/tmp.asm"
+Added jti for 0x4f1e0 -> 0x7f2ebe97a11e
+JIT exited with 1 0x4f1f4
+asmfn "/tmp/tmp.asm"
+Added jti for 0x4f1f4 -> 0x7f2ebe97a18d
+JIT exited with 1 0x4f178
+asmfn "/tmp/tmp.asm"
+Added jti for 0x4f178 -> 0x7f2ebe97a1ab
+JIT exited with 1 0x4f18c
+asmfn "/tmp/tmp.asm"
+Added jti for 0x4f18c -> 0x7f2ebe97a217
+JIT exited with 1 0x4f1a0
+asmfn "/tmp/tmp.asm"
+Added jti for 0x4f1a0 -> 0x7f2ebe97a283
+JIT exited with 1 0x4f1b4
+asmfn "/tmp/tmp.asm"
+Added jti for 0x4f1b4 -> 0x7f2ebe97a2ef
+JIT exited with 1 0x4f944
+asmfn "/tmp/tmp.asm"
+Added jti for 0x4f944 -> 0x7f2ebe97a390
+JIT exited with 1 0x4f5c8
+asmfn "/tmp/tmp.asm"
+Added jti for 0x4f5c8 -> 0x7f2ebe97a420
+JIT exited with 1 0x4f9d4
+asmfn "/tmp/tmp.asm"
+Added jti for 0x4f9d4 -> 0x7f2ebe97a4fe
+JIT exited with 1 0x4f9dc
+asmfn "/tmp/tmp.asm"
+Added jti for 0x4f9dc -> 0x7f2ebe97a52c
+JIT exited with 1 0x596c4
+asmfn "/tmp/tmp.asm"
+Added jti for 0x596c4 -> 0x7f2ebe97a612
+JIT exited with 1 0x5a088
+asmfn "/tmp/tmp.asm"
+Added jti for 0x5a088 -> 0x7f2ebe97a6ea
+JIT exited with 1 0x5a0fc
+asmfn "/tmp/tmp.asm"
+Added jti for 0x5a0fc -> 0x7f2ebe97a83d
+JIT exited with 1 0x3df84
+asmfn "/tmp/tmp.asm"
+Added jti for 0x3df84 -> 0x7f2ebe97a886
+JIT exited with 1 0x3f8b4
+asmfn "/tmp/tmp.asm"
+Added jti for 0x3f8b4 -> 0x7f2ebe97a947
+JIT exited with 1 0x3f8fc
+asmfn "/tmp/tmp.asm"
+Added jti for 0x3f8fc -> 0x7f2ebe97abc9
+JIT exited with 1 0xa21d0
+asmfn "/tmp/tmp.asm"
+Added jti for 0xa21d0 -> 0x7f2ebe97ad30
+JIT exited with 1 0xa21e4
+asmfn "/tmp/tmp.asm"
+Added jti for 0xa21e4 -> 0x7f2ebe97ae4d
+JIT exited with 1 0x3f94c
+asmfn "/tmp/tmp.asm"
+Added jti for 0x3f94c -> 0x7f2ebe97aefe
+JIT exited with 1 0x3f9b4
+asmfn "/tmp/tmp.asm"
+Added jti for 0x3f9b4 -> 0x7f2ebe97af7d
+JIT exited with 1 0x3dc98
+asmfn "/tmp/tmp.asm"
+Added jti for 0x3dc98 -> 0x7f2ebe97b014
+JIT exited with 1 0x3dce0
+asmfn "/tmp/tmp.asm"
+Added jti for 0x3dce0 -> 0x7f2ebe97b099
+JIT exited with 1 0x3fb7c
+asmfn "/tmp/tmp.asm"
+Added jti for 0x3fb7c -> 0x7f2ebe97b0e1
+JIT exited with 1 0x3fba4
+asmfn "/tmp/tmp.asm"
+Added jti for 0x3fba4 -> 0x7f2ebe97b2b3
+JIT exited with 1 0x3dcf0
+asmfn "/tmp/tmp.asm"
+Added jti for 0x3dcf0 -> 0x7f2ebe97b3f1
+JIT exited with 1 0x3dcac
+asmfn "/tmp/tmp.asm"
+Added jti for 0x3dcac -> 0x7f2ebe97b44c
+JIT exited with 1 0x3fb10
+asmfn "/tmp/tmp.asm"
+Added jti for 0x3fb10 -> 0x7f2ebe97b47a
+JIT exited with 1 0x3dcb4
+asmfn "/tmp/tmp.asm"
+Added jti for 0x3dcb4 -> 0x7f2ebe97b533
+JIT exited with 1 0x3dccc
+asmfn "/tmp/tmp.asm"
+Added jti for 0x3dccc -> 0x7f2ebe97b5aa
+JIT exited with 1 0x3f9cc
+asmfn "/tmp/tmp.asm"
+Added jti for 0x3f9cc -> 0x7f2ebe97b60e
+JIT exited with 1 0x3fa24
+asmfn "/tmp/tmp.asm"
+Added jti for 0x3fa24 -> 0x7f2ebe97b7b1
+JIT exited with 1 0x3f984
+asmfn "/tmp/tmp.asm"
+Added jti for 0x3f984 -> 0x7f2ebe97b834
+JIT exited with 1 0x3dfb4
+asmfn "/tmp/tmp.asm"
+Added jti for 0x3dfb4 -> 0x7f2ebe97b905
+JIT exited with 1 0x3dfd8
+asmfn "/tmp/tmp.asm"
+Added jti for 0x3dfd8 -> 0x7f2ebe97b9a3
+JIT exited with 1 0x3dbb8
+asmfn "/tmp/tmp.asm"
+Added jti for 0x3dbb8 -> 0x7f2ebe97ba0c
+JIT exited with 1 0x6090c
+asmfn "/tmp/tmp.asm"
+Added jti for 0x6090c -> 0x7f2ebe97bb11
+JIT exited with 1 0x60924
+asmfn "/tmp/tmp.asm"
+Added jti for 0x60924 -> 0x7f2ebe97bb6f
+JIT exited with 1 0x3dbf8
+asmfn "/tmp/tmp.asm"
+Added jti for 0x3dbf8 -> 0x7f2ebe97bbf7
+JIT exited with 1 0x5a918
+asmfn "/tmp/tmp.asm"
+Added jti for 0x5a918 -> 0x7f2ebe97bd01
+JIT exited with 1 0x5a978
+asmfn "/tmp/tmp.asm"
+Added jti for 0x5a978 -> 0x7f2ebe97be7b
+JIT exited with 1 0x5a980
+asmfn "/tmp/tmp.asm"
+Added jti for 0x5a980 -> 0x7f2ebe97beaa
+JIT exited with 1 0x5a938
+asmfn "/tmp/tmp.asm"
+Added jti for 0x5a938 -> 0x7f2ebe97befd
+JIT exited with 1 0x3dc34
+asmfn "/tmp/tmp.asm"
+Added jti for 0x3dc34 -> 0x7f2ebe97bff7
+JIT exited with 1 0x5a10c
+asmfn "/tmp/tmp.asm"
+Added jti for 0x5a10c -> 0x7f2ebe97c130
+JIT exited with 1 0x3e190
+asmfn "/tmp/tmp.asm"
+Added jti for 0x3e190 -> 0x7f2ebe97c215
+JIT exited with 1 0x5a144
+asmfn "/tmp/tmp.asm"
+Added jti for 0x5a144 -> 0x7f2ebe97c29e
+JIT exited with 1 0x5a188
+asmfn "/tmp/tmp.asm"
+Added jti for 0x5a188 -> 0x7f2ebe97c3db
+JIT exited with 1 0x3cbe4
+asmfn "/tmp/tmp.asm"
+Added jti for 0x3cbe4 -> 0x7f2ebe97c40a
+JIT exited with 1 0x3cc00
+asmfn "/tmp/tmp.asm"
+Added jti for 0x3cc00 -> 0x7f2ebe97c4b5
+JIT exited with 1 0x5a190
+asmfn "/tmp/tmp.asm"
+Added jti for 0x5a190 -> 0x7f2ebe97c4e7
+JIT exited with 1 0x5a404
+asmfn "/tmp/tmp.asm"
+Added jti for 0x5a404 -> 0x7f2ebe97c8da
+JIT exited with 1 0x5a1d0
+asmfn "/tmp/tmp.asm"
+Added jti for 0x5a1d0 -> 0x7f2ebe97c937
+JIT exited with 1 0x5a414
+asmfn "/tmp/tmp.asm"
+Added jti for 0x5a414 -> 0x7f2ebe97cc16
+JIT exited with 1 0x5a1f4
+asmfn "/tmp/tmp.asm"
+Added jti for 0x5a1f4 -> 0x7f2ebe97cc7e
+JIT exited with 1 0x5a228
+asmfn "/tmp/tmp.asm"
+Added jti for 0x5a228 -> 0x7f2ebe97cebc
+JIT exited with 1 0x5a248
+asmfn "/tmp/tmp.asm"
+Added jti for 0x5a248 -> 0x7f2ebe97d023
+JIT exited with 1 0x5a270
+asmfn "/tmp/tmp.asm"
+Added jti for 0x5a270 -> 0x7f2ebe97d0f3
+JIT exited with 1 0x9fba4
+asmfn "/tmp/tmp.asm"
+Added jti for 0x9fba4 -> 0x7f2ebe97d13c
+JIT exited with 1 0x9fbc0
+asmfn "/tmp/tmp.asm"
+Added jti for 0x9fbc0 -> 0x7f2ebe97d169
+JIT exited with 1 0x9fbac
+asmfn "/tmp/tmp.asm"
+Added jti for 0x9fbac -> 0x7f2ebe97d1d8
+JIT exited with 1 0x9fbd0
+asmfn "/tmp/tmp.asm"
+Added jti for 0x9fbd0 -> 0x7f2ebe97d2b9
+JIT exited with 1 0x5a280
+asmfn "/tmp/tmp.asm"
+Added jti for 0x5a280 -> 0x7f2ebe97d2fc
+JIT exited with 1 0x5a258
+asmfn "/tmp/tmp.asm"
+Added jti for 0x5a258 -> 0x7f2ebe97d3a1
+JIT exited with 1 0x5a294
+asmfn "/tmp/tmp.asm"
+Added jti for 0x5a294 -> 0x7f2ebe97d436
+JIT exited with 1 0x5a2a8
+asmfn "/tmp/tmp.asm"
+Added jti for 0x5a2a8 -> 0x7f2ebe97d485
+JIT exited with 1 0x5a2b8
+asmfn "/tmp/tmp.asm"
+Added jti for 0x5a2b8 -> 0x7f2ebe97d592
+JIT exited with 1 0x5a2d8
+asmfn "/tmp/tmp.asm"
+Added jti for 0x5a2d8 -> 0x7f2ebe97d632
+JIT exited with 1 0x3e0ec
+asmfn "/tmp/tmp.asm"
+Added jti for 0x3e0ec -> 0x7f2ebe97d67f
+JIT exited with 1 0x5a2e8
+asmfn "/tmp/tmp.asm"
+Added jti for 0x5a2e8 -> 0x7f2ebe97d6c9
+JIT exited with 1 0x5a31c
+asmfn "/tmp/tmp.asm"
+Added jti for 0x5a31c -> 0x7f2ebe97d7b3
+JIT exited with 1 0x5a34c
+asmfn "/tmp/tmp.asm"
+Added jti for 0x5a34c -> 0x7f2ebe97d873
+JIT exited with 1 0x5a344
+asmfn "/tmp/tmp.asm"
+Added jti for 0x5a344 -> 0x7f2ebe97dbc1
+JIT exited with 1 0x5a79c
+asmfn "/tmp/tmp.asm"
+Added jti for 0x5a79c -> 0x7f2ebe97df41
+JIT exited with 1 0x5a390
+asmfn "/tmp/tmp.asm"
+Added jti for 0x5a390 -> 0x7f2ebe97e008
+JIT exited with 1 0x5a14c
+asmfn "/tmp/tmp.asm"
+Added jti for 0x5a14c -> 0x7f2ebe97e1fa
+JIT exited with 1 0x4fa08
+asmfn "/tmp/tmp.asm"
+Added jti for 0x4fa08 -> 0x7f2ebe97e307
+JIT exited with 1 0x4f9fc
+asmfn "/tmp/tmp.asm"
+Added jti for 0x4f9fc -> 0x7f2ebe97e3b6
+JIT exited with 1 0x3cbf0
+asmfn "/tmp/tmp.asm"
+Added jti for 0x3cbf0 -> 0x7f2ebe97e3f3
+JIT exited with 1 0x59650
+asmfn "/tmp/tmp.asm"
+Added jti for 0x59650 -> 0x7f2ebe97e463
+JIT exited with 1 0x596fc
+asmfn "/tmp/tmp.asm"
+Added jti for 0x596fc -> 0x7f2ebe97e72f
+JIT exited with 1 0x59768
+asmfn "/tmp/tmp.asm"
+Added jti for 0x59768 -> 0x7f2ebe97e907
+JIT exited with 1 0x5997c
+asmfn "/tmp/tmp.asm"
+Added jti for 0x5997c -> 0x7f2ebe97e999
+JIT exited with 1 0x596cc
+asmfn "/tmp/tmp.asm"
+Added jti for 0x596cc -> 0x7f2ebe97ec3a
+JIT exited with 1 0x5987c
+asmfn "/tmp/tmp.asm"
+Added jti for 0x5987c -> 0x7f2ebe97ecf7
+JIT exited with 1 0x59870
+asmfn "/tmp/tmp.asm"
+Added jti for 0x59870 -> 0x7f2ebe97ed95
+JIT exited with 1 0x5989c
+asmfn "/tmp/tmp.asm"
+Added jti for 0x5989c -> 0x7f2ebe97ee85
+JIT exited with 1 0x59c10
+asmfn "/tmp/tmp.asm"
+Added jti for 0x59c10 -> 0x7f2ebe97f0e5
+JIT exited with 1 0x3d80c
+asmfn "/tmp/tmp.asm"
+Added jti for 0x3d80c -> 0x7f2ebe97f282
+JIT exited with 2 0xc0890
+Syscall 214
+JIT exited with 1 0x3d814
+asmfn "/tmp/tmp.asm"
+Added jti for 0x3d814 -> 0x7f2ebe97f2b1
+JIT exited with 1 0x3d7ec
+asmfn "/tmp/tmp.asm"
+Added jti for 0x3d7ec -> 0x7f2ebe97f31c
+JIT exited with 1 0x597b0
+asmfn "/tmp/tmp.asm"
+Added jti for 0x597b0 -> 0x7f2ebe97f355
+JIT exited with 1 0x59d74
+asmfn "/tmp/tmp.asm"
+Added jti for 0x59d74 -> 0x7f2ebe97f54c
+JIT exited with 1 0x3fbec
+asmfn "/tmp/tmp.asm"
+Added jti for 0x3fbec -> 0x7f2ebe97f5f3
+JIT exited with 1 0x3fbf0
+asmfn "/tmp/tmp.asm"
+Added jti for 0x3fbf0 -> 0x7f2ebe97f615
+JIT exited with 1 0x3fbd4
+asmfn "/tmp/tmp.asm"
+Added jti for 0x3fbd4 -> 0x7f2ebe97f698
+JIT exited with 2 0xc0890
+Syscall 214
+JIT exited with 1 0x5a1e4
+asmfn "/tmp/tmp.asm"
+Added jti for 0x5a1e4 -> 0x7f2ebe97f709
+JIT exited with 1 0x59920
+asmfn "/tmp/tmp.asm"
+Added jti for 0x59920 -> 0x7f2ebe97f991
+JIT exited with 1 0x59930
+asmfn "/tmp/tmp.asm"
+Added jti for 0x59930 -> 0x7f2ebe97f9d7
+JIT exited with 1 0x5a428
+asmfn "/tmp/tmp.asm"
+Added jti for 0x5a428 -> 0x7f2ebe97fb2b
+JIT exited with 1 0x5a1d4
+asmfn "/tmp/tmp.asm"
+Added jti for 0x5a1d4 -> 0x7f2ebe97fbaa
+JIT exited with 1 0x5a3a0
+asmfn "/tmp/tmp.asm"
+Added jti for 0x5a3a0 -> 0x7f2ebe97fe7c
+JIT exited with 1 0x4f5d8
+asmfn "/tmp/tmp.asm"
+Added jti for 0x4f5d8 -> 0x7f2ebe97fff2
+JIT exited with 1 0x48450
+asmfn "/tmp/tmp.asm"
+Added jti for 0x48450 -> 0x7f2ebe980066
+JIT exited with 1 0x48468
+asmfn "/tmp/tmp.asm"
+Added jti for 0x48468 -> 0x7f2ebe9800c6
+JIT exited with 1 0x48478
+asmfn "/tmp/tmp.asm"
+Added jti for 0x48478 -> 0x7f2ebe980219
+JIT exited with 1 0x374c4
+asmfn "/tmp/tmp.asm"
+Added jti for 0x374c4 -> 0x7f2ebe98031a
+JIT exited with 1 0x374e8
+asmfn "/tmp/tmp.asm"
+Added jti for 0x374e8 -> 0x7f2ebe980456
+JIT exited with 1 0x484b8
+asmfn "/tmp/tmp.asm"
+Added jti for 0x484b8 -> 0x7f2ebe9804a3
+JIT exited with 1 0x4f5e8
+asmfn "/tmp/tmp.asm"
+Added jti for 0x4f5e8 -> 0x7f2ebe980505
+JIT exited with 1 0x4f610
+asmfn "/tmp/tmp.asm"
+Added jti for 0x4f610 -> 0x7f2ebe9805a4
+JIT exited with 1 0x4f604
+asmfn "/tmp/tmp.asm"
+Added jti for 0x4f604 -> 0x7f2ebe980658
+JIT exited with 1 0x4f61c
+asmfn "/tmp/tmp.asm"
+Added jti for 0x4f61c -> 0x7f2ebe980767
+JIT exited with 1 0x4f608
+asmfn "/tmp/tmp.asm"
+Added jti for 0x4f608 -> 0x7f2ebe9807d5
+JIT exited with 1 0x5a8e8
+asmfn "/tmp/tmp.asm"
+Added jti for 0x5a8e8 -> 0x7f2ebe9808bb
+JIT exited with 1 0x4f630
+asmfn "/tmp/tmp.asm"
+Added jti for 0x4f630 -> 0x7f2ebe980980
+JIT exited with 1 0x4f688
+asmfn "/tmp/tmp.asm"
+Added jti for 0x4f688 -> 0x7f2ebe980a41
+JIT exited with 1 0x380a4
+asmfn "/tmp/tmp.asm"
+Added jti for 0x380a4 -> 0x7f2ebe980a7d
+JIT exited with 1 0x3f888
+asmfn "/tmp/tmp.asm"
+Added jti for 0x3f888 -> 0x7f2ebe980aa7
+JIT exited with 1 0x9f728
+asmfn "/tmp/tmp.asm"
+Added jti for 0x9f728 -> 0x7f2ebe980b07
+JIT exited with 1 0xa52ac
+asmfn "/tmp/tmp.asm"
+Added jti for 0xa52ac -> 0x7f2ebe980bb2
+JIT exited with 1 0xa3844
+asmfn "/tmp/tmp.asm"
+Added jti for 0xa3844 -> 0x7f2ebe980bec
+JIT exited with 1 0xa3864
+asmfn "/tmp/tmp.asm"
+Added jti for 0xa3864 -> 0x7f2ebe980c7e
+JIT exited with 1 0xa3940
+asmfn "/tmp/tmp.asm"
+Added jti for 0xa3940 -> 0x7f2ebe980ff7
+JIT exited with 1 0xa3a8c
+asmfn "/tmp/tmp.asm"
+Added jti for 0xa3a8c -> 0x7f2ebe981179
+JIT exited with 1 0xa3ab4
+asmfn "/tmp/tmp.asm"
+Added jti for 0xa3ab4 -> 0x7f2ebe98123a
+JIT exited with 1 0xa3980
+asmfn "/tmp/tmp.asm"
+Added jti for 0xa3980 -> 0x7f2ebe98128d
+JIT exited with 1 0xa3aec
+asmfn "/tmp/tmp.asm"
+Added jti for 0xa3aec -> 0x7f2ebe9812f8
+JIT exited with 1 0xa39ac
+asmfn "/tmp/tmp.asm"
+Added jti for 0xa39ac -> 0x7f2ebe98136d
+JIT exited with 1 0x9f750
+asmfn "/tmp/tmp.asm"
+Added jti for 0x9f750 -> 0x7f2ebe9813fe
+JIT exited with 1 0xa39d8
+asmfn "/tmp/tmp.asm"
+Added jti for 0xa39d8 -> 0x7f2ebe981480
+JIT exited with 1 0xa38dc
+asmfn "/tmp/tmp.asm"
+Added jti for 0xa38dc -> 0x7f2ebe98155a
+JIT exited with 1 0xa3960
+asmfn "/tmp/tmp.asm"
+Added jti for 0xa3960 -> 0x7f2ebe9816ce
+JIT exited with 1 0x3f8a0
+asmfn "/tmp/tmp.asm"
+Added jti for 0x3f8a0 -> 0x7f2ebe9817b7
+JIT exited with 1 0x4f694
+asmfn "/tmp/tmp.asm"
+Added jti for 0x4f694 -> 0x7f2ebe98181a
+JIT exited with 1 0x4f3e8
+asmfn "/tmp/tmp.asm"
+Added jti for 0x4f3e8 -> 0x7f2ebe981845
+JIT exited with 1 0x3c06c
+asmfn "/tmp/tmp.asm"
+Added jti for 0x3c06c -> 0x7f2ebe981927
+JIT exited with 1 0x3c080
+asmfn "/tmp/tmp.asm"
+Added jti for 0x3c080 -> 0x7f2ebe981982
+JIT exited with 1 0xa38e4
+asmfn "/tmp/tmp.asm"
+Added jti for 0xa38e4 -> 0x7f2ebe9819b3
+JIT exited with 1 0x3c088
+asmfn "/tmp/tmp.asm"
+Added jti for 0x3c088 -> 0x7f2ebe981af4
+JIT exited with 1 0x3be5c
+asmfn "/tmp/tmp.asm"
+Added jti for 0x3be5c -> 0x7f2ebe981b1d
+JIT exited with 1 0x14354
+asmfn "/tmp/tmp.asm"
+Added jti for 0x14354 -> 0x7f2ebe981c24
+JIT exited with 1 0x143e0
+asmfn "/tmp/tmp.asm"
+Added jti for 0x143e0 -> 0x7f2ebe981c6b
+JIT exited with 1 0x12178
+asmfn "/tmp/tmp.asm"
+Added jti for 0x12178 -> 0x7f2ebe981c99
+JIT exited with 1 0x121e8
+asmfn "/tmp/tmp.asm"
+Added jti for 0x121e8 -> 0x7f2ebe981eeb
+JIT exited with 1 0x9fbdc
+asmfn "/tmp/tmp.asm"
+Added jti for 0x9fbdc -> 0x7f2ebe981f39
+JIT exited with 1 0xa02ec
+asmfn "/tmp/tmp.asm"
+Added jti for 0xa02ec -> 0x7f2ebe981f57
+JIT exited with 1 0xa2634
+asmfn "/tmp/tmp.asm"
+Added jti for 0xa2634 -> 0x7f2ebe982085
+JIT exited with 1 0xa0338
+asmfn "/tmp/tmp.asm"
+Added jti for 0xa0338 -> 0x7f2ebe9820c7
+JIT exited with 1 0xa0670
+asmfn "/tmp/tmp.asm"
+Added jti for 0xa0670 -> 0x7f2ebe982179
+JIT exited with 1 0xa0344
+asmfn "/tmp/tmp.asm"
+Added jti for 0xa0344 -> 0x7f2ebe9821aa
+JIT exited with 1 0xa035c
+asmfn "/tmp/tmp.asm"
+Added jti for 0xa035c -> 0x7f2ebe9821fd
+JIT exited with 1 0xa0368
+asmfn "/tmp/tmp.asm"
+Added jti for 0xa0368 -> 0x7f2ebe98223b
+JIT exited with 1 0xa03ac
+asmfn "/tmp/tmp.asm"
+Added jti for 0xa03ac -> 0x7f2ebe98237b
+JIT exited with 1 0xa03bc
+asmfn "/tmp/tmp.asm"
+Added jti for 0xa03bc -> 0x7f2ebe982419
+JIT exited with 1 0xa03c8
+asmfn "/tmp/tmp.asm"
+Added jti for 0xa03c8 -> 0x7f2ebe982451
+JIT exited with 1 0xa03d8
+asmfn "/tmp/tmp.asm"
+Added jti for 0xa03d8 -> 0x7f2ebe9824e8
+JIT exited with 1 0xa03e0
+asmfn "/tmp/tmp.asm"
+Added jti for 0xa03e0 -> 0x7f2ebe982519
+JIT exited with 1 0xa03f0
+asmfn "/tmp/tmp.asm"
+Added jti for 0xa03f0 -> 0x7f2ebe9825b7
+JIT exited with 1 0xa03fc
+asmfn "/tmp/tmp.asm"
+Added jti for 0xa03fc -> 0x7f2ebe9825ef
+JIT exited with 1 0xa040c
+asmfn "/tmp/tmp.asm"
+Added jti for 0xa040c -> 0x7f2ebe9826a5
+JIT exited with 1 0xa041c
+asmfn "/tmp/tmp.asm"
+Added jti for 0xa041c -> 0x7f2ebe9826f5
+JIT exited with 1 0xa0428
+asmfn "/tmp/tmp.asm"
+Added jti for 0xa0428 -> 0x7f2ebe982732
+JIT exited with 1 0xa8230
+asmfn "/tmp/tmp.asm"
+Added jti for 0xa8230 -> 0x7f2ebe9827b7
+JIT exited with 1 0xa8234
+asmfn "/tmp/tmp.asm"
+Added jti for 0xa8234 -> 0x7f2ebe982857
+JIT exited with 1 0xa0448
+asmfn "/tmp/tmp.asm"
+Added jti for 0xa0448 -> 0x7f2ebe9828eb
+JIT exited with 1 0xa045c
+asmfn "/tmp/tmp.asm"
+Added jti for 0xa045c -> 0x7f2ebe98293f
+JIT exited with 1 0xa048c
+asmfn "/tmp/tmp.asm"
+Added jti for 0xa048c -> 0x7f2ebe9829f4
+JIT exited with 1 0xa05fc
+asmfn "/tmp/tmp.asm"
+Added jti for 0xa05fc -> 0x7f2ebe982b7d
+JIT exited with 1 0xa0618
+asmfn "/tmp/tmp.asm"
+Added jti for 0xa0618 -> 0x7f2ebe982c3e
+JIT exited with 1 0xa04b8
+asmfn "/tmp/tmp.asm"
+Added jti for 0xa04b8 -> 0x7f2ebe982c67
+JIT exited with 1 0xa0620
+asmfn "/tmp/tmp.asm"
+Added jti for 0xa0620 -> 0x7f2ebe982d22
+JIT exited with 1 0xa0624
+asmfn "/tmp/tmp.asm"
+Added jti for 0xa0624 -> 0x7f2ebe982d44
+JIT exited with 1 0x121fc
+asmfn "/tmp/tmp.asm"
+Added jti for 0x121fc -> 0x7f2ebe982e85
+JIT exited with 1 0xa638c
+asmfn "/tmp/tmp.asm"
+Added jti for 0xa638c -> 0x7f2ebe982eda
+JIT exited with 1 0xb1c00
+asmfn "/tmp/tmp.asm"
+Added jti for 0xb1c00 -> 0x7f2ebe982fc4
+JIT exited with 1 0xb88a8
+asmfn "/tmp/tmp.asm"
+Added jti for 0xb88a8 -> 0x7f2ebe983123
+JIT exited with 1 0xb1c50
+asmfn "/tmp/tmp.asm"
+Added jti for 0xb1c50 -> 0x7f2ebe98316b
+JIT exited with 1 0xb1c60
+asmfn "/tmp/tmp.asm"
+Added jti for 0xb1c60 -> 0x7f2ebe9831b2
+JIT exited with 1 0xb1fd8
+asmfn "/tmp/tmp.asm"
+Added jti for 0xb1fd8 -> 0x7f2ebe983824
+JIT exited with 1 0xb4544
+asmfn "/tmp/tmp.asm"
+Added jti for 0xb4544 -> 0x7f2ebe98385f
+JIT exited with 1 0xb461c
+asmfn "/tmp/tmp.asm"
+Added jti for 0xb461c -> 0x7f2ebe983a7e
+JIT exited with 2 0xc0694
+Syscall 80
+JIT exited with 1 0xc06c8
+asmfn "/tmp/tmp.asm"
+Added jti for 0xc06c8 -> 0x7f2ebe983af9
+JIT exited with 1 0xc06d0
+asmfn "/tmp/tmp.asm"
+Added jti for 0xc06d0 -> 0x7f2ebe983b2b
+JIT exited with 1 0xc06a4
+asmfn "/tmp/tmp.asm"
+[    1.0001] Fuzz cases          0 | fcps        0.0 | inst/sec        0.0
+reset      NaN | vm      NaN
+Added jti for 0xc06a4 -> 0x7f2ebe983b60
+JIT exited with 1 0xa403c
+asmfn "/tmp/tmp.asm"
+Added jti for 0xa403c -> 0x7f2ebe983b9a
+JIT exited with 1 0xa4028
+asmfn "/tmp/tmp.asm"
+Added jti for 0xa4028 -> 0x7f2ebe983c40
+JIT exited with 1 0xa5134
+asmfn "/tmp/tmp.asm"
+Added jti for 0xa5134 -> 0x7f2ebe983ca5
+JIT exited with 1 0xa518c
+asmfn "/tmp/tmp.asm"
+Added jti for 0xa518c -> 0x7f2ebe983d3f
+JIT exited with 1 0xa50d4
+asmfn "/tmp/tmp.asm"
+Added jti for 0xa50d4 -> 0x7f2ebe983d7b
+JIT exited with 1 0xa54bc
+asmfn "/tmp/tmp.asm"
+Added jti for 0xa54bc -> 0x7f2ebe983db8
+JIT exited with 1 0xa56ec
+asmfn "/tmp/tmp.asm"
+Added jti for 0xa56ec -> 0x7f2ebe983fc2
+JIT exited with 1 0xa54f0
+asmfn "/tmp/tmp.asm"
+Added jti for 0xa54f0 -> 0x7f2ebe984041
+JIT exited with 1 0xa5704
+asmfn "/tmp/tmp.asm"
+Added jti for 0xa5704 -> 0x7f2ebe984183
+JIT exited with 1 0xa5744
+asmfn "/tmp/tmp.asm"
+Added jti for 0xa5744 -> 0x7f2ebe984277
+JIT exited with 1 0xb4634
+asmfn "/tmp/tmp.asm"
+Added jti for 0xb4634 -> 0x7f2ebe9842a1
+JIT exited with 1 0xb4580
+asmfn "/tmp/tmp.asm"
+Added jti for 0xb4580 -> 0x7f2ebe9842da
+JIT exited with 1 0xb1fe4
+asmfn "/tmp/tmp.asm"
+Added jti for 0xb1fe4 -> 0x7f2ebe9843d6
+JIT exited with 1 0xb1fec
+asmfn "/tmp/tmp.asm"
+Added jti for 0xb1fec -> 0x7f2ebe984419
+JIT exited with 1 0xb1cd0
+asmfn "/tmp/tmp.asm"
+Added jti for 0xb1cd0 -> 0x7f2ebe984506
+JIT exited with 1 0xb1d34
+asmfn "/tmp/tmp.asm"
+Added jti for 0xb1d34 -> 0x7f2ebe98497b
+JIT exited with 1 0xb2028
+asmfn "/tmp/tmp.asm"
+Added jti for 0xb2028 -> 0x7f2ebe984c8b
+JIT exited with 1 0xb1d4c
+asmfn "/tmp/tmp.asm"
+Added jti for 0xb1d4c -> 0x7f2ebe984cf5
+JIT exited with 1 0xb229c
+asmfn "/tmp/tmp.asm"
+Added jti for 0xb229c -> 0x7f2ebe984f61
+JIT exited with 1 0xb33ec
+asmfn "/tmp/tmp.asm"
+Added jti for 0xb33ec -> 0x7f2ebe985021
+JIT exited with 1 0xb33f4
+asmfn "/tmp/tmp.asm"
+Added jti for 0xb33f4 -> 0x7f2ebe985052
+JIT exited with 1 0xb22ec
+asmfn "/tmp/tmp.asm"
+Added jti for 0xb22ec -> 0x7f2ebe985081
+JIT exited with 1 0xb1e40
+asmfn "/tmp/tmp.asm"
+Added jti for 0xb1e40 -> 0x7f2ebe985170
+JIT exited with 1 0xb1e4c
+asmfn "/tmp/tmp.asm"
+Added jti for 0xb1e4c -> 0x7f2ebe985736
+JIT exited with 1 0xb1e9c
+asmfn "/tmp/tmp.asm"
+Added jti for 0xb1e9c -> 0x7f2ebe985cae
+JIT exited with 1 0xb1ed4
+asmfn "/tmp/tmp.asm"
+Added jti for 0xb1ed4 -> 0x7f2ebe986095
+JIT exited with 1 0xb1f24
+asmfn "/tmp/tmp.asm"
+Added jti for 0xb1f24 -> 0x7f2ebe986384
+JIT exited with 1 0xb297c
+asmfn "/tmp/tmp.asm"
+Added jti for 0xb297c -> 0x7f2ebe98649d
+JIT exited with 1 0xb082c
+asmfn "/tmp/tmp.asm"
+Added jti for 0xb082c -> 0x7f2ebe9864e8
+JIT exited with 1 0xb072c
+asmfn "/tmp/tmp.asm"
+Added jti for 0xb072c -> 0x7f2ebe986538
+JIT exited with 1 0xb0824
+asmfn "/tmp/tmp.asm"
+Added jti for 0xb0824 -> 0x7f2ebe986757
+JIT exited with 1 0xa4190
+asmfn "/tmp/tmp.asm"
+Added jti for 0xa4190 -> 0x7f2ebe986779
+JIT exited with 1 0xa428c
+asmfn "/tmp/tmp.asm"
+Added jti for 0xa428c -> 0x7f2ebe986a62
+JIT exited with 1 0xa432c
+asmfn "/tmp/tmp.asm"
+Added jti for 0xa432c -> 0x7f2ebe986bdf
+JIT exited with 1 0xa441c
+asmfn "/tmp/tmp.asm"
+Added jti for 0xa441c -> 0x7f2ebe986df3
+JIT exited with 1 0xa5b08
+asmfn "/tmp/tmp.asm"
+Added jti for 0xa5b08 -> 0x7f2ebe986e9d
+JIT exited with 1 0xa5b20
+asmfn "/tmp/tmp.asm"
+Added jti for 0xa5b20 -> 0x7f2ebe986efd
+JIT exited with 1 0xa4440
+asmfn "/tmp/tmp.asm"
+Added jti for 0xa4440 -> 0x7f2ebe986f62
+JIT exited with 1 0xa4344
+asmfn "/tmp/tmp.asm"
+Added jti for 0xa4344 -> 0x7f2ebe986fc8
+JIT exited with 1 0xa4350
+asmfn "/tmp/tmp.asm"
+Added jti for 0xa4350 -> 0x7f2ebe98715a
+JIT exited with 1 0xa4370
+asmfn "/tmp/tmp.asm"
+Added jti for 0xa4370 -> 0x7f2ebe98729c
+JIT exited with 1 0xa45bc
+asmfn "/tmp/tmp.asm"
+Added jti for 0xa45bc -> 0x7f2ebe987333
+JIT exited with 1 0xa5b8c
+asmfn "/tmp/tmp.asm"
+Added jti for 0xa5b8c -> 0x7f2ebe987373
+JIT exited with 1 0xa45c8
+asmfn "/tmp/tmp.asm"
+Added jti for 0xa45c8 -> 0x7f2ebe9874a4
+JIT exited with 1 0xa4394
+asmfn "/tmp/tmp.asm"
+Added jti for 0xa4394 -> 0x7f2ebe98752b
+JIT exited with 1 0xa43f0
+asmfn "/tmp/tmp.asm"
+Added jti for 0xa43f0 -> 0x7f2ebe9876ec
+JIT exited with 1 0xa29f0
+asmfn "/tmp/tmp.asm"
+Added jti for 0xa29f0 -> 0x7f2ebe987729
+JIT exited with 1 0xa2a14
+asmfn "/tmp/tmp.asm"
+Added jti for 0xa2a14 -> 0x7f2ebe987829
+JIT exited with 1 0xa2a28
+asmfn "/tmp/tmp.asm"
+Added jti for 0xa2a28 -> 0x7f2ebe987879
+JIT exited with 1 0xa8128
+asmfn "/tmp/tmp.asm"
+Added jti for 0xa8128 -> 0x7f2ebe9878f3
+JIT exited with 1 0xb44dc
+asmfn "/tmp/tmp.asm"
+Added jti for 0xb44dc -> 0x7f2ebe987a97
+JIT exited with 1 0xc0978
+asmfn "/tmp/tmp.asm"
+Added jti for 0xc0978 -> 0x7f2ebe987b37
+JIT exited with 2 0xc0988
+Syscall 64
+[    2.0002] Fuzz cases          0 | fcps        0.0 | inst/sec        0.0
+reset      NaN | vm      NaN
+[    3.0004] Fuzz cases          0 | fcps        0.0 | inst/sec        0.0
+reset      NaN | vm      NaN

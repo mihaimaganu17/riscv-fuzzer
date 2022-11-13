@@ -449,14 +449,14 @@ impl Emulator {
             unsafe {
                 // Invoke the JIT
                 let exit_code: u64;
-                let status: u64;
+                let reentry_pc: u64;
                 asm!(r#"
                     call {entry}
                 "#,
                 // We discard these outputs(rax, rbx, rcx)
                 entry = in(reg) jit_addr,
                 out("rax") exit_code,
-                out("rdx") status,
+                out("rdx") reentry_pc,
                 out("rcx") _,
                 in("r8") memory,
                 in("r9") perms,
@@ -467,12 +467,19 @@ impl Emulator {
                 in("r14") trans_table,
                 );
 
-                print!("JIT exited with {} {:#x}\n", exit_code, status);
+                // Update the PC reentry point
+                self.set_reg(Register::Pc, reentry_pc);
+
+                print!("JIT exited with {} {:#x}\n", exit_code, reentry_pc);
 
                 match exit_code {
                     1 => {
-                        // Branch decode request, update PC and re-enter
-                        self.set_reg(Register::Pc, status);
+                        // Branch decode request, just continue as PC has been updated to the new
+                        // target
+                    }
+                    2 => {
+                        // Syscall
+                        return Err(VmExit::Syscall);
                     }
                     _ => unreachable!(),
                 }
@@ -678,25 +685,26 @@ impl Emulator {
                     // We know it's an Itype
                     let inst = Itype::from(inst);
 
-                    let (loadtyp, loadsz) = match inst.funct3 {
-                        0b000 => /* LB */ ("movsx", "byte"),
-                        0b001 => /* LH */ ("movsx", "word"),
-                        0b010 => /* LW */ ("movsx", "dword"),
-                        0b011 => /* LD */ ("mov", "qword"),
-                        0b100 => /* LBU */ ("movzx", "byte"),
-                        0b101 => /* LHU */ ("movzx", "word"),
-                        0b110 => /* LWU */ ("movzx", "dword"),
+                    let (loadtyp, loadsz, regtyp) = match inst.funct3 {
+                        0b000 => /* LB */ ("movsx", "byte", "rax"),
+                        0b001 => /* LH */ ("movsx", "word", "rax"),
+                        0b010 => /* LW */ ("movsx", "dword", "rax"),
+                        0b011 => /* LD */ ("mov", "qword", "rax"),
+                        0b100 => /* LBU */ ("movzx", "byte", "rax"),
+                        0b101 => /* LHU */ ("movzx", "word", "rax"),
+                        0b110 => /* LWU */ ("mov", "dword", "eax"),
                         _ => unreachable!(),
                     };
 
                     asm += &format!(r#"
                         {load_rax_from_rs1}
-                        {loadtyp} rax, {loadsz} [r8 + rax + {imm}]
+                        {loadtyp} {regtyp}, {loadsz} [r8 + rax + {imm}]
                         {store_rax_into_rd}
                     "#, load_rax_from_rs1 = load_reg!("rax", inst.rs1),
                         imm = inst.imm,
                         loadtyp = loadtyp,
                         loadsz = loadsz,
+                        regtyp = regtyp,
                         store_rax_into_rd = store_reg!(inst.rd, "rax"),
                     );
                 }
@@ -1098,16 +1106,18 @@ impl Emulator {
                 0b1110011 => {
                     if inst == 0b00000000000000000000000001110011 {
                         // ECALL
-                        asm += r#"
+                        asm += &format!(r#"
                             mov rax, 2
+                            mov rdx, {pc}
                             ret
-                        "#;
+                        "#, pc = pc);
                     } else if inst == 0b00000000000100000000000001110011 {
                         // EBREAK
-                        asm += r#"
+                        asm += &format!(r#"
                             mov rax, 3
+                            mov rdx, {pc}
                             ret
-                        "#;
+                        "#, pc = pc);
                     } else {
                         unreachable!();
                     }
