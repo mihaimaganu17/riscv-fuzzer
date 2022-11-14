@@ -33,15 +33,13 @@ pub struct JitCache {
 
     /// The raw JIT RWX backing
     jit: Mutex<(&'static mut [u8], usize)>,
-
-    /// Number of bytes in use in `jit`
-    inuse: usize,
 }
 
 // JIT calling convention
 // rax - Scratch
-// rbx - Scratch
 // rcx - Scratch
+// rdx - Scratch
+// rdi - Scratch
 // r8 - Pointer to the base of mmu memory
 // r9 - Pointer to the base of mmu permissions
 // r10 - Pointer to the base of mmu.dirty
@@ -51,21 +49,23 @@ pub struct JitCache {
 // r14 - Pointer to the base of jitcache.blocks
 //
 // JIT -return code (in rax)
+// In all cases rbx = PC to resume execution at upon reentry
 // 1 - Brach resolution issue, rbx = PC that was not present
 // 2 - ECALL instruction
 // 3 - EBREAK instruction
+// 4 - Read fault, rcx = guest faulting address
+// 5 - Write fault, rcx = guest faulting address
 
 impl JitCache {
     /// Allocates a new `JitCache` which is capable of handling up to `max_guest_addr` in
     /// executable code.
     pub fn new(max_guest_addr: VirtAddr) -> Self {
-        /// Alocate a zeroed out block cache
+        // Alocate a zeroed out block cache
         JitCache {
             blocks: (0..(max_guest_addr.0 + 3) / 4).map(|_| {
                 AtomicUsize::new(0)
             }).collect::<Vec<_>>().into_boxed_slice(),
             jit: Mutex::new((alloc_rwx(16 * 1024 * 1024), 0)),
-            inuse: 0,
         }
     }
 
@@ -99,12 +99,12 @@ impl JitCache {
         // Make sure the address is aligned
         assert!(addr.0 & 3 == 0, "Unaligned code address to JIT lookup");
 
-        /// Get exclusive access to the JIT
+        // Get exclusive access to the JIT
         let mut jit = self.jit.lock().unwrap();
 
-        /// Now that we have the lock, check if there's already an existing mapping. If there not,
-        /// there is not way one could show up while we have the lock held, thus we can safely
-        /// continue from this point.
+        // Now that we have the lock, check if there's already an existing mapping. If there not,
+        // there is not way one could show up while we have the lock held, thus we can safely
+        // continue from this point.
         if let Some(existing) = self.lookup(addr) {
             return existing;
         }

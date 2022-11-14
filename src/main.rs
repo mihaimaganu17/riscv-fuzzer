@@ -5,7 +5,8 @@ pub mod jitcache;
 
 use emulator::{Register, Emulator, VmExit, File};
 use mmu::{VirtAddr, PERM_WRITE, PERM_EXEC, PERM_READ, Perm, Section};
-use std::sync::{Arc, Mutex};
+use std::sync::Arc;
+use std::sync::Mutex;
 use jitcache::JitCache;
 
 /// If true, the guest writes to stdout and std err will be printed to our own stdout and stderr
@@ -331,7 +332,7 @@ struct Statistics {
 }
 
 fn worker(mut emu: Emulator, original: Arc<Emulator>, stats: Arc<Mutex<Statistics>>) {
-    const BATCH_SIZE: usize = 1;
+    const BATCH_SIZE: usize = 100;
     loop {
         let batch_start = rdtsc();
 
@@ -343,12 +344,13 @@ fn worker(mut emu: Emulator, original: Arc<Emulator>, stats: Arc<Mutex<Statistic
             emu.reset(&*original);
             local_stats.reset_cycles += rdtsc() - it;
 
+            emu.fuzz_input.clear();
+            emu.fuzz_input.extend_from_slice(include_bytes!("../xauth"));
+
             let vmexit = loop {
                 let it = rdtsc();
                 let vmexit = emu.run(&mut local_stats.inst_exec).expect_err("Failed to execute emulator");
                 local_stats.vm_cycles += rdtsc() - it;
-
-                emu.fuzz_input.extend_from_slice(include_bytes!("../xauth"));
 
                 match vmexit {
                     VmExit::Syscall => {
@@ -371,7 +373,6 @@ fn worker(mut emu: Emulator, original: Arc<Emulator>, stats: Arc<Mutex<Statistic
 
         let mut stats = stats.lock().unwrap();
 
-
         stats.fuzz_cases += local_stats.fuzz_cases;
         stats.inst_exec+= local_stats.inst_exec;
         stats.reset_cycles += local_stats.reset_cycles;
@@ -387,7 +388,7 @@ fn main() {
     let jit_cache = Arc::new(JitCache::new(VirtAddr(1024 * 1024)));
 
     // Create an emulator using the JIT
-    let mut emu = Emulator::new((32 * 1024 * 1024)).enable_jit(jit_cache);
+    let mut emu = Emulator::new(32 * 1024 * 1024).enable_jit(jit_cache);
 
     emu.memory.load("./objdump", &[
         Section {
@@ -452,7 +453,7 @@ fn main() {
     // Create a new stats structure
     let stats = Arc::new(Mutex::new(Statistics::default()));
 
-    for _ in 0..1 {
+    for _ in 0..16 {
         let new_emu= emu.fork();
         let stats = stats.clone();
         let parent = emu.clone();
@@ -473,10 +474,13 @@ fn main() {
 
     loop {
         std::thread::sleep(Duration::from_millis(1000));
+
+        // Get access to the stats structure
         let stats = stats.lock().unwrap();
 
         let time_delta = last_time.elapsed().as_secs_f64();
         let elapsed = start.elapsed().as_secs_f64();
+
         let fuzz_cases = stats.fuzz_cases;
         let instrs = stats.inst_exec;
 
@@ -487,7 +491,8 @@ fn main() {
             reset {:8.4} | vm {:8.4}\n",
             elapsed, fuzz_cases,
             (fuzz_cases - last_cases) as f64 / time_delta,
-            (instrs - last_inst) as f64 / time_delta, resetc, vmc);
+            (instrs - last_inst) as f64 / time_delta / 1_000_000.0,
+            resetc, vmc);
         last_cases = fuzz_cases;
         last_inst = instrs;
         last_time = Instant::now();

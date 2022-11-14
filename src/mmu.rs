@@ -152,6 +152,12 @@ impl Mmu {
         Some(())
     }
 
+    /// Get the maximum size of guest memory
+    #[inline]
+    pub fn len(&self) -> usize {
+        self.memory.len()
+    }
+
     /// Get the dirty list length
     pub fn dirty_len(&self) -> usize {
         self.dirty.len()
@@ -345,7 +351,7 @@ impl Mmu {
                              .checked_add(section.file_size)?),
                     &padding).ok()?;
             }
-            
+
             // Demote permissions to originals
             self.set_permissions(section.virt_addr, section.mem_size,
                                         section.permissions)?;

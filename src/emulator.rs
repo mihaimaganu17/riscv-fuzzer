@@ -1,8 +1,8 @@
 //! A 64-bit RISC-V RV64i interpreter
 
-use crate::mmu::{Mmu, Perm, VirtAddr, PERM_EXEC, DIRTY_BLOCK_SIZE};
+use crate::mmu::{Mmu, Perm, VirtAddr, PERM_READ, PERM_WRITE, PERM_RAW, PERM_EXEC, DIRTY_BLOCK_SIZE};
 use crate::jitcache::JitCache;
-use std::sync::{Arc, Mutex};
+use std::sync::Arc;
 use std::fmt;
 use std::process::Command;
 use std::arch::asm;
@@ -395,7 +395,7 @@ impl Emulator {
 
     /// Run the VM using either the emulator or the JIT
     pub fn run(&mut self, instrs_execed: &mut u64) -> Result<(), VmExit> {
-        if let Some(jit_cache) = &self.jit_cache {
+        if self.jit_cache.is_some() {
             self.run_jit(instrs_execed)
         } else {
             self.run_emu(instrs_execed)
@@ -427,17 +427,22 @@ impl Emulator {
                 let asm = self.generate_jit(VirtAddr(pc as usize), num_blocks)?;
 
                 // Write out the assembly
-                let asmfn = std::env::temp_dir().join("tmp.asm");
+                let asmfn = std::env::temp_dir()
+                    .join(format!("fwetmp_{:?}.asm", std::thread::current().id()));
+                let binfn = std::env::temp_dir()
+                    .join(format!("fwetmp_{:?}.bin", std::thread::current().id()));
                 std::fs::write(&asmfn, &asm).expect("Failed to write out asm");
 
                 // Invoke NASM to generate the binary
                 let res = Command::new("nasm")
-                    .args(&["-f", "bin", "-o", "test", asmfn.to_str().unwrap()]).status()
+                    .args(&["-f", "bin", "-o",
+                          binfn.to_str().unwrap(),
+                          asmfn.to_str().unwrap()]).status()
                     .expect("Failed to run `nasm`, is it in you path?");
                 assert!(res.success(), "nasm returned an error");
 
                 // Read the binary
-                let tmp = std::fs::read("test")
+                let tmp = std::fs::read(&binfn)
                     .expect("Failed to read nasm output");
 
                 // Update the JIT tables
@@ -449,9 +454,11 @@ impl Emulator {
                 // Invoke the JIT
                 let exit_code: u64;
                 let reentry_pc: u64;
+                let exit_info: u64;
 
                 let dirty_inuse = self.memory.dirty_len();
                 let new_dirty_inuse: usize;
+                let mut instcount = *instrs_execed;
 
                 asm!(r#"
                     call {entry}
@@ -460,7 +467,8 @@ impl Emulator {
                 entry = in(reg) jit_addr,
                 out("rax") exit_code,
                 out("rdx") reentry_pc,
-                out("rcx") _,
+                out("rcx") exit_info,
+                out("rdi") _,
                 in("r8") memory,
                 in("r9") perms,
                 in("r10") dirty,
@@ -468,10 +476,14 @@ impl Emulator {
                 inout("r12") dirty_inuse => new_dirty_inuse,
                 in("r13") self.registers.as_ptr(),
                 in("r14") trans_table,
+                inout("r15") instcount,
                 );
 
                 // Update the PC reentry point
                 self.set_reg(Register::Pc, reentry_pc);
+
+                // Update insts execed
+                *instrs_execed = instcount;
 
                 // Update the dirty state
                 self.memory.set_dirty_len(new_dirty_inuse);
@@ -484,6 +496,12 @@ impl Emulator {
                     2 => {
                         // Syscall
                         return Err(VmExit::Syscall);
+                    }
+                    4 => {
+                        return Err(VmExit::ReadFault(VirtAddr(exit_info as usize)));
+                    }
+                    5 => {
+                        return Err(VmExit::WriteFault(VirtAddr(exit_info as usize)));
                     }
                     _ => unreachable!(),
                 }
@@ -498,6 +516,8 @@ impl Emulator {
 
         let mut pc = pc.0 as u64;
 
+        let mut block_instrs = 0;
+
         'next_inst: loop {
             // Get the current program counter
             let inst: u32 = self
@@ -509,6 +529,9 @@ impl Emulator {
 
             // Add a lable to this instruction
             asm += &format!("inst_pc_{:#x}:\n", pc);
+
+            // Track number of instructions in the block
+            block_instrs += 1;
 
             // Produce the assembly statement to load RISC-V `reg` into `x86` reg
             macro_rules! load_reg {
@@ -575,16 +598,20 @@ impl Emulator {
                         test rax, rax
                         jz .jit_resolve
 
+                        add r15, {block_instrs}
                         jmp rax
 
                         .jit_resolve:
                         mov rax, 1
                         mov rdx, {target_pc}
+
+                        add r15, {block_instrs}
                         ret
                     "#, store_rd_from_rax = store_reg!(inst.rd, "rax"),
                         ret = ret,
                         target = (target / 4) * 8,
                         target_pc = target,
+                        block_instrs = block_instrs,
                     );
 
                     break 'next_inst;
@@ -615,16 +642,19 @@ impl Emulator {
                                 test rax, rax
                                 jz .jit_resolve
 
+                                add r15, {block_instrs}
                                 jmp rax
 
                                 .jit_resolve:
                                 {load_rdx_from_rs1}
                                 add rdx, {imm}
                                 mov rax, 1
+                                add r15, {block_instrs}
                                 ret
                             "#, store_rd_from_rax = store_reg!(inst.rd, "rax"),
                                 load_rax_from_rs1 = load_reg!("rax", inst.rs1),
                                 load_rdx_from_rs1 = load_reg!("rdx", inst.rs1),
+                                block_instrs = block_instrs,
                                 imm = inst.imm, ret = ret, num_blocks = num_blocks);
 
                             break 'next_inst;
@@ -666,11 +696,13 @@ impl Emulator {
                                 test rax, rax
                                 jz .jit_resolve
 
+                                add r15, {block_instrs}
                                 jmp rax
 
                                 .jit_resolve:
                                 mov rax, 1
                                 mov rdx, {target_pc}
+                                add r15, {block_instrs}
                                 ret
 
                                 .fallthrough:
@@ -679,6 +711,7 @@ impl Emulator {
                                 load_rdx_from_rs2 = load_reg!("rdx", inst.rs2),
                                 target_pc = target,
                                 target = (target / 4) * 8,
+                                block_instrs = block_instrs,
                                 );
 
                         }
@@ -689,38 +722,69 @@ impl Emulator {
                     // We know it's an Itype
                     let inst = Itype::from(inst);
 
-                    let (loadtyp, loadsz, regtyp) = match inst.funct3 {
-                        0b000 => /* LB */ ("movsx", "byte", "rax"),
-                        0b001 => /* LH */ ("movsx", "word", "rax"),
-                        0b010 => /* LW */ ("movsx", "dword", "rax"),
-                        0b011 => /* LD */ ("mov", "qword", "rax"),
-                        0b100 => /* LBU */ ("movzx", "byte", "rax"),
-                        0b101 => /* LHU */ ("movzx", "word", "rax"),
-                        0b110 => /* LWU */ ("mov", "dword", "eax"),
+                    let (loadtyp, loadsz, regtyp, access_size) = match inst.funct3 {
+                        0b000 => /* LB */ ("movsx", "byte", "rbx", 1),
+                        0b001 => /* LH */ ("movsx", "word", "rbx", 2),
+                        0b010 => /* LW */ ("movsx", "dword", "rbx", 4),
+                        0b011 => /* LD */ ("mov", "qword", "rbx", 8),
+                        0b100 => /* LBU */ ("movzx", "byte", "rbx", 1),
+                        0b101 => /* LHU */ ("movzx", "word", "rbx", 2),
+                        0b110 => /* LWU */ ("mov", "dword", "ebx", 4),
                         _ => unreachable!(),
                     };
 
+                    // Compute the read permission mask
+                    let mut perm_mask = 0u64;
+                    for ii in 0..access_size {
+                        perm_mask |= (PERM_READ as u64) << (ii * 8)
+                    }
+
                     asm += &format!(r#"
                         {load_rax_from_rs1}
-                        {loadtyp} {regtyp}, {loadsz} [r8 + rax + {imm}]
+                        add rax, {imm}
+
+                        ; Check if we are Out of bounds
+                        cmp rax, {memory_len} - {access_size}
+                        ja .fault
+
+                        {loadtyp} {regtyp}, {loadsz} [r9 + rax]
+                        mov rcx, {perm_mask}
+                        and rbx, rcx
+                        cmp rbx, rcx
+                        je .nofault
+
+                        .fault:
+                        mov rcx, rax
+                        mov rbx, {pc}
+                        mov rax, 4
+                        add r15, {block_instrs}
+                        ret
+
+                        .nofault:
+                        {loadtyp} {regtyp}, {loadsz} [r8 + rax]
                         {store_rax_into_rd}
                     "#, load_rax_from_rs1 = load_reg!("rax", inst.rs1),
+                        store_rax_into_rd = store_reg!(inst.rd, "rbx"),
                         imm = inst.imm,
                         loadtyp = loadtyp,
                         loadsz = loadsz,
                         regtyp = regtyp,
-                        store_rax_into_rd = store_reg!(inst.rd, "rax"),
+                        perm_mask= perm_mask,
+                        pc = pc,
+                        access_size = access_size,
+                        block_instrs = block_instrs,
+                        memory_len = self.memory.len(),
                     );
                 }
                 0b0100011 => {
                     // We know it's an Stype
                     let inst = Stype::from(inst);
 
-                    let (storetyp, storesz, regtype) = match inst.funct3 {
-                        0b000 => /* SB */ ("mov", "byte", "dl"),
-                        0b001 => /* SH */ ("mov", "word", "dx"),
-                        0b010 => /* SW */ ("mov", "dword", "edx"),
-                        0b011 => /* SD */ ("mov", "qword", "rdx"),
+                    let (storetyp, storesz, regtype, loadrt, access_size) = match inst.funct3 {
+                        0b000 => /* SB */ ("movzx", "byte", "dl", "edx", 1),
+                        0b001 => /* SH */ ("movzx", "word", "dx", "edx", 2),
+                        0b010 => /* SW */ ("mov", "dword", "edx", "edx", 4),
+                        0b011 => /* SD */ ("mov", "qword", "rdx", "rdx", 8),
                         _ => unreachable!(),
                     };
 
@@ -732,16 +796,50 @@ impl Emulator {
                     // Amount to shift to get the block from an address
                     let dirty_block_shift = DIRTY_BLOCK_SIZE.trailing_zeros();
 
+                    // Compute the write permission mask
+                    let mut write_mask = 0u64;
+                    for ii in 0..access_size {
+                        write_mask |= (PERM_WRITE as u64) << (ii * 8)
+                    }
+
                     asm += &format!(r#"
                         {load_rax_from_rs1}
-                        {load_rdx_from_rs2}
-
                         add rax, {imm}
+
+                        ; Check if we are Out of bounds
+                        cmp rax, {memory_len} - {access_size}
+                        ja .fault
+
+                        {storetyp} {loadrt}, {storesz} [r9 + rax]
+                        mov rcx, {write_mask}
+                        mov rdi, rbx
+                        and rdx, rcx
+                        cmp rdx, rcx
+                        je .nofault
+
+                        .fault:
+                        mov rcx, rax
+                        mov rdx, {pc}
+                        mov rax, 5
+                        add r15, {block_instrs}
+                        ret
+
+                        .nofault:
+                        ; Get the raw bits and shift them into the read slot
+                        ; Distance between the RAW bit and the not RAW bit
+                        ; TODO
+                        ; Convert the mask for the correct size into the RAW mask
+                        shl rcx, 2
+                        ; We know have the RAW bits in rdi
+                        and rdi, rcx
+                        shr rdi, 3
+                        mov rdx, rdi
+                        ; Update the permissions
+                        or {storesz} [r9 + rax], {regtype}
                         mov rcx, rax
 
                         ; This gives us the dirty block index
                         shr rcx, {dirty_block_shift}
-
                         bts qword [r11], rcx
                         ; If its non-zero, continue
                         jc .continue
@@ -749,15 +847,22 @@ impl Emulator {
                         ; Write the block rcx at the dirty index
                         mov qword [r10 + r12 * 8], rcx
                         ; Increment the dirty index
-                        inc r12
+                        add r12, 1
 
                         .continue:
-                        {storetyp} {storesz} [r8 + rax], {regtype}
+                        {load_rdx_from_rs2}
+                        mov {storesz} [r8 + rax], {regtype}
                     "#,
                         load_rax_from_rs1 = load_reg!("rax", inst.rs1),
                         load_rdx_from_rs2 = load_reg!("rdx", inst.rs2),
                         imm = inst.imm,
+                        access_size = access_size,
+                        block_instrs = block_instrs,
+                        write_mask = write_mask,
+                        memory_len = self.memory.len(),
+                        loadrt = loadrt,
                         storetyp = storetyp,
+                        pc = pc,
                         storesz = storesz,
                         regtype = regtype,
                         dirty_block_shift = dirty_block_shift,
@@ -1139,15 +1244,21 @@ impl Emulator {
                         asm += &format!(r#"
                             mov rax, 2
                             mov rdx, {pc}
+                            add r15, {block_instrs}
                             ret
-                        "#, pc = pc);
+                        "#, pc = pc,
+                            block_instrs = block_instrs,
+                        );
                     } else if inst == 0b00000000000100000000000001110011 {
                         // EBREAK
                         asm += &format!(r#"
                             mov rax, 3
                             mov rdx, {pc}
+                            add r15, {block_instrs}
                             ret
-                        "#, pc = pc);
+                        "#, pc = pc,
+                            block_instrs = block_instrs,
+                        );
                     } else {
                         unreachable!();
                     }
