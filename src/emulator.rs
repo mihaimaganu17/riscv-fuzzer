@@ -1,6 +1,6 @@
 //! A 64-bit RISC-V RV64i interpreter
 
-use crate::mmu::{Mmu, Perm, VirtAddr, PERM_EXEC};
+use crate::mmu::{Mmu, Perm, VirtAddr, PERM_EXEC, DIRTY_BLOCK_SIZE};
 use crate::jitcache::JitCache;
 use std::sync::{Arc, Mutex};
 use std::fmt;
@@ -428,7 +428,6 @@ impl Emulator {
 
                 // Write out the assembly
                 let asmfn = std::env::temp_dir().join("tmp.asm");
-                println!("asmfn {:?}", asmfn.display());
                 std::fs::write(&asmfn, &asm).expect("Failed to write out asm");
 
                 // Invoke NASM to generate the binary
@@ -450,6 +449,10 @@ impl Emulator {
                 // Invoke the JIT
                 let exit_code: u64;
                 let reentry_pc: u64;
+
+                let dirty_inuse = self.memory.dirty_len();
+                let new_dirty_inuse: usize;
+
                 asm!(r#"
                     call {entry}
                 "#,
@@ -462,7 +465,7 @@ impl Emulator {
                 in("r9") perms,
                 in("r10") dirty,
                 in("r11") dirty_bitmap,
-                in("r12") 0u64,
+                inout("r12") dirty_inuse => new_dirty_inuse,
                 in("r13") self.registers.as_ptr(),
                 in("r14") trans_table,
                 );
@@ -470,7 +473,8 @@ impl Emulator {
                 // Update the PC reentry point
                 self.set_reg(Register::Pc, reentry_pc);
 
-                print!("JIT exited with {} {:#x}\n", exit_code, reentry_pc);
+                // Update the dirty state
+                self.memory.set_dirty_len(new_dirty_inuse);
 
                 match exit_code {
                     1 => {
@@ -720,10 +724,35 @@ impl Emulator {
                         _ => unreachable!(),
                     };
 
+                    // Make sure the dirty block size is sane
+                    assert!(DIRTY_BLOCK_SIZE.count_ones() == 1 &&
+                            DIRTY_BLOCK_SIZE >= 8,
+                        "Dirty block size must be a power of two and >= 8");
+
+                    // Amount to shift to get the block from an address
+                    let dirty_block_shift = DIRTY_BLOCK_SIZE.trailing_zeros();
+
                     asm += &format!(r#"
                         {load_rax_from_rs1}
                         {load_rdx_from_rs2}
-                        {storetyp} {storesz} [r8 + rax + {imm}], {regtype}
+
+                        add rax, {imm}
+                        mov rcx, rax
+
+                        ; This gives us the dirty block index
+                        shr rcx, {dirty_block_shift}
+
+                        bts qword [r11], rcx
+                        ; If its non-zero, continue
+                        jc .continue
+
+                        ; Write the block rcx at the dirty index
+                        mov qword [r10 + r12 * 8], rcx
+                        ; Increment the dirty index
+                        inc r12
+
+                        .continue:
+                        {storetyp} {storesz} [r8 + rax], {regtype}
                     "#,
                         load_rax_from_rs1 = load_reg!("rax", inst.rs1),
                         load_rdx_from_rs2 = load_reg!("rdx", inst.rs2),
@@ -731,6 +760,7 @@ impl Emulator {
                         storetyp = storetyp,
                         storesz = storesz,
                         regtype = regtype,
+                        dirty_block_shift = dirty_block_shift,
                     );
                 }
                 0b0010011 => {

@@ -19,7 +19,7 @@ fn handle_syscall(emu: &mut Emulator) -> Result<(), VmExit> {
     // Get the syscall number
     let num = emu.reg(Register::A7);
 
-    print!("Syscall {}\n", num);
+    //print!("Syscall {}\n", num);
 
     match num {
         214 => {
@@ -364,7 +364,7 @@ fn worker(mut emu: Emulator, original: Arc<Emulator>, stats: Arc<Mutex<Statistic
             };
 
             if vmexit != VmExit::Exit {
-                panic!("Vmexit {:#x} {:?}\n", emu.reg(Register::Pc), vmexit);
+                print!("Vmexit {:#x} {:?}\n", emu.reg(Register::Pc), vmexit);
             }
             local_stats.fuzz_cases += 1;
         }

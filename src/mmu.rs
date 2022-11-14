@@ -9,7 +9,7 @@ use crate::primitive::Primitive;
 /// The larger this is, the fewer but more expensive memcpys() need to occur,
 /// the small, the greater but less expensive memcpys() need to occur.
 /// It seems the sweet spot is often 128-4096 bytes
-const DIRTY_BLOCK_SIZE: usize = 128;
+pub const DIRTY_BLOCK_SIZE: usize = 128;
 
 /// If `true` the logic for uninitialized memory tracking will be disabled and all memory will be
 /// marked as readable if it has the RAW bit set
@@ -79,6 +79,7 @@ impl Mmu {
             memory:       self.memory.clone(),
             permissions:  self.permissions.clone(),
             dirty:        Vec::with_capacity(size / DIRTY_BLOCK_SIZE + 1),
+            // Use quad indexing
             dirty_bitmap: vec![0u64; size / DIRTY_BLOCK_SIZE / 64 + 1],
             cur_alc:      self.cur_alc.clone(),
         }
@@ -149,6 +150,17 @@ impl Mmu {
         self.permissions.get_mut(addr.0..addr.0.checked_add(size)?)?
             .iter_mut().for_each(|x| *x = perm);
         Some(())
+    }
+
+    /// Get the dirty list length
+    pub fn dirty_len(&self) -> usize {
+        self.dirty.len()
+    }
+
+    /// Set the dirty list length
+    #[inline]
+    pub unsafe fn set_dirty_len(&mut self, len: usize) {
+        self.dirty.set_len(len);
     }
 
     /// Get the tuple of (memory ptr, permissions pointer, dirty pointre, dirty bitmap pointer)

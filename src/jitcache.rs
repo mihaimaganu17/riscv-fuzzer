@@ -128,8 +128,6 @@ impl JitCache {
         // Update the in use for the JIT
         jit.1 += code.len();
 
-        print!("Added jti for {:#x} -> {:#x}\n", addr.0, new_addr);
-
         new_addr
     }
 }
